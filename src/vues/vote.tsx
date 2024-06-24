@@ -7,12 +7,10 @@ const DisplayVotes: React.FC = () => {
   const [votes, setVotes] = useState<Vote[]>([]); // Utilisez l'interface Vote ici
   const theme = useTheme();
 
-  // Supposons que vous récupérez les votes via une fonction getVotes() dans le fichier VoteService
   useEffect(() => {
-    const fetchedVotes = getVotes(); // Assurez-vous que getVotes() est correctement implémenté dans votre service VoteService
+    const fetchedVotes = getVotes(); 
     setVotes(fetchedVotes);
 
-    // Initialiser selectedOptions avec un tableau vide pour chaque vote ID
     const initialSelectedOptions: { [voteId: number]: string[] } = {};
     fetchedVotes.forEach(vote => {
       initialSelectedOptions[vote.id] = [];

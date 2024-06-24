@@ -1,9 +1,11 @@
 import React from "react";
 
-
+import  Image  from "../components/image/logo.png";
 import "./single.scss";
+import { useAuth } from "../services/AuthService";
 
 function Dashboard2() {
+  const { user } = useAuth();
   return (
     <div className="single">
       <div className="singleContainer">
@@ -11,16 +13,17 @@ function Dashboard2() {
         <div className="top">
           <div className="left">
             <h1 className="title">Information</h1>
-            <span className="editButton">modofier</span>
+            <span className="editButton" onClick={() =>console.log("test")}>modifier</span>
+
 
             <div className="item">
-              <img src="/assets/person.jpg" alt="" className="itemImg" />
+              <img src={Image} alt="" className="itemImg" />
 
               <div className="details">
-                <h1 className="itemTitle">rayan maze</h1>
+                <h1 className="itemTitle">{user?.nom} {user?.prenom} </h1>
                 <div className="detailItem">
                   <span className="itemkey">Email: </span>
-                  <span className="itemValue">rayan@gmail.com</span>
+                  <span className="itemValue">{user?.email} </span>
                 </div>
                 <div className="detailItem">
                   <span className="itemkey">num telephone: </span>

@@ -27,7 +27,7 @@ const Team = () => {
           name: `${user.prenom} ${user.nom}`,
           email: user.email,
           age: user.age || "N/A",
-          phone: user.phone || "N/A",
+          phone: user.numTel || "N/A",
           access: user.role
         }));
         setRows(data);

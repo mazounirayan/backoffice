@@ -7,10 +7,10 @@ interface PrivateRouteProps {
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
-    const { user, token } = useAuth();
+    const { user } = useAuth();
   const location = useLocation();
-
-  if (!user || !token) {
+ const token = localStorage.getItem('token');
+  if (!token) {
     // Si l'utilisateur n'est pas connecté, redirigez-le vers la page de connexion
     return <Navigate to="/login" state={{ from: location }} replace />;
   }

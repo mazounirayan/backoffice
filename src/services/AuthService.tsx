@@ -8,6 +8,8 @@ interface User {
   prenom: string;
   email: string;
   role: string;
+  token:string;
+  numTel :string
 }
 
 interface AuthContextType {
@@ -21,7 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
+  const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -38,6 +40,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setToken(token);
       setUser(user);
       localStorage.setItem('token', token);
+      console.log('Utilisateur connecté:', user);
       navigate('/'); // Redirect to the homepage after login
     } catch (error) {
       if (axios.isAxiosError(error)) {
