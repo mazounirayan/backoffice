@@ -19,9 +19,10 @@ import LoginForm from './vues/LoginForm';
 import { AuthProvider } from './services/AuthService';
 import PrivateRoute from './services/PrivateRoute';
 import CreateVote from "./vues/createvote";
-import Documents from "./vues/Documents";
+import Documents from "./vues/Documents/Documents";
 import DisplayVotes from "./vues/vote";
 import Payment from "./vues/payment/payment";
+import AgList from "./vues/ag/ag";
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
                 <Route path="/createVote" element={<PrivateRoute element={<CreateVote />} />} />
                 <Route path="/vote" element={<PrivateRoute element={<DisplayVotes />} />} />
                 <Route path="/document" element={<PrivateRoute element={<Documents />} />} />
+                <Route path="/ag" element={<PrivateRoute element={<AgList />} />} />
               </Routes>
             </main>
           </div>

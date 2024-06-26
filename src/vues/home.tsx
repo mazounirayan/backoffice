@@ -49,20 +49,20 @@ import  SignatureIcon  from '@mui/icons-material/Subscriptions';
 import  KnowledgeIcon  from '@mui/icons-material/Subscriptions';
 
 import  AccountingIcon  from '@mui/icons-material/Subscriptions';
+import { Link } from "react-router-dom";
 
 function Dashboard() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
   const items = [
-    { icon: <SubscriptionIcon />, label: "abonnement" },
-    { icon: <StudioIcon />, label: "assosiation" },
-    { icon: <CrmIcon />, label: "client" },
-    { icon: <SignatureIcon />, label: "document" },
-    { icon: <KnowledgeIcon />, label: "information" },
-    { icon: <AccountingIcon />, label: "comptabiliter" },
+    { icon: <SubscriptionIcon />, label: "team", route: "/team" },
+    { icon: <StudioIcon />, label: "vote", route: "/vote" },
+    { icon: <CrmIcon />, label: "client", route: "/CrmIcon" },
+    { icon: <SignatureIcon />, label: "document", route: "/document" },
+    { icon: <KnowledgeIcon />, label: "ag", route: "/ag" },
+    { icon: <AccountingIcon />, label: "comptabiliter", route: "/AccountingIcon" },
   ];
-
   return (
     <Box m="20px">
       {/* HEADER */}
@@ -72,22 +72,24 @@ function Dashboard() {
       <Grid container spacing={2}>
         {items.map((item, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            <Box
-              display="flex"
-              flexDirection="column"
-              alignItems="center"
-              justifyContent="center"
-              p={2}
-              border="1px solid #e0e0e0"
-              borderRadius="8px"
-            >
-              <IconButton>
-                {item.icon}
-              </IconButton>
-              <Typography variant="h6" textAlign="center">
-                {item.label}
-              </Typography>
-            </Box>
+            <Link to={item.route} style={{ textDecoration: 'none' }}>
+              <Box
+                display="flex"
+                flexDirection="column"
+                alignItems="center"
+                justifyContent="center"
+                p={2}
+                border="1px solid #e0e0e0"
+                borderRadius="8px"
+              >
+                <IconButton>
+                  {item.icon}
+                </IconButton>
+                <Typography variant="h6" textAlign="center">
+                  {item.label}
+                </Typography>
+              </Box>
+            </Link>
           </Grid>
         ))}
       </Grid>

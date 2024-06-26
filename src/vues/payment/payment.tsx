@@ -12,7 +12,7 @@ const Message: React.FC<MessageProps> = ({ content }) => {
 
 const Payment: React.FC = () => {
   const initialOptions = {
-    clientId: "ARgg-ml60Yv9UGxpXb581XJyhlch2vpgxNASFbCxMPBWuNX75qNf_ew5WaMEWzWuYIBldHEJwbMRUrr4",
+    clientId: "test",
     enableFunding: "venmo",
     disableFunding: "",
     country: "US",

@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Box, useTheme, Button } from "@mui/material";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { tokens } from "../components/theme/theme";
-import { useAuth } from '../services/AuthService';
+import { tokens } from "../../components/theme/theme";
+import { useAuth } from '../../services/AuthService';
 
-import { getDocumentName, getDocumentlien } from '../services/api';
+import { getDocumentName, getDocumentlien } from '../../services/api';
 
 interface Document {
   fileName: string;
@@ -25,13 +25,16 @@ const Documents: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem('token');
+  
       if (!token) {
         console.error('Token is null');
         return;
       }
 
-      if (!user) return;
-
+      if (!user)  {
+        console.error('user is null');
+        return;
+      }
       try {
         const result = await getDocumentName(token, user.id);
         console.log(result)
@@ -50,8 +53,10 @@ const Documents: React.FC = () => {
       return;
     }
 
-    if (!user) return;
-
+    if (!user)  {
+      console.error('Token is null');
+      return;
+    }
     try {
       console.log(content);
       const result = await getDocumentlien(content,token, user.id);
@@ -68,9 +73,10 @@ const Documents: React.FC = () => {
   };
 
   // Display loading message while user data is fetched
-  if (!user) {
-    return <p>Loading user data...</p>;
-  }
+  // if (!user) {
+
+  //   return <p>{user}Loading user data...</p>;
+  // }
   console.log(documents);
   return (
     <Box m="20px">

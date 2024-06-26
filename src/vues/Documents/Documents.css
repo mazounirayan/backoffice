@@ -1,0 +1,58 @@
+.documents-container {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .document-card {
+    background-color: orange;
+    padding: 10px;
+    margin: 10px 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+  
+  .document-icon {
+    font-size: 24px;
+    margin-right: 10px;
+  }
+  
+  .document-title {
+    font-size: 18px;
+  }
+  
+  .documents-list, .folder-contents {
+    margin-left: 20px;
+  }
+  
+  .folder-header {
+    cursor: pointer;
+    margin: 5px 0;
+  }
+  
+  .file {
+    margin-left: 20px;
+    margin: 5px 0;
+  }
+  
+  .folder-header {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .triangle {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 10px solid black;
+    margin-right: 8px;
+    transition: transform 0.3s ease;
+  }
+  
+  .triangle.open {
+    transform: rotate(180deg);
+  }
+  
