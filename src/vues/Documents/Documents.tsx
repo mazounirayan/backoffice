@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './Documents.css';
+import UploadDocument from './UploadDocument';
+
 type FolderProps = {
   id: number;
   name: string;
-  token: string;
+  token: string|null;
 };
 
 const Folder: React.FC<FolderProps> = ({ id, name, token }) => {
@@ -61,7 +63,7 @@ const Folder: React.FC<FolderProps> = ({ id, name, token }) => {
     try {
       const response = await axios.post(
         'http://localhost:3006/dossiers',
-        { nom: newFolderName, dossier: id, user: 1 },
+        { nom: newFolderName, dossier: id },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +72,11 @@ const Folder: React.FC<FolderProps> = ({ id, name, token }) => {
       );
 
       const newFolder = response.data; // The API response
-      setContents((prevContents) => (prevContents ? [...prevContents, { Nom: newFolder.nom, dossierId: newFolder.id, Type: 'dossier' }] : [{ Nom: newFolder.nom, dossierId: newFolder.id, Type: 'dossier' }]));
+      setContents((prevContents) =>
+        prevContents
+          ? [...prevContents, { Nom: newFolder.nom, dossierId: newFolder.id, Type: 'dossier' }]
+          : [{ Nom: newFolder.nom, dossierId: newFolder.id, Type: 'dossier' }]
+      );
       setNewFolderName('');
       setShowNewFolderForm(false);
     } catch (error) {
@@ -90,7 +96,7 @@ const Folder: React.FC<FolderProps> = ({ id, name, token }) => {
             contents.map((content) => (
               <div key={`${content.Type}-${content.dossierId}`}>
                 {content.Type === 'dossier' ? (
-                  <Folder id={content.dossierId!} name={content.Nom} token={token} />
+                  <Folder id={content.dossierId!} name={content.Nom} token={token}  />
                 ) : (
                   <div className="file">📄 {content.Nom}</div>
                 )}
@@ -126,8 +132,6 @@ const File: React.FC<FileProps> = ({ name }) => {
   return <div className="file">📄 {name}</div>;
 };
 
-
-
 type Item = {
   nomFichier: string;
   id: number;
@@ -137,14 +141,16 @@ type Item = {
 const Documents: React.FC = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [showItems, setShowItems] = useState(false);
+  const [showUploadForm, setShowUploadForm] = useState(false);
 
-  
-  const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiamVhbi5kdXBvbnRAZW1haWwuY29tIiwiaWF0IjoxNzE5MjY3MzAwLCJleHAiOjE3MTkzNTM3MDB9.EW__kk-BEH7PVitZ1Qma8YbdifiIdTHlk6ViXPXOm-c"
+  const token = localStorage.getItem('token');
+  const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}'); 
+
 
   const fetchItems = async () => {
     try {
       const response = await axios.post(
-        'http://localhost:3006/racine/1',
+        `http://localhost:3006/racine/${loggedInUser.id}`,
         { token },
         {
           headers: {
@@ -165,6 +171,8 @@ const Documents: React.FC = () => {
         <div className="document-icon">📊</div>
         <div className="document-title">MA COMPTABILITÉ</div>
       </div>
+      <button onClick={() => setShowUploadForm(!showUploadForm)}>Upload Document</button>
+      {showUploadForm && <UploadDocument userId={loggedInUser.id} token={token} />}
       {showItems && (
         <div className="documents-list">
           <h3>MA COMPTABILITÉ</h3>

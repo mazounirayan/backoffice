@@ -40,7 +40,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setToken(token);
       setUser(user);
       localStorage.setItem('token', token);
-      localStorage.setItem('user', user);
+      localStorage.setItem('loggedInUser', JSON.stringify(user));
       console.log('Utilisateur connecté:', user);
       navigate('/'); // Redirect to the homepage after login
     } catch (error) {
