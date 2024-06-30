@@ -23,15 +23,23 @@ import Documents from "./vues/Documents/Documents";
 import DisplayVotes from "./vues/vote";
 import Payment from "./vues/payment/payment";
 import AgList from "./vues/ag/ag";
+import   VotePage from "./vues/vote/vote";
+import CreateAGForm from "./vues/ag/CreateAGForm";
+import AGForm from "./vues/ag/CreateAGForm";
+import PropositionForm from "./vues/ag/propostions";
+import CreatePropositionForm from "./vues/ag/propostions";
 
 
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
   const location = useLocation();
+  const [currentAG, setCurrentAG] = useState<number | null>(null);
 
   const isLoginPage = location.pathname === '/login';
-
+  const handleAGCreated = (ag: any) => {
+    setCurrentAG(ag.id);
+  };
   return (
     <AuthProvider>
       <ColorModeContext.Provider value={colorMode}>
@@ -45,7 +53,10 @@ function App() {
               <Routes>
                 <Route path="/login" element={<LoginForm />} />
                 {/* <Route path="/" element={<PrivateRoute element={<Dashboard />} />} /> */}
-          
+                CreateAGForm
+                <Route path="/createAG" element={<PrivateRoute element={<AGForm onAGCreated={handleAGCreated} />} />} />
+                <Route path="/createProposition/:agId" element={ <PrivateRoute element={<CreatePropositionForm agId={currentAG} />}/>}/>
+                <Route path="/vote1" element={<PrivateRoute element={<VotePage />} />} />
                 <Route path="/stripe" element={<PrivateRoute element={<Payment />} />} />
                 <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
                 <Route path="/apitest" element={<PrivateRoute element={<Apitest />} />} />
@@ -69,3 +80,7 @@ function App() {
 }
 
 export default App;
+function setCurrentAG(id: any) {
+  throw new Error("Function not implemented.");
+}
+

@@ -54,10 +54,10 @@ import { Link } from "react-router-dom";
 function Dashboard() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+  // <Route path="/vote1" element={<PrivateRoute element={<Vote />} />} />
   const items = [
     { icon: <SubscriptionIcon />, label: "team", route: "/team" },
-    { icon: <StudioIcon />, label: "vote", route: "/vote" },
+    { icon: <StudioIcon />, label: "vote1", route: "/vote1" },
     { icon: <CrmIcon />, label: "client", route: "/CrmIcon" },
     { icon: <SignatureIcon />, label: "document", route: "/document" },
     { icon: <KnowledgeIcon />, label: "ag", route: "/ag" },
@@ -72,7 +72,8 @@ function Dashboard() {
       <Grid container spacing={2}>
         {items.map((item, index) => (
           <Grid item xs={12} sm={6} md={4} key={index}>
-            <Link to={item.route} style={{ textDecoration: 'none' }}>
+            {/* <Link to={item.route} style={{ textDecoration: 'none' }}> */}
+            <Link to={item.route} >
               <Box
                 display="flex"
                 flexDirection="column"
