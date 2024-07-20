@@ -8,26 +8,34 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./components/theme/theme";
 import Team from "./vues/team";
 import New from "./vues/new";
-import { userInputs } from "./vues/source";
 import FAQ from "./vues/FAQ";
 import Calendar from "./vues/calendrier";
 import Dashboard2 from "./vues/dashbord";
-import Apitest from "./vues/apiTest";
+
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
-import LoginForm from './vues/LoginForm';
+import LoginForm from './vues/login/LoginForm';
 import { AuthProvider } from './services/AuthService';
 import PrivateRoute from './services/PrivateRoute';
 import CreateVote from "./vues/createvote";
-import Documents from "./vues/Documents/Documents";
-import DisplayVotes from "./vues/vote";
+
+import DisplayVotes from "./vues/ag/vote";
 import Payment from "./vues/payment/payment";
 import AgList from "./vues/ag/ag";
 import   VotePage from "./vues/vote/vote";
 import CreateAGForm from "./vues/ag/CreateAGForm";
-import AGForm from "./vues/ag/CreateAGForm";
-import PropositionForm from "./vues/ag/propostions";
+
 import CreatePropositionForm from "./vues/ag/propostions";
+import AgDetail from "./vues/ag/AgDetail";
+import LogoutPage from "./vues/login/Logout";
+import TransactionsList from "./vues/Transaction";
+import Demandes from "./vues/Demande/Demande";
+import { UserProvider } from "./services/UserContext";
+import EvenementsPage from "./vues/evenement/createEvent";
+import AccorderRessourcesPage from "./vues/evenement/AccorderRessourcesEtUtilisateursPage";
+import VoteForm from "./vues/ag/vote";
+import VoteResults from "./vues/ag/VoteResults";
+import DocumentsContainer from "./vues/Documents/DocumentContainer";
 
 
 function App() {
@@ -36,13 +44,17 @@ function App() {
   const location = useLocation();
   const [currentAG, setCurrentAG] = useState<number | null>(null);
 
-  const isLoginPage = location.pathname === '/login';
   const handleAGCreated = (ag: any) => {
-    setCurrentAG(ag.id);
+    setCurrentAG(ag.id); // Convertissez l'ID de l'AG en chaîne si nécessaire
   };
+
+
+  const isLoginPage = location.pathname === '/login';
+
   return (
     <AuthProvider>
       <ColorModeContext.Provider value={colorMode}>
+      <UserProvider>
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <div className="app">
@@ -53,34 +65,51 @@ function App() {
               <Routes>
                 <Route path="/login" element={<LoginForm />} />
                 {/* <Route path="/" element={<PrivateRoute element={<Dashboard />} />} /> */}
-                CreateAGForm
-                <Route path="/createAG" element={<PrivateRoute element={<AGForm onAGCreated={handleAGCreated} />} />} />
-                <Route path="/createProposition/:agId" element={ <PrivateRoute element={<CreatePropositionForm agId={currentAG} />}/>}/>
+             
+                <Route
+                  path="/createAG"
+                  element={<PrivateRoute element={<CreateAGForm onAGCreated={handleAGCreated} />} />}
+                />
+                <Route
+                  path="/createProposition/:agId"
+                  element={<PrivateRoute element={<CreatePropositionForm   />} />}
+                />
+                <Route
+                  path="/ags/:id" 
+                  element={<PrivateRoute element={<AgDetail   />} />}
+                />
                 <Route path="/vote1" element={<PrivateRoute element={<VotePage />} />} />
                 <Route path="/stripe" element={<PrivateRoute element={<Payment />} />} />
                 <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
-                <Route path="/apitest" element={<PrivateRoute element={<Apitest />} />} />
                 <Route path="/team" element={<PrivateRoute element={<Team />} />} />
                 <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
-                <Route path="/form" element={<PrivateRoute element={<New inputs={userInputs} title={"Créer un nouvel utilisateur"} />} />} />
+                <Route path="/form" element={<PrivateRoute element={<New  title={"Créer un nouvel utilisateur"}  />} />} />
                 <Route path="/Account" element={<PrivateRoute element={<Dashboard2 />} />} />
                 <Route path="/faq" element={<PrivateRoute element={<FAQ />} />} />
                 <Route path="/calendar" element={<PrivateRoute element={<Calendar />} />} />
                 <Route path="/createVote" element={<PrivateRoute element={<CreateVote />} />} />
                 <Route path="/vote" element={<PrivateRoute element={<DisplayVotes />} />} />
-                <Route path="/document" element={<PrivateRoute element={<Documents />} />} />
+                <Route path="/document" element={<PrivateRoute element={<DocumentsContainer />} />} />
                 <Route path="/ag" element={<PrivateRoute element={<AgList />} />} />
+                <Route path="/logout" element={<PrivateRoute element={<LogoutPage />} />} />
+                <Route path="/transaction" element={<PrivateRoute element={<TransactionsList />} />} />
+                {/* <Route path="/ag" element={<PrivateRoute element={<AgList />} />} /> */}
+                <Route path="/demande" element={<PrivateRoute element={<Demandes />} />} />
+                {/* <Route path="/transaction" element={<PrivateRoute element={<TransactionsList />} />} /> */}
+                <Route path="/ags/:agId/vote" element={<PrivateRoute element={<VoteForm />} />} />
+                
+                <Route path="/VoteResults" element={<PrivateRoute element={<VoteResults />} />} />
+                <Route path="/evenement" element={<PrivateRoute element={<EvenementsPage />} />} />
+            
               </Routes>
             </main>
           </div>
         </ThemeProvider>
+      </UserProvider>  
       </ColorModeContext.Provider>
     </AuthProvider>
   );
 }
 
 export default App;
-function setCurrentAG(id: any) {
-  throw new Error("Function not implemented.");
-}
 

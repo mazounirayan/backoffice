@@ -1,17 +1,31 @@
-// src/components/CreatePropositionForm.tsx
 import React, { useState } from 'react';
+import {
+  Button,
+  TextField,
+  Typography,
+  Box,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  useTheme,
+} from '@mui/material';
 import axios from 'axios';
-import { Button, TextField, Typography, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { tokens } from '../../components/theme/theme';
 
 interface PropositionFormProps {
-  agId: number;
+  agId: string; // Ensure agId matches the type extracted from useParams
+  [key: string]: string | undefined; // Index signature for other possible params
 }
 
-const CreatePropositionForm: React.FC<PropositionFormProps> = ({ agId }) => {
+const CreatePropositionForm: React.FC = () => {
   const [question, setQuestion] = useState('');
   const [type, setType] = useState('checkbox');
   const [choix, setChoix] = useState<string[]>(['', '']);
-
+  const { agId } = useParams<PropositionFormProps>();
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const handleAddChoice = () => {
     setChoix([...choix, '']);
   };
@@ -29,14 +43,13 @@ const CreatePropositionForm: React.FC<PropositionFormProps> = ({ agId }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const proposition = { question, type, choix, ag: agId };
-      await axios.post('http://localhost:3000/propositions', proposition);
+      await axios.post('https://pa-api-0tcm.onrender.com/propositions', { question, type, choix, ag: agId });
       // Reset form
       setQuestion('');
       setType('checkbox');
       setChoix(['', '']);
     } catch (error) {
-      console.error('Erreur lors de la création de la proposition', error);
+      console.error('Error creating proposition', error);
     }
   };
 
@@ -48,12 +61,12 @@ const CreatePropositionForm: React.FC<PropositionFormProps> = ({ agId }) => {
         padding: '20px',
         borderRadius: '10px',
         boxShadow: '0 0 10px rgba(0,0,0,0.1)',
-        backgroundColor: 'black',
+        backgroundColor: colors.primary[500],
         marginTop: '20px',
       }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
-        Create a Proposition for AG {agId}
+        Create a Proposition for AG {agId} {/* Display agId for verification */}
       </Typography>
       <TextField
         fullWidth
@@ -65,10 +78,7 @@ const CreatePropositionForm: React.FC<PropositionFormProps> = ({ agId }) => {
       />
       <FormControl fullWidth sx={{ marginBottom: '20px' }}>
         <InputLabel>Type</InputLabel>
-        <Select
-          value={type}
-          onChange={(e) => setType(e.target.value as string)}
-        >
+        <Select value={type} onChange={(e) => setType(e.target.value as string)}>
           <MenuItem value="checkbox">Checkbox</MenuItem>
           <MenuItem value="radio">Radio</MenuItem>
           <MenuItem value="text">Text</MenuItem>
@@ -90,7 +100,7 @@ const CreatePropositionForm: React.FC<PropositionFormProps> = ({ agId }) => {
         </Box>
       ))}
       <Box sx={{ display: 'flex', gap: '5px', marginTop: '20px' }}>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
+        <Button variant="contained" sx={{ bgcolor: colors.greenAccent[500] }} onClick={handleSubmit}>
           Create Proposition
         </Button>
         <Button variant="contained" onClick={handleAddChoice}>

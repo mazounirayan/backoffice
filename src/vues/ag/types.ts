@@ -7,7 +7,7 @@ export interface Participation {
     id: number;
     question: string;
     type: string;
-    choix: string;
+    choix: string[];
   }
   
   export interface Ag {

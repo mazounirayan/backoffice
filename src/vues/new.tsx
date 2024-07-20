@@ -1,87 +1,218 @@
+import React, { useState, ChangeEvent, FormEvent } from "react";
+import { Box, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import "./css/new.scss";
+import { SelectChangeEvent } from '@mui/material';
 
-import Navbar from '../components/navbar/navbar';
-import Sidebar from '../components/sidbar/sidbar';
-import DriveFolderUploadOutlinedIcon from "@mui/icons-material/DriveFolderUploadOutlined";
-import React, { useState } from "react";
-import "./css/new.scss"
-import { Box, Button } from '@mui/material';
-interface Input {
-  options?: string[];
-  id: number;
-  label: string;
-  type: string;
-  placeholder?: string;
-}
+
 
 interface NewProps {
-  inputs: Input[];
+ 
   title: string;
 }
 
-const New: React.FC<NewProps> = ({ inputs, title }) => {
-  const [file, setFile] = useState<File | null>(null);
+interface FormValues {
+  nom: string;
+  prenom: string;
+  email: string;
+  motDePasse: string;
+  role: string;
+  estBenevole: boolean;
+  numTel: string;
+  profession: string;
+  dateInscription: string;
+}
+
+const New: React.FC<NewProps> = ({ title }) => {
+ 
+  const [formValues, setFormValues] = useState<FormValues>({
+    nom: '',
+    prenom: '',
+    email: '',
+    motDePasse: '',
+    role: 'Visiteur',
+    estBenevole: false,
+    numTel: '',
+    profession: '',
+    dateInscription: '',
+  });
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value, type } = e.target;
+    let updatedValue: string | boolean = value;
+    if (type === 'checkbox' && e.target instanceof HTMLInputElement) {
+      updatedValue = e.target.checked
+    }
+    setFormValues({
+      ...formValues,
+      [name]: updatedValue === null ? '' : updatedValue,
+    });
+  };
+
+  const handleRoleChange = (e: SelectChangeEvent<string>) => {
+    setFormValues({
+      ...formValues,
+      role: e.target.value as string,
+    });
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Validation des champs requis
+    if (!formValues.nom || !formValues.prenom || !formValues.email || !formValues.motDePasse) {
+      toast.error('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://pa-api-0tcm.onrender.com/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formValues),
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        toast.success('Utilisateur créé avec succès');
+        // Réinitialiser le formulaire ou effectuer une autre action si nécessaire
+      }  else if (data && data.email) {
+        toast.error(data.email);
+      } else {
+        toast.error(data.error || 'Erreur lors de la création de l\'utilisateur');
+      }
+    } catch (error) {
+      console.error('Erreur:', error);
+      toast.error('Erreur lors de la création de l\'utilisateur');
+    }
+  };
 
   return (
     <div className="new">
-      
+      <ToastContainer />
       <div className="newContainer">
-        
         <div className="top">
-          <h1>{title}</h1>
+          <Typography variant="h1">{title}</Typography>
         </div>
-        <div className="bottom">
-          <div className="left">
-            <img
-              src={
-                file
-                  ? URL.createObjectURL(file)
-                  : "https://icon-library.com/images/no-image-icon/no-image-icon-0.jpg"
-              }
-              alt=""
+        <Box className="bottom" p={3} boxShadow={3}>
+          <form onSubmit={handleSubmit}>
+            <TextField
+              label="Nom"
+              type="text"
+              name="nom"
+              value={formValues.nom}
+              onChange={handleInputChange}
+              placeholder="Martin"
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              required
             />
-          </div>
-          <div className="right">
-            <form>
-              <div className="formInput">
-                <label htmlFor="file">
-                  Image: <DriveFolderUploadOutlinedIcon className="icon" />
-                </label>
-                <input
-                  type="file"
-                  id="file"
-                  onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-                  style={{ display: "none" }}
-                />
-              </div>
-
-              {inputs.map((input) => (
-                <div className="formInput" key={input.id}>
-                  <label>{input.label}</label>
-                  {input.type === "select" && input.options ? (
-            <select>
-              {input.options.map((option, index) => (
-                <option key={index} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <input
-              type={input.type}
-              placeholder={input.placeholder}
+            <TextField
+              label="Prenom"
+              type="text"
+              name="prenom"
+              value={formValues.prenom}
+              onChange={handleInputChange}
+              placeholder="Alice"
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              required
             />
-          )}
-                </div>
-              ))}
+            <TextField
+              label="Email"
+              type="email"
+              name="email"
+              value={formValues.email}
+              onChange={handleInputChange}
+              placeholder="alice.martin@email.com"
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <TextField
+              label="Mot de passe"
+              type="password"
+              name="motDePasse"
+              value={formValues.motDePasse}
+              onChange={handleInputChange}
+              placeholder="motdepasse2"
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              required
+            />
+            <FormControl fullWidth variant="outlined" margin="normal">
+              <InputLabel>Rôle</InputLabel>
+              <Select
+                name="role"
+                value={formValues.role}
+                onChange={handleRoleChange}
+                label="Rôle"
+              >
+                <MenuItem value="Visiteur">Visiteur</MenuItem>
+                <MenuItem value="Administrateur">Administrateur</MenuItem>
+                <MenuItem value="Adherent">Adherent</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Numéro de téléphone"
+              type="text"
+              name="numTel"
+              value={formValues.numTel}
+              onChange={handleInputChange}
+              placeholder="0123456789"
               
-              <Box display="flex" justifyContent="end" mt="20px">
+              variant="outlined"
+              margin="normal"
+            />
+            <TextField
+              label="Profession"
+              type="text"
+              name="profession"
+              value={formValues.profession}
+              onChange={handleInputChange}
+              placeholder="Ingénieur"
+              fullWidth
+              variant="outlined"
+              margin="normal"
+            />
+            <TextField
+              label="Date d'inscription"
+              type="date"
+              name="dateInscription"
+              value={formValues.dateInscription}
+              onChange={handleInputChange}
+              fullWidth
+              variant="outlined"
+              margin="normal"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+            <Box display="flex" alignItems="center" mt={2}>
+              <label>
+                Est Bénévole
+                <input
+                  type="checkbox"
+                  name="estBenevole"
+                  checked={formValues.estBenevole}
+                  onChange={handleInputChange}
+                />
+              </label>
+            </Box>
+            <Box display="flex" justifyContent="flex-end" mt={3}>
               <Button type="submit" color="secondary" variant="contained">
-                Create New User
+                Créer un nouvel utilisateur
               </Button>
-              </Box>
-            </form>
-          </div>
-        </div>
+            </Box>
+          </form>
+        </Box>
       </div>
     </div>
   );

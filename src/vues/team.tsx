@@ -21,7 +21,7 @@ const Team = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:3006/users');
+        const response = await axios.get('https://pa-api-0tcm.onrender.com/users');
         const data = response.data.Users.map((user: User) => ({
           id: user.id,
           name: `${user.prenom} ${user.nom}`,
@@ -96,7 +96,7 @@ const Team = () => {
               onClick={handleClick} // Add onClick to open the menu
             >
               {access === "Administrateur" && <AdminPanelSettingsOutlinedIcon />}
-              {access === "manager" && <SecurityOutlinedIcon />}
+              {access === "Visiteur" && <SecurityOutlinedIcon />}
               {access === "Adherent" && <LockOpenOutlinedIcon />}
               <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
                 {access}
@@ -109,7 +109,7 @@ const Team = () => {
             >
               <MenuItem onClick={handleClose}>Administrateur</MenuItem>
               <MenuItem onClick={handleClose}>Adherent</MenuItem>
-              <MenuItem onClick={handleClose}>Manager</MenuItem>
+              <MenuItem onClick={handleClose}>Visiteur</MenuItem>
             </Menu>
           </>
         );

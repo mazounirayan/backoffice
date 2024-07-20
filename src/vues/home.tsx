@@ -62,6 +62,9 @@ function Dashboard() {
     { icon: <SignatureIcon />, label: "document", route: "/document" },
     { icon: <KnowledgeIcon />, label: "ag", route: "/ag" },
     { icon: <AccountingIcon />, label: "comptabiliter", route: "/AccountingIcon" },
+    { icon: <AccountingIcon />, label: "Demandes", route: "/demande" },
+    { icon: <AccountingIcon />, label: "VoteResults", route: "/VoteResults" },
+    
   ];
   return (
     <Box m="20px">

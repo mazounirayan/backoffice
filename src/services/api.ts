@@ -20,7 +20,7 @@ export interface User {
 
 
 const api = axios.create({
-  baseURL: 'http://localhost:3006', // Remplacez par l'URL de votre API
+  baseURL: 'https://pa-api-0tcm.onrender.com',
 });
 
 export const getUsers = async () : Promise<User[]> => {
@@ -75,7 +75,7 @@ export const getDocumentlien = async (blobName :string , token: string,iduser:nu
 //     formData.append('token', token); // Optional, based on your server-side logic
 
 //     const response = await axios.post(
-//       `http://localhost:3006/upload-document/${iduser}`,
+//       `https://pa-api-0tcm.onrender.com/upload-document/${iduser}`,
 //       formData,
 //       {
 //         headers: {
@@ -102,7 +102,7 @@ export const getDocumentlien = async (blobName :string , token: string,iduser:nu
 
 export const handleViewDocument = async (documentId: number ,token:string) => {
     try {
-      const response = await axios.get(`http://localhost:3006/documents/${documentId}`, {
+      const response = await axios.get(`https://pa-api-0tcm.onrender.com/documents/${documentId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

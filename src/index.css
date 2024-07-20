@@ -7,11 +7,20 @@ body,
   height: 100%;
   width: 100%;
   font-family: "Source Sans Pro", sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .app {
   display: flex;
   position: relative;
+}
+
+.content {
+  /* Assure que le conteneur a un fond blanc */
+  overflow: auto; /* Permet de gérer les débordements */
+  flex: 1; /* Prend tout l'espace disponible */
+  margin: 0; /* Assure qu'il n'y a pas de marges qui ajoutent des espaces */
 }
 
 ::-webkit-scrollbar {

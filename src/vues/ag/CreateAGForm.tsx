@@ -1,4 +1,5 @@
 // src/components/CreateAGForm.tsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -19,13 +20,14 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
     e.preventDefault();
     try {
       const ag = { nom, date, type, quorum, description };
-      const response = await axios.post('http://localhost:3000/ags', ag);
-      onAGCreated(response.data);
-      navigate(`/createProposition/${response.data.id}`); // Rediriger vers la page de création de propositions
+      const response = await axios.post('https://pa-api-0tcm.onrender.com/ags', ag);
+      onAGCreated(response.data); // Appel de la fonction onAGCreated avec les données de l'AG créé
+      navigate(`/createProposition/${response.data.id}`); // Redirection vers la page de création de propositions avec l'ID de l'AG
     } catch (error) {
       console.error('Erreur lors de la création de l\'AG', error);
     }
   };
+  
 
   return (
     <Box

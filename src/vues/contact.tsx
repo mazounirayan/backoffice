@@ -1,98 +1,83 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Box } from "@mui/material";
-import { DataGrid, GridToolbar,GridColDef } from "@mui/x-data-grid";
+import { DataGrid, GridToolbar, GridColDef } from "@mui/x-data-grid";
 import { tokens } from "../components/theme/theme";
-
 import Header from "../components/Header";
 import { useTheme } from "@mui/material";
-// types.ts
-export interface Contact {
-    id: number;
-    name: string;
-    email: string;
-    age: number;
-    phone: string;
-    address: string;
 
-    registrarId: number;
-  }
-  
-  export interface Column {
-    field: string;
-    headerName: string;
-    flex?: number;
-    type?: string;
-    headerAlign?: string;
-    align?: string;
-    cellClassName?: string;
-    renderCell?: (params: any) => React.ReactNode;
-  }
-const columns: GridColDef<Contact>[] =  [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "registrarId", headerName: "Registrar ID" },
-    {
-      field: "name",
-      headerName: "Name",
-      flex: 1,
-      cellClassName: "name-column--cell",
-    },
-    {
-      field: "age",
-      headerName: "Age",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
-    },
-    {
-      field: "phone",
-      headerName: "Phone Number",
-      flex: 1,
-    },
-    {
-      field: "email",
-      headerName: "Email",
-      flex: 1,
-    },
-    {
-      field: "address",
-      headerName: "Address",
-      flex: 1,
-    },
-  ];
-  
-  const mockDataContacts: Contact[] = [
-    {
-      id: 1,
-      name: "Jon Snow",
-      email: "jonsnow@gmail.com",
-      age: 35,
-      phone: "(665)121-5454",
-      address: "0912 Won Street, Alabama, SY 10001",
+// Define the interface for Visiteur
+export interface Visiteur {
+  id: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  age: number;
+  numTel: string;
+  adresse: string;
+  profession: string;
+  dateInscription: string;
+  estBenevole: boolean;
+  parrain: Parrain | null;
+}
 
-      registrarId: 123512,
-    },
-    {
-      id: 2,
-      name: "Cersei Lannister",
-      email: "cerseilannister@gmail.com",
-      age: 42,
-      phone: "(421)314-2288",
-      address: "1234 Main Street, New York, NY 10001",
-   
-      registrarId: 123512,
-    },
- 
-  ];
-const Contacts = () => {
+// Define the interface for Parrain
+export interface Parrain {
+  id: number;
+  nom: string;
+  prenom: string;
+  email: string;
+  numTel: string;
+  profession: string;
+}
+
+const Visiteurs = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [rows, setRows] = useState<Visiteur[]>([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://pa-api-0tcm.onrender.com/visiteurs');
+        const data = response.data.Visiteurs.map((visiteur: Visiteur, index: number) => ({
+          id: index + 1,
+          nom: visiteur.nom,
+          prenom: visiteur.prenom,
+          email: visiteur.email,
+          age: visiteur.age,
+          numTel: visiteur.numTel,
+          adresse: visiteur.adresse,
+          profession: visiteur.profession,
+          dateInscription: visiteur.dateInscription,
+          estBenevole: visiteur.estBenevole,
+          parrain: visiteur.parrain ? `${visiteur.parrain.prenom} ${visiteur.parrain.nom}` : "N/A",
+        }));
+        setRows(data);
+      } catch (error) {
+        console.error('Failed to fetch visitors', error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  const columns: GridColDef[] = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    { field: "nom", headerName: "Nom", flex: 1 },
+    { field: "prenom", headerName: "Prénom", flex: 1 },
+    { field: "email", headerName: "Email", flex: 1 },
+    { field: "age", headerName: "Age", type: "number", headerAlign: "left", align: "left" },
+    { field: "numTel", headerName: "Téléphone", flex: 1 },
+    { field: "adresse", headerName: "Adresse", flex: 1 },
+    { field: "profession", headerName: "Profession", flex: 1 },
+    { field: "dateInscription", headerName: "Date d'Inscription", flex: 1 },
+    { field: "estBenevole", headerName: "Bénévole", flex: 1, renderCell: (params) => (params.value ? "Oui" : "Non") },
+    { field: "parrain", headerName: "Parrain", flex: 1 },
+  ];
 
   return (
     <Box m="20px">
-      <Header
-        title="CONTACTS"
-        subtitle="List of Contacts for Future Reference"
-      />
+      <Header title="VISITEURS" subtitle="Liste des Visiteurs" />
       <Box
         m="40px 0 0 0"
         height="75vh"
@@ -126,7 +111,7 @@ const Contacts = () => {
         }}
       >
         <DataGrid
-          rows={mockDataContacts}
+          rows={rows}
           columns={columns}
           slots={{ toolbar: GridToolbar }}
         />
@@ -135,4 +120,4 @@ const Contacts = () => {
   );
 };
 
-export default Contacts;
+export default Visiteurs;

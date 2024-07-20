@@ -8,8 +8,8 @@ interface User {
   prenom: string;
   email: string;
   role: string;
-  token:string;
-  numTel :string
+  token: string;
+  numTel: string;
 }
 
 interface AuthContextType {
@@ -17,6 +17,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, motDePasse: string) => Promise<void>;
   logout: () => void;
+  updatePassword: (userId: number, newPassword: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -25,17 +26,21 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(storedToken);
     }
+    const loggedInUser = localStorage.getItem('loggedInUser');
+    if (loggedInUser) {
+      setUser(JSON.parse(loggedInUser));
+    }
   }, []);
-
 
   const login = async (email: string, motDePasse: string) => {
     try {
-      const response = await axios.post('http://localhost:3006/auth/login', { email, motDePasse });
+      const response = await axios.post('https://pa-api-0tcm.onrender.com/auth/login', { email, motDePasse }, { adapter: 'fetch' });
       const { token, user } = response.data;
       setToken(token);
       setUser(user);
@@ -45,11 +50,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       navigate('/'); // Redirect to the homepage after login
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        // Si l'erreur est une erreur Axios, vous pouvez accéder aux détails de l'erreur Axios
         console.error('Login failed', error);
         throw new Error('Login failed. Please check your email and password.');
       } else {
-        // Sinon, l'erreur est une autre erreur JavaScript
         console.error('An unexpected error occurred', error);
         throw new Error('An unexpected error occurred. Please try again later.');
       }
@@ -60,14 +63,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setToken(null);
     setUser(null);
     localStorage.removeItem('token');
+    localStorage.removeItem('loggedInUser');
     navigate('/login');
   };
 
-
-
+  const updatePassword = async (userId: number, newPassword: string) => {
+    if (!token) throw new Error('No token available');
+    try {
+      const response = await axios.patch(`https://pa-api-0tcm.onrender.com/users/${userId}`, {
+        password: newPassword ,  token 
+      });
+      if (!response.data.success) {
+        throw new Error('Failed to update password');
+      }
+    } catch (error) {
+      console.error('Error updating password:', error);
+      throw new Error('Failed to update password');
+    }
+  };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updatePassword }}>
       {children}
     </AuthContext.Provider>
   );
