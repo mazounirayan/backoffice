@@ -77,7 +77,7 @@ const Visiteurs = () => {
 
   return (
     <Box m="20px">
-      <Header title="VISITEURS" subtitle="Liste des Visiteurs" />
+      <Header title="Adhérant " subtitle="Liste des Adhérant " />
       <Box
         m="40px 0 0 0"
         height="75vh"
