@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { TextField, Button, Select, MenuItem, FormControl, InputLabel, Checkbox, FormControlLabel } from '@mui/material';
 import axios from 'axios';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 const EvenementsPage: React.FC = () => {
   const [nom, setNom] = useState('');
@@ -53,9 +55,18 @@ const EvenementsPage: React.FC = () => {
       });
       const eventId = response.data.id;
       setEvenementId(eventId);
-      alert('Événement créé avec succès. Vous pouvez maintenant accorder des ressources et des utilisateurs.');
+      Toastify({
+        text: 'Événement créé avec succès. Vous pouvez maintenant accorder des ressources et des utilisateurs.',
+        duration: 3000,
+        backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+      }).showToast();
     } catch (error) {
       console.error('Error creating event:', error);
+      Toastify({
+        text: 'Erreur lors de la création de l\'événement.',
+        duration: 3000,
+        backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+      }).showToast();
     }
   };
 
@@ -66,9 +77,18 @@ const EvenementsPage: React.FC = () => {
         evenement: evenementId,
         ressource: selectedRessource
       });
-      alert('Ressource accordée avec succès');
+      Toastify({
+        text: 'Ressource accordée avec succès',
+        duration: 3000,
+        backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+      }).showToast();
     } catch (error) {
       console.error('Error accordering resource:', error);
+      Toastify({
+        text: 'Erreur lors de l\'attribution de la ressource.',
+        duration: 3000,
+        backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+      }).showToast();
     }
   };
 
@@ -79,9 +99,18 @@ const EvenementsPage: React.FC = () => {
         evenement: evenementId,
         user: selectedUser
       });
-      alert('Utilisateur ajouté avec succès');
+      Toastify({
+        text: 'Utilisateur ajouté avec succès',
+        duration: 3000,
+        backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+      }).showToast();
     } catch (error) {
       console.error('Error accordering user:', error);
+      Toastify({
+        text: 'Erreur lors de l\'ajout de l\'utilisateur.',
+        duration: 3000,
+        backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+      }).showToast();
     }
   };
 

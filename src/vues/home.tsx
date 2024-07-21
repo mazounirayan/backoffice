@@ -48,6 +48,14 @@ import  CrmIcon  from '@mui/icons-material/Subscriptions';
 import  SignatureIcon  from '@mui/icons-material/Subscriptions';
 import  KnowledgeIcon  from '@mui/icons-material/Subscriptions';
 
+
+
+import GroupsIcon from '@mui/icons-material/Groups';
+import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import GroupIcon from '@mui/icons-material/Group';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import SpeakerNotesIcon from '@mui/icons-material/SpeakerNotes';
+import AlignVerticalBottomIcon from '@mui/icons-material/AlignVerticalBottom';
 import  AccountingIcon  from '@mui/icons-material/Subscriptions';
 import { Link } from "react-router-dom";
 
@@ -56,14 +64,12 @@ function Dashboard() {
   const colors = tokens(theme.palette.mode);
   // <Route path="/vote1" element={<PrivateRoute element={<Vote />} />} />
   const items = [
-    { icon: <SubscriptionIcon />, label: "team", route: "/team" },
-    { icon: <StudioIcon />, label: "vote1", route: "/vote1" },
-    { icon: <CrmIcon />, label: "client", route: "/CrmIcon" },
-    { icon: <SignatureIcon />, label: "document", route: "/document" },
-    { icon: <KnowledgeIcon />, label: "ag", route: "/ag" },
-    { icon: <AccountingIcon />, label: "comptabiliter", route: "/AccountingIcon" },
-    { icon: <AccountingIcon />, label: "Demandes", route: "/demande" },
-    { icon: <AccountingIcon />, label: "VoteResults", route: "/VoteResults" },
+    { icon: <GroupIcon />, label: "team", route: "/team" },
+    { icon: <HowToVoteIcon />, label: "vote", route: "/vote1" },
+    { icon: <InsertDriveFileIcon />, label: "document", route: "/document" },
+    { icon: <GroupsIcon />, label: "ag", route: "/ag" },
+    { icon: <SpeakerNotesIcon />, label: "Demandes", route: "/demande" },
+    { icon: <AlignVerticalBottomIcon />, label: "VoteResults", route: "/VoteResults" },
     
   ];
   return (

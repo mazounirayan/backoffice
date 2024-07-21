@@ -148,7 +148,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               setSelected={setSelected}
             />
             <Item
-              title="Inscreption  Information"
+              title="Information Inscription"
               to="/contacts"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
@@ -163,7 +163,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               setSelected={setSelected}
             />
                <Item
-              title="transaction"
+              title="Transaction"
               to="/transaction"
               icon={<ReceiptOutlinedIcon />}
               selected={selected}
@@ -185,7 +185,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               setSelected={setSelected}
             />
             <Item
-              title="calndreier"
+              title="Calendrier"
               to="/calendar"
               icon={<CalendarTodayOutlinedIcon />}
               selected={selected}
@@ -215,7 +215,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
             />
                
             <Item
-              title="evenement "
+              title="Evenement "
               to="/evenement"
               icon={<AccountBoxIcon />}
               selected={selected}
@@ -225,21 +225,21 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
 
 
           <Item
-              title="crée un AG "
+              title="Crée un AG "
               to="/createAG"
               icon={<BallotIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="crée un vote "
+              title="Crée un vote "
               to="/createVote"
               icon={<BallotIcon />}
               selected={selected}
               setSelected={setSelected}
             />
               <Item
-              title="votez "
+              title="Votez "
               to="/vote"
               icon={<HowToVoteIcon />}
               selected={selected}
@@ -253,7 +253,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               connexion
             </Typography>
             <Item
-              title="logout "
+              title="Logout "
               to="/logout"
               icon={< ExitToAppIcon />}
               selected={selected}

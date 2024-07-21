@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { createVote, Vote } from '../services/VoteService'; // Importez l'interface Votes
 import { Button, Checkbox, TextField, Typography, FormControlLabel, Box, useTheme } from '@mui/material';
 import { tokens } from "../components/theme/theme";
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 const CreateVote: React.FC = () => {
   const [title, setTitle] = useState('');
@@ -20,6 +22,24 @@ const CreateVote: React.FC = () => {
   };
 
   const handleSubmit = () => {
+    if (!title.trim()) {
+      Toastify({
+        text: "Le titre est requis.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+      return;
+    }
+
+    if (options.some(option => !option.trim())) {
+      Toastify({
+        text: "Toutes les options doivent être remplies.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+      return;
+    }
+
     const newVote: Vote = {
       id: votes.length + 1, // Incremental ID
       title,
@@ -32,6 +52,12 @@ const CreateVote: React.FC = () => {
     setTitle(''); // Réinitialisez le titre
     setOptions(['', '']); // Réinitialisez les options
     setMultipleChoice(false); // Réinitialisez multipleChoice
+
+    Toastify({
+      text: "Vote créé avec succès.",
+      duration: 3000,
+      backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+    }).showToast();
   };
 
   const handleOptionChange = (index: number, value: string) => {
@@ -62,6 +88,7 @@ const CreateVote: React.FC = () => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         sx={{ marginBottom: '20px' }}
+        required
       />
       {options.map((option, index) => (
         <Box key={index} sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
@@ -72,6 +99,7 @@ const CreateVote: React.FC = () => {
             value={option}
             onChange={(e) => handleOptionChange(index, e.target.value)}
             sx={{ marginRight: '10px' }}
+            required
           />
           <Button variant="contained" color="secondary" onClick={() => handleRemoveOption(index)}>
             Remove
@@ -105,10 +133,7 @@ const CreateVote: React.FC = () => {
         <ul>
           {votes.map((vote) => (
             <li key={vote.id}>
-               {vote.id},
-              {vote.title},
-              {vote.multipleChoice}
-              
+              {vote.id}, {vote.title}, {vote.multipleChoice ? 'Multiple Choice' : 'Single Choice'}
             </li>
           ))}
         </ul>
