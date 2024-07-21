@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, useTheme } from "@mui/material";
+import { Box, Typography, useTheme, Button } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../components/theme/theme";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
@@ -10,13 +10,14 @@ import Header from "../components/Header";
 import { User } from "../services/api";
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { useNavigate } from "react-router-dom";
 
 const Team = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [rows, setRows] = useState([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  // Add state for menu anchor
+  const navigate = useNavigate(); // Initialize the navigate function
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,6 +45,10 @@ const Team = () => {
   
   const handleClose = () => {
     setAnchorEl(null); // Close the menu
+  };
+
+  const handleAddMember = () => {
+    navigate("/form"); // Navigate to the form route
   };
 
   const columns: GridColDef[] = [
@@ -120,6 +125,12 @@ const Team = () => {
   return (
     <Box m="20px">
       <Header title="TEAM" subtitle="Managing the Team Members" />
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
+        <Typography variant="h6">Team Members</Typography>
+        <Button variant="contained" color="primary" onClick={handleAddMember}>
+          Add Member
+        </Button>
+      </Box>
       <Box
         m="40px 0 0 0"
         height="75vh"

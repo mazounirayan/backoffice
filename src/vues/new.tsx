@@ -78,7 +78,7 @@ const New: React.FC<NewProps> = ({ title }) => {
 
       if (response.ok) {
         toast.success('Utilisateur créé avec succès');
-        // Réinitialiser le formulaire ou effectuer une autre action si nécessaire
+       
       }  else if (data && data.email) {
         toast.error(data.email);
       } else {

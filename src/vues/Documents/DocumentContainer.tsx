@@ -4,7 +4,7 @@ import FolderView from './Folderview';
 import './Documents.css';
 import Modal from 'react-modal';
 
-Modal.setAppElement('#root'); // Assurez-vous que l'élément racine est correctement ciblé
+Modal.setAppElement('#root');
 
 const DocumentsContainer: React.FC = () => {
   const [items, setItems] = useState<any[]>([]);
@@ -119,7 +119,7 @@ const DocumentsContainer: React.FC = () => {
 
       const newFolder = {
         ...response.data,
-        Type: 'dossier', // Ajoute le type 'dossier'
+        Type: 'dossier',
       };
       setItems([...items, newFolder]);
       setShowNewFolderForm(false);
@@ -128,6 +128,54 @@ const DocumentsContainer: React.FC = () => {
       console.error('Error creating new folder:', error);
     }
   };
+
+  const handleDeleteItem = async (item: any) => {
+    try {
+      // Vérifier le type d'élément et construire l'URL appropriée
+      let deleteUrl = '';
+      if (item.Type === 'fichier') {
+        deleteUrl = `https://pa-api-0tcm.onrender.com/delete-document/${userId}`;
+        await axios.post(deleteUrl, {
+          blobName: item.nomFichier,
+          token,
+        }, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (item.Type === 'dossier') {
+        deleteUrl = `https://pa-api-0tcm.onrender.com/dossiers/${item.id}`;
+        await axios.delete(deleteUrl, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else {
+        console.error('Unknown item type.');
+        return;
+      }
+  
+      // Réactualiser les éléments après la suppression
+      if (currentFolder && item.id === currentFolder.id) {
+        // Si on supprime le dossier courant, il faut réinitialiser l'état
+        await fetchRootItems();
+        setBreadcrumbs([]);
+        setCurrentFolder(null);
+      } else {
+        // Sinon, mettre à jour les éléments du dossier courant
+        if (currentFolder) {
+          const response = await axios.post(
+            `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
+            { token, dossierId: currentFolder.id },
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          setItems(response.data.arboDossier || []);
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting item:', error);
+    }
+  };
+  
+  
 
   return (
     <div className="documents-container">
@@ -142,6 +190,7 @@ const DocumentsContainer: React.FC = () => {
         onNewFolderNameChange={setNewFolderName}
         onToggleNewFolderForm={() => setShowNewFolderForm(!showNewFolderForm)}
         onItemClick={handleItemClick}
+        onDeleteItem={handleDeleteItem} // Passer la fonction de suppression
       />
 
       {/* Modal pour afficher les fichiers */}

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import Topbar from "./components/navbar/navbar";
 import Sidebar from "./components/sidbar/sidbar";
 import Dashboard from "./vues/home";
-import Contacts from "./vues/contact";
+import Contacts from "./vues/visiteur";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./components/theme/theme";
 import Team from "./vues/team";
@@ -11,7 +11,6 @@ import New from "./vues/new";
 import FAQ from "./vues/FAQ";
 import Calendar from "./vues/calendrier";
 import Dashboard2 from "./vues/dashbord";
-
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import LoginForm from './vues/login/LoginForm';
@@ -45,7 +44,7 @@ function App() {
   const [currentAG, setCurrentAG] = useState<number | null>(null);
 
   const handleAGCreated = (ag: any) => {
-    setCurrentAG(ag.id); // Convertissez l'ID de l'AG en chaîne si nécessaire
+    setCurrentAG(ag.id); 
   };
 
 

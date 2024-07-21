@@ -1,27 +1,54 @@
-import Header from "../components/Header";
-import { tokens } from "../components/theme/theme";
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FullCalendar from "@fullcalendar/react";
 import { formatDate } from "@fullcalendar/core";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
-import {
-  Box,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  useTheme,
-} from "@mui/material";
-
+import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
+import Header from "../components/Header";
+import { tokens } from "../components/theme/theme";
 
 const Calendar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const responseEvenements = await fetch("https://pa-api-0tcm.onrender.com/evenements");
+        const responseAgs = await fetch("https://pa-api-0tcm.onrender.com/ags");
+
+        if (!responseEvenements.ok || !responseAgs.ok) {
+          throw new Error('Failed to fetch data');
+        }
+
+        const dataEvenements = await responseEvenements.json();
+        const dataAgs = await responseAgs.json();
+
+        const events = dataEvenements.Evenements.map((event: any) => ({
+          id: `evenement-${event.id}`,
+          title: event.nom,
+          start: event.date,
+          description: event.description,
+        }));
+
+        const ags = dataAgs.Ags.map((ag: any) => ({
+          id: `ag-${ag.id}`,
+          title: ag.nom,
+          start: ag.date,
+          description: ag.description,
+        }));
+
+        setCurrentEvents([...events, ...ags]);
+      } catch (error) {
+        console.error("Error fetching events or AGs:", error);
+      }
+    };
+
+    fetchEvents();
+  }, []);
 
   const handleDateClick = (selected: any) => {
     const title = prompt("Please enter a new title for your event");
@@ -40,14 +67,18 @@ const Calendar = () => {
   };
 
   const handleEventClick = (selected: any) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete the event '${selected.event.title}'`
-      )
-    ) {
+    if (window.confirm(`Are you sure you want to delete the event '${selected.event.title}'`)) {
       selected.event.remove();
     }
   };
+
+  const renderEventContent = (eventInfo: any) => (
+    <div>
+      <b>{eventInfo.timeText}</b>
+      <i>{eventInfo.event.title}</i>
+      <p>{eventInfo.event.extendedProps.description}</p>
+    </div>
+  );
 
   return (
     <Box m="20px">
@@ -55,32 +86,16 @@ const Calendar = () => {
 
       <Box display="flex" justifyContent="space-between">
         {/* CALENDAR SIDEBAR */}
-        <Box
-          flex="1 1 20%"
-          bgcolor={colors.primary[400]}
-          p="15px"
-          borderRadius="4px"
-        >
+        <Box flex="1 1 20%" bgcolor={colors.primary[400]} p="15px" borderRadius="4px">
           <Typography variant="h5">Events</Typography>
           <List>
             {currentEvents.map((event) => (
-              <ListItem
-                key={event.id}
-                sx={{
-                  backgroundColor: colors.greenAccent[500],
-                  margin: "10px 0",
-                  borderRadius: "2px",
-                }}
-              >
+              <ListItem key={event.id} sx={{ backgroundColor: colors.greenAccent[500], margin: "10px 0", borderRadius: "2px" }}>
                 <ListItemText
                   primary={event.title}
                   secondary={
                     <Typography>
-                      {formatDate(event.start, {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {formatDate(event.start, { year: "numeric", month: "short", day: "numeric" })}
                     </Typography>
                   }
                 />
@@ -93,17 +108,8 @@ const Calendar = () => {
         <Box flex="1 1 100%" ml="15px">
           <FullCalendar
             height="75vh"
-            plugins={[
-              dayGridPlugin,
-              timeGridPlugin,
-              interactionPlugin,
-              listPlugin,
-            ]}
-            headerToolbar={{
-              left: "prev,next today",
-              center: "title",
-              right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth",
-            }}
+            plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin, listPlugin]}
+            headerToolbar={{ left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth" }}
             initialView="dayGridMonth"
             editable={true}
             selectable={true}
@@ -111,19 +117,8 @@ const Calendar = () => {
             dayMaxEvents={true}
             select={handleDateClick}
             eventClick={handleEventClick}
-            eventsSet={(events: any) => setCurrentEvents(events)}
-            initialEvents={[
-              {
-                id: "12315",
-                title: "All-day event",
-                date: "2022-09-14",
-              },
-              {
-                id: "5123",
-                title: "Timed event",
-                date: "2022-09-28",
-              },
-            ]}
+            events={currentEvents}
+            eventContent={renderEventContent} // Use this to render custom content
           />
         </Box>
       </Box>

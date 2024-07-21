@@ -13,14 +13,15 @@ interface FolderViewProps {
   onNewFolderNameChange: (name: string) => void;
   onToggleNewFolderForm: () => void;
   onItemClick: (item: any) => void;
+  onDeleteItem: (id: string) => void; // Ajout de la prop pour la suppression
 }
 
 const FolderView: React.FC<FolderViewProps> = ({
-  items=[], breadcrumbs, currentFolder, showNewFolderForm, newFolderName,
-  onBreadcrumbClick, onNewFolderSubmit, onNewFolderNameChange, onToggleNewFolderForm, onItemClick
+  items = [], breadcrumbs, currentFolder, showNewFolderForm, newFolderName,
+  onBreadcrumbClick, onNewFolderSubmit, onNewFolderNameChange, onToggleNewFolderForm, onItemClick, onDeleteItem
 }) => {
   const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
-  const userId = user.id
+  const userId = user.id;
   const token = localStorage.getItem('token');
 
   return (
@@ -54,16 +55,19 @@ const FolderView: React.FC<FolderViewProps> = ({
         {Array.isArray(items) && items.length > 0 ? (
           items.map((item, index) => (
             <div key={`${item.Type}-${item.id || index}`} className="item-container">
-              <div onClick={() => onItemClick(item)}>
-                {item.Type === 'dossier' ? (
-                  <div className="folder">
-                    <span role="img" aria-label="folder">📁</span> {item.nomFichier || item.Nom}
-                  </div>
-                ) : (
-                  <div className="file">
-                    <span role="img" aria-label="file">📄</span> {item.nomFichier || item.Nom}
-                  </div>
-                )}
+              <div>
+                <div onClick={() => onItemClick(item)}>
+                  {item.Type === 'dossier' ? (
+                    <div className="folder">
+                      <span role="img" aria-label="folder">📁</span> {item.nomFichier || item.Nom}
+                    </div>
+                  ) : (
+                    <div className="file">
+                      <span role="img" aria-label="file">📄</span> {item.nomFichier || item.Nom}
+                    </div>
+                  )}
+                </div>
+                <button onClick={() => onDeleteItem(item)}>Delete</button> {/* Passer l'objet item */}
               </div>
             </div>
           ))
@@ -78,5 +82,6 @@ const FolderView: React.FC<FolderViewProps> = ({
     </div>
   );
 };
+
 
 export default FolderView;
