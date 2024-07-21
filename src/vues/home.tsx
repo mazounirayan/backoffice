@@ -91,6 +91,7 @@ function Dashboard() {
                 p={2}
                 border="1px solid #e0e0e0"
                 borderRadius="8px"
+                color={colors.greenAccent[400]}
               >
                 <IconButton>
                   {item.icon}
