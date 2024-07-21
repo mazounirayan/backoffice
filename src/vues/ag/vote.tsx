@@ -15,6 +15,8 @@ import {
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { tokens } from '../../components/theme/theme';
+import Toastify from 'toastify-js';
+import 'toastify-js/src/toastify.css';
 
 interface Proposition {
   id: string;
@@ -73,7 +75,33 @@ const VoteForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedProposition) return;
+
+    if (!selectedProposition) {
+      Toastify({
+        text: "Veuillez sélectionner une proposition.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+      return;
+    }
+
+    if (selectedProposition.type === 'text' && !selectedChoices.textAnswer) {
+      Toastify({
+        text: "Veuillez entrer une réponse.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+      return;
+    }
+
+    if ((selectedProposition.type === 'radio' || selectedProposition.type === 'checkbox') && Object.keys(selectedChoices).length === 0) {
+      Toastify({
+        text: "Veuillez sélectionner une option.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+      return;
+    }
 
     try {
       const voteData: VoteData = {
@@ -82,9 +110,18 @@ const VoteForm: React.FC = () => {
         choices: selectedChoices,
       };
       await axios.post('https://pa-api-0tcm.onrender.com/votes', voteData);
-      alert('Vote submitted successfully');
+      Toastify({
+        text: "Vote soumis avec succès.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+      }).showToast();
     } catch (error) {
       console.error('Error submitting vote', error);
+      Toastify({
+        text: "Erreur lors de la soumission du vote.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
     }
   };
 
@@ -112,6 +149,7 @@ const VoteForm: React.FC = () => {
           SelectProps={{
             native: true,
           }}
+          required
         >
           <option value="" />
           {propositions.map((prop) => (
@@ -161,6 +199,7 @@ const VoteForm: React.FC = () => {
               value={selectedChoices.textAnswer || ''}
               onChange={handleChoiceChange}
               sx={{ marginBottom: '20px' }}
+              required
             />
           )}
           <Button variant="contained" sx={{ bgcolor: colors.greenAccent[500] }} onClick={handleSubmit}>

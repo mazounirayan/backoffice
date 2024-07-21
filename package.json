@@ -34,6 +34,7 @@
     "react-scripts": "^5.0.1",
     "react-toastify": "^10.0.5",
     "sass": "^1.77.2",
+    "toastify-js": "^1.12.0",
     "typescript": "^3.9.10",
     "web-vitals": "^2.1.4"
   },
@@ -68,7 +69,9 @@
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/react-modal": "^3.16.3",
     "@types/react-router-dom": "^5.3.3",
+    "@types/toastify-js": "^1.12.3",
     "gh-pages": "^6.1.1",
+
     "prettier": "3.2.5"
   },
   "proxy": "https://pa-api-0tcm.onrender.com"

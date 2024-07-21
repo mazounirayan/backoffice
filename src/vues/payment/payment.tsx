@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-
-interface MessageProps {
-  content: string;
-}
-
-// Renders errors or successful transactions on the screen.
-const Message: React.FC<MessageProps> = ({ content }) => {
-  return <p>{content}</p>;
-};
+import Toastify from "toastify-js";
+import "toastify-js/src/toastify.css";
 
 const Payment: React.FC = () => {
   const initialOptions = {
@@ -23,6 +16,17 @@ const Payment: React.FC = () => {
   };
 
   const [message, setMessage] = useState<string>("");
+
+  const showToast = (text: string, success = true) => {
+    Toastify({
+      text,
+      duration: 3000,
+      close: true,
+      gravity: "top",
+      position: "right",
+      backgroundColor: success ? "linear-gradient(to right, #00b09b, #96c93d)" : "linear-gradient(to right, #ff5f6d, #ffc371)",
+    }).showToast();
+  };
 
   return (
     <div className="App">
@@ -41,8 +45,6 @@ const Payment: React.FC = () => {
                 headers: {
                   "Content-Type": "application/json",
                 },
-                // Use the "body" param to optionally pass additional order information
-                // like product ids and quantities
                 body: JSON.stringify({
                   cart: [
                     {
@@ -67,7 +69,7 @@ const Payment: React.FC = () => {
               }
             } catch (error) {
               console.error(error);
-              setMessage(`Could not initiate PayPal Checkout...${error}`);
+              showToast(`Could not initiate PayPal Checkout... ${error}`, false);
             }
           }}
           onApprove={async (data, actions) => {
@@ -83,29 +85,20 @@ const Payment: React.FC = () => {
               );
 
               const orderData = await response.json();
-              // Three cases to handle:
-              //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
-              //   (2) Other non-recoverable errors -> Show a failure message
-              //   (3) Successful transaction -> Show confirmation or thank you message
-
               const errorDetail = orderData?.details?.[0];
 
               if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
-                // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
-                // Recoverable state, per https://developer.paypal.com/docs/checkout/standard/customize/handle-funding-failures/
                 return actions.restart();
               } else if (errorDetail) {
-                // (2) Other non-recoverable errors -> Show a failure message
                 throw new Error(
                   `${errorDetail.description} (${orderData.debug_id})`
                 );
               } else {
-                // (3) Successful transaction -> Show confirmation or thank you message
-                // Or go to another URL: actions.redirect('thank_you.html');
                 const transaction = orderData.purchase_units[0].payments.captures[0];
                 setMessage(
                   `Transaction ${transaction.status}: ${transaction.id}. See console for all available details`
                 );
+                showToast(`Transaction ${transaction.status}: ${transaction.id}`);
                 console.log(
                   "Capture result",
                   orderData,
@@ -114,12 +107,11 @@ const Payment: React.FC = () => {
               }
             } catch (error) {
               console.error(error);
-              setMessage(`Sorry, your transaction could not be processed...${error}`);
+              showToast(`Sorry, your transaction could not be processed... ${error}`, false);
             }
           }}
         />
       </PayPalScriptProvider>
-      <Message content={message} />
     </div>
   );
 };
