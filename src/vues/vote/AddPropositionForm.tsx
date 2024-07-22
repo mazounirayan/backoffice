@@ -2,22 +2,22 @@ import React, { useState } from 'react';
 import { TextField, Button, Grid, MenuItem } from '@mui/material';
 
 type AddPropositionFormProps = {
-  agId: number; // ID de l'AG à laquelle associer la proposition
-  sondageId: number; // ID du sondage auquel ajouter la proposition
+  agId: number; 
+  sondageId: number; 
   onPropositionSubmit: (question: string, choix: string, type: string, agId: number, sondageId: number) => void; // Callback pour soumettre la proposition
 };
 
 const AddPropositionForm: React.FC<AddPropositionFormProps> = ({ agId, sondageId, onPropositionSubmit }) => {
   const [question, setQuestion] = useState('');
   const [choix, setChoix] = useState('');
-  const [type, setType] = useState('radio'); // Par défaut, type radio
+  const [type, setType] = useState('radio'); 
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     onPropositionSubmit(question, choix, type, agId, sondageId);
     setQuestion('');
     setChoix('');
-    setType('radio'); // Réinitialisation du type à radio après soumission
+    setType('radio'); 
   };
 
   return (

@@ -13,7 +13,7 @@ interface FolderViewProps {
   onNewFolderNameChange: (name: string) => void;
   onToggleNewFolderForm: () => void;
   onItemClick: (item: any) => void;
-  onDeleteItem: (id: string) => void; // Ajout de la prop pour la suppression
+  onDeleteItem: (id: string) => void; 
 }
 
 const FolderView: React.FC<FolderViewProps> = ({
@@ -67,7 +67,7 @@ const FolderView: React.FC<FolderViewProps> = ({
                     </div>
                   )}
                 </div>
-                <button onClick={() => onDeleteItem(item)}>Delete</button> {/* Passer l'objet item */}
+                <button onClick={() => onDeleteItem(item)}>Delete</button>
               </div>
             </div>
           ))

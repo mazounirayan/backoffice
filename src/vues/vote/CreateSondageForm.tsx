@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { TextField, Button, Grid } from '@mui/material';
 
 type CreateSondageFormProps = {
-  agId: number; // ID de l'AG à laquelle associer le sondage
-  onSondageSubmit: (nom: string, date: string, description: string) => void; // Callback pour soumettre le sondage
+  agId: number; 
+  onSondageSubmit: (nom: string, date: string, description: string) => void;
 };
 
 const CreateSondageForm: React.FC<CreateSondageFormProps> = ({ agId, onSondageSubmit }) => {

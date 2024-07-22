@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getUsers } from '../services/api';
 
 interface ApiDataType {
-  // Define the expected structure of your data here
+  
 }
 
 
@@ -43,7 +43,7 @@ const Apitest: React.FC = () => {
     <p>Nom : {user.nom}</p>
     <p>Prénom : {user.prenom}</p>
     <p>Email : {user.email}</p>
-    {/* Ajoutez d'autres propriétés à afficher si nécessaire */}
+
   </div>
 ))}</h1>
       <pre></pre>

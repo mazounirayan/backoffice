@@ -85,7 +85,7 @@ const Calendar = () => {
       <Header title="Calendar" subtitle="Full Calendar Interactive Page" />
 
       <Box display="flex" justifyContent="space-between">
-        {/* CALENDAR SIDEBAR */}
+   
         <Box flex="1 1 20%" bgcolor={colors.primary[400]} p="15px" borderRadius="4px">
           <Typography variant="h5">Events</Typography>
           <List>
@@ -104,7 +104,7 @@ const Calendar = () => {
           </List>
         </Box>
 
-        {/* CALENDAR */}
+
         <Box flex="1 1 100%" ml="15px">
           <FullCalendar
             height="75vh"
@@ -118,7 +118,7 @@ const Calendar = () => {
             select={handleDateClick}
             eventClick={handleEventClick}
             events={currentEvents}
-            eventContent={renderEventContent} // Use this to render custom content
+            eventContent={renderEventContent} 
           />
         </Box>
       </Box>

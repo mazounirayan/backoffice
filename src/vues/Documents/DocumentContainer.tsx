@@ -131,7 +131,7 @@ const DocumentsContainer: React.FC = () => {
 
   const handleDeleteItem = async (item: any) => {
     try {
-      // Vérifier le type d'élément et construire l'URL appropriée
+     
       let deleteUrl = '';
       if (item.Type === 'fichier') {
         deleteUrl = `https://pa-api-0tcm.onrender.com/delete-document/${userId}`;
@@ -151,14 +151,14 @@ const DocumentsContainer: React.FC = () => {
         return;
       }
   
-      // Réactualiser les éléments après la suppression
+   
       if (currentFolder && item.id === currentFolder.id) {
-        // Si on supprime le dossier courant, il faut réinitialiser l'état
+        
         await fetchRootItems();
         setBreadcrumbs([]);
         setCurrentFolder(null);
       } else {
-        // Sinon, mettre à jour les éléments du dossier courant
+
         if (currentFolder) {
           const response = await axios.post(
             `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
@@ -190,10 +190,10 @@ const DocumentsContainer: React.FC = () => {
         onNewFolderNameChange={setNewFolderName}
         onToggleNewFolderForm={() => setShowNewFolderForm(!showNewFolderForm)}
         onItemClick={handleItemClick}
-        onDeleteItem={handleDeleteItem} // Passer la fonction de suppression
+        onDeleteItem={handleDeleteItem} 
       />
 
-      {/* Modal pour afficher les fichiers */}
+
       <Modal
         isOpen={isPopupOpen}
         onRequestClose={() => setIsPopupOpen(false)}

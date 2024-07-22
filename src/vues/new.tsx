@@ -60,7 +60,7 @@ const New: React.FC<NewProps> = ({ title }) => {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validation des champs requis
+
     if (!formValues.nom || !formValues.prenom || !formValues.email || !formValues.motDePasse) {
       toast.error('Veuillez remplir tous les champs obligatoires.');
       return;

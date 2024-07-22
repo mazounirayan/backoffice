@@ -27,7 +27,7 @@ const AccorderRessourcesEtUtilisateursPage: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get('https://pa-api-0tcm.onrender.com/users');
-      setUsers(response.data.Users); // Assurez-vous que la réponse est au format attendu
+      setUsers(response.data.Users);  
     } catch (error) {
       console.error('Error fetching users:', error);
     }

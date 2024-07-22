@@ -5,7 +5,7 @@ interface User {
   nom: string;
   prenom: string;
   email: string;
-  // Ajoutez d'autres propriétés utilisateur si nécessaire
+ 
 }
 
 interface UserContextType {

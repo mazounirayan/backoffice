@@ -11,11 +11,11 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ element }) => {
   const location = useLocation();
  const token = localStorage.getItem('token');
   if (!token) {
-    // Si l'utilisateur n'est pas connecté, redirigez-le vers la page de connexion
+
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Si l'utilisateur est connecté, affichez le composant de la route protégée
+ 
   return element;
 };
 

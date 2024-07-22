@@ -7,8 +7,8 @@ import { useUser } from '../../services/UserContext';
 
 const AgList: React.FC = () => {
   const [ags, setAgs] = useState<Ag[]>([]);
-  const { user } = useUser(); // Utiliser le contexte utilisateur
-  const navigate = useNavigate(); // Utiliser le hook useNavigate
+  const { user } = useUser(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getAgs = async () => {
@@ -30,11 +30,11 @@ const AgList: React.FC = () => {
   };
 
   const handleOpenAg = (id: number) => {
-    navigate(`/ags/${id}`); // Redirection vers la page de détails de l'AG avec l'ID correspondant
+    navigate(`/ags/${id}`);
   };
 
   const handleVote = (id: number) => {
-    navigate(`/ags/${id}/vote`); // Redirection vers la page de vote avec l'ID correspondant
+    navigate(`/ags/${id}/vote`); 
   };
 
   const handleDeleteAg = async (id: number) => {
@@ -44,7 +44,7 @@ const AgList: React.FC = () => {
       });
 
       if (response.ok) {
-        // Si la suppression est réussie, mettre à jour la liste des AGs
+      
         setAgs(ags.filter(ag => ag.id !== id));
       } else {
         console.error('Failed to delete AG');

@@ -15,8 +15,8 @@ import { useParams } from 'react-router-dom';
 import { tokens } from '../../components/theme/theme';
 
 interface PropositionFormProps {
-  agId: string; // Ensure agId matches the type extracted from useParams
-  [key: string]: string | undefined; // Index signature for other possible params
+  agId: string; 
+  [key: string]: string | undefined; 
 }
 
 const CreatePropositionForm: React.FC = () => {
@@ -66,7 +66,7 @@ const CreatePropositionForm: React.FC = () => {
       }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
-        Create a Proposition for AG {agId} {/* Display agId for verification */}
+        Create a Proposition for AG {agId} 
       </Typography>
       <TextField
         fullWidth

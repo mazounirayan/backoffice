@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Typography, useTheme, CircularProgress, Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
-import Header from "../components/Header"; // Assurez-vous que ce composant existe ou ajustez-le en conséquence
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import { format } from 'date-fns';
-
+import Header from "../components/Header";
 
 interface Transaction {
     id: number;

@@ -21,7 +21,7 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Check if all fields are filled
+
     if (!nom || !date || !type || !quorum || !description) {
       Toastify({
         text: "Tous les champs sont requis.",

@@ -41,17 +41,17 @@ const CreateVote: React.FC = () => {
     }
 
     const newVote: Vote = {
-      id: votes.length + 1, // Incremental ID
+      id: votes.length + 1,
       title,
       options,
       multipleChoice,
     };
-    const createdVote = createVote(newVote); // Crée le vote et récupère le vote créé
-    const updatedVotes = [...votes, createdVote]; // Ajoute le vote créé au tableau de votes
-    setVotes(updatedVotes); // Met à jour le state avec le nouveau tableau de votes
-    setTitle(''); // Réinitialisez le titre
-    setOptions(['', '']); // Réinitialisez les options
-    setMultipleChoice(false); // Réinitialisez multipleChoice
+    const createdVote = createVote(newVote); 
+    const updatedVotes = [...votes, createdVote]; 
+    setVotes(updatedVotes); 
+    setTitle(''); 
+    setOptions(['', '']); 
+    setMultipleChoice(false); 
 
     Toastify({
       text: "Vote créé avec succès.",
@@ -125,7 +125,7 @@ const CreateVote: React.FC = () => {
         label="Multiple Choice"
         sx={{ marginTop: '20px' }}
       />
-      {/* Affichage des votes créés */}
+    
       <Box sx={{ marginTop: '20px' }}>
         <Typography variant="h5" gutterBottom>
           Created Votes:

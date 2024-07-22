@@ -17,7 +17,7 @@ const Team = () => {
   const colors = tokens(theme.palette.mode);
   const [rows, setRows] = useState([]);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const navigate = useNavigate(); // Initialize the navigate function
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -48,7 +48,7 @@ const Team = () => {
   };
 
   const handleAddMember = () => {
-    navigate("/form"); // Navigate to the form route
+    navigate("/form"); 
   };
 
   const columns: GridColDef[] = [

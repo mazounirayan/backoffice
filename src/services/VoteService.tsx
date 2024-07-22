@@ -24,7 +24,7 @@ export const getVoteById = (id: number): Vote | undefined => {
   return votes.find((vote) => vote.id === id);
 };
 
-// Fonction utilitaire pour générer un identifiant unique
+
 const generateUniqueId = (): number => {
-  return new Date().getTime(); // Utilisez une logique plus robuste pour générer des identifiants uniques
+  return new Date().getTime();
 };

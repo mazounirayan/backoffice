@@ -25,7 +25,7 @@ const api = axios.create({
 
 export const getUsers = async () : Promise<User[]> => {
     try {
-        const response = await api.get('/users', { mode: 'no-cors' } as any ); // Ajoutez l'option mode: 'no-cors'
+        const response = await api.get('/users', { mode: 'no-cors' } as any );
         return response.data;
       } catch (error) {
         console.error('Error fetching data', error);
@@ -108,7 +108,7 @@ export const handleViewDocument = async (documentId: number ,token:string) => {
         },
         
       });
-      alert(response.data.content); // Affiche le contenu du document dans une alerte
+      alert(response.data.content);
     } catch (error) {
       console.error('Failed to fetch document', error);
       alert('Failed to fetch document. Please try again later.');

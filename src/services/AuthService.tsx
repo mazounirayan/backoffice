@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       localStorage.setItem('token', token);
       localStorage.setItem('loggedInUser', JSON.stringify(user));
       console.log('Utilisateur connecté:', user);
-      navigate('/'); // Redirect to the homepage after login
+      navigate('/'); 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Login failed', error);
