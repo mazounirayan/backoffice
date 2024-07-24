@@ -1,10 +1,10 @@
 import React, { useState, ChangeEvent, FormEvent } from "react";
-import { Box, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel } from '@mui/material';
+import { Box, Button, TextField, Typography, Select, MenuItem, FormControl, InputLabel, Paper,useTheme } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import "./css/new.scss";
 import { SelectChangeEvent } from '@mui/material';
-
+import { tokens } from '../components/theme/theme';
 
 
 interface NewProps {
@@ -25,7 +25,8 @@ interface FormValues {
 }
 
 const New: React.FC<NewProps> = ({ title }) => {
- 
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [formValues, setFormValues] = useState<FormValues>({
     nom: '',
     prenom: '',
@@ -97,7 +98,12 @@ const New: React.FC<NewProps> = ({ title }) => {
         <div className="top">
           <Typography variant="h1">{title}</Typography>
         </div>
-        <Box className="bottom" p={3} boxShadow={3}>
+        <Box 
+           sx={{      boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+            backgroundColor: colors.primary[500],
+            padding: 3, borderRadius: 2 }}>
+        <Paper sx={{ padding: 3, backgroundColor: colors.primary[500], borderRadius: 2 }}>
+      
           <form onSubmit={handleSubmit}>
             <TextField
               label="Nom"
@@ -212,8 +218,11 @@ const New: React.FC<NewProps> = ({ title }) => {
               </Button>
             </Box>
           </form>
+  
+        </Paper>
         </Box>
       </div>
+    
     </div>
   );
 };

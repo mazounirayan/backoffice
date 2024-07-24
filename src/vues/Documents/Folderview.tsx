@@ -24,6 +24,7 @@ const FolderView: React.FC<FolderViewProps> = ({
   const userId = user.id;
   const token = localStorage.getItem('token');
 
+  
   return (
     <div className="folder-view">
       <Breadcrumbs
@@ -35,7 +36,9 @@ const FolderView: React.FC<FolderViewProps> = ({
         <UploadDocument 
           userId={userId} 
           token={token} 
-          currentFolderId={currentFolder ? currentFolder.id : null}
+          currentFolderId={ currentFolder ? currentFolder.id : null}
+
+
           onFileUploaded={(newFile: any) => onItemClick(newFile)}
         />
       </div>
@@ -75,7 +78,7 @@ const FolderView: React.FC<FolderViewProps> = ({
           <div className="empty-folder">
             <div className="empty-folder-icon">📁</div>
             <p>This folder is empty</p>
-            <p>Drag files here to upload</p>
+          
           </div>
         )}
       </div>

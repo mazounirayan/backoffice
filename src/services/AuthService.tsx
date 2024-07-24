@@ -18,6 +18,7 @@ interface AuthContextType {
   login: (email: string, motDePasse: string) => Promise<void>;
   logout: () => void;
   updatePassword: (userId: number, newPassword: string) => Promise<void>;
+  handleAccessForbidden: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,7 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (!token) throw new Error('No token available');
     try {
       const response = await axios.patch(`https://pa-api-0tcm.onrender.com/users/${userId}`, {
-        password: newPassword ,  token 
+        password: newPassword, token 
       });
       if (!response.data.success) {
         throw new Error('Failed to update password');
@@ -82,8 +83,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const handleAccessForbidden = () => {
+    logout();
+    navigate('/login');
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, updatePassword }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updatePassword, handleAccessForbidden }}>
       {children}
     </AuthContext.Provider>
   );

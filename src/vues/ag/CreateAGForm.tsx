@@ -1,5 +1,3 @@
-// src/components/CreateAGForm.tsx
-
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -18,9 +16,44 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
 
+
+  const fetchEmails = async () => {
+    try {
+      const response = await axios.post('https://pa-api-0tcm.onrender.com/usersEmail');
+      return response.data.emails; 
+    } catch (error) {
+      Toastify({
+        text: "Erreur lors de la récupération des e-mails.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+      return '';
+    }
+  };
+
+
+  const sendEmails = async (emails: string) => {
+    try {
+      const response = await axios.post('https://mehdikit.app.n8n.cloud/webhook/c1a02914-bb9b-411b-b900-a1604a833947', {
+        mail: emails,
+        date: date
+      });
+      Toastify({
+        text: "E-mails envoyés avec succès",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+      }).showToast();
+    } catch (error) {
+      Toastify({
+        text: "Erreur lors de l'envoi des e-mails.",
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
 
     if (!nom || !date || !type || !quorum || !description) {
       Toastify({
@@ -42,9 +75,11 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
         backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
       }).showToast();
 
+      const emails = await fetchEmails();
+      await sendEmails(emails);
+
       navigate(`/createProposition/${response.data.id}`);
     } catch (error) {
-      console.error('Erreur lors de la création de l\'AG', error);
       Toastify({
         text: "Erreur lors de la création de l'AG.",
         duration: 3000,

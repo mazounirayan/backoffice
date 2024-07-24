@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createVote, Vote } from '../services/VoteService'; // Importez l'interface Votes
+//import { createVote, Vote } from '../services/VoteService'; // Importez l'interface Votes
 import { Button, Checkbox, TextField, Typography, FormControlLabel, Box, useTheme } from '@mui/material';
 import { tokens } from "../components/theme/theme";
 import Toastify from 'toastify-js';
@@ -9,62 +9,62 @@ const CreateVote: React.FC = () => {
   const [title, setTitle] = useState('');
   const [options, setOptions] = useState<string[]>(['', '']);
   const [multipleChoice, setMultipleChoice] = useState(false);
-  const [votes, setVotes] = useState<Vote[]>([]); // Utilisez l'interface Votes ici
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  // //const [votes, setVotes] = useState<Vote[]>([]); // Utilisez l'interface Votes ici
+  // const theme = useTheme();
+  // const colors = tokens(theme.palette.mode);
 
-  const handleAddOption = () => {
-    setOptions([...options, '']);
-  };
+  // const handleAddOption = () => {
+  //   setOptions([...options, '']);
+  // };
 
-  const handleRemoveOption = (index: number) => {
-    setOptions(options.filter((_, i) => i !== index));
-  };
+  // const handleRemoveOption = (index: number) => {
+  //   setOptions(options.filter((_, i) => i !== index));
+  // };
 
-  const handleSubmit = () => {
-    if (!title.trim()) {
-      Toastify({
-        text: "Le titre est requis.",
-        duration: 3000,
-        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-      }).showToast();
-      return;
-    }
+  // const handleSubmit = () => {
+  //   if (!title.trim()) {
+  //     Toastify({
+  //       text: "Le titre est requis.",
+  //       duration: 3000,
+  //       backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+  //     }).showToast();
+  //     return;
+  //   }
 
-    if (options.some(option => !option.trim())) {
-      Toastify({
-        text: "Toutes les options doivent être remplies.",
-        duration: 3000,
-        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-      }).showToast();
-      return;
-    }
+  //   if (options.some(option => !option.trim())) {
+  //     Toastify({
+  //       text: "Toutes les options doivent être remplies.",
+  //       duration: 3000,
+  //       backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+  //     }).showToast();
+  //     return;
+  //   }
 
-    const newVote: Vote = {
-      id: votes.length + 1,
-      title,
-      options,
-      multipleChoice,
-    };
-    const createdVote = createVote(newVote); 
-    const updatedVotes = [...votes, createdVote]; 
-    setVotes(updatedVotes); 
-    setTitle(''); 
-    setOptions(['', '']); 
-    setMultipleChoice(false); 
+  //   const newVote: Vote = {
+  //     id: votes.length + 1,
+  //     title,
+  //     options,
+  //     multipleChoice,
+  //   };
+  //   const createdVote = createVote(newVote); 
+  //   const updatedVotes = [...votes, createdVote]; 
+  //   setVotes(updatedVotes); 
+  //   setTitle(''); 
+  //   setOptions(['', '']); 
+  //   setMultipleChoice(false); 
 
-    Toastify({
-      text: "Vote créé avec succès.",
-      duration: 3000,
-      backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-    }).showToast();
-  };
+  //   Toastify({
+  //     text: "Vote créé avec succès.",
+  //     duration: 3000,
+  //     backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+  //   }).showToast();
+  // };
 
-  const handleOptionChange = (index: number, value: string) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
-    setOptions(newOptions);
-  };
+  // const handleOptionChange = (index: number, value: string) => {
+  //   const newOptions = [...options];
+  //   newOptions[index] = value;
+  //   setOptions(newOptions);
+  // };
 
   return (
     <Box
@@ -97,27 +97,27 @@ const CreateVote: React.FC = () => {
             variant="outlined"
             label={`Option ${index + 1}`}
             value={option}
-            onChange={(e) => handleOptionChange(index, e.target.value)}
+          //  onChange={(e) => handleOptionChange(index, e.target.value)}
             sx={{ marginRight: '10px' }}
             required
           />
-          <Button variant="contained" color="secondary" onClick={() => handleRemoveOption(index)}>
+          {/* <Button variant="contained" color="secondary" onClick={() => handleRemoveOption(index)}>
             Remove
-          </Button>
+          </Button> */}
         </Box>
       ))}
       <Box sx={{ display: 'flex', gap: '5px', marginTop: '20px' }}>
-        <Button sx={{ bgcolor: colors.greenAccent[500] }} variant="contained" color="primary" onClick={handleSubmit}>
+        <Button  variant="contained" color="primary" >
           Create Vote
         </Button>
-        <Button variant="contained" onClick={handleAddOption}>
+        <Button variant="contained" >
           Add Option
         </Button>
       </Box>
       <FormControlLabel
         control={
           <Checkbox
-            sx={{ color: colors.greenAccent[500] }}
+           
             checked={multipleChoice}
             onChange={() => setMultipleChoice(!multipleChoice)}
           />
@@ -131,11 +131,7 @@ const CreateVote: React.FC = () => {
           Created Votes:
         </Typography>
         <ul>
-          {votes.map((vote) => (
-            <li key={vote.id}>
-              {vote.id}, {vote.title}, {vote.multipleChoice ? 'Multiple Choice' : 'Single Choice'}
-            </li>
-          ))}
+     
         </ul>
       </Box>
     </Box>

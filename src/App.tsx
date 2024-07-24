@@ -31,7 +31,7 @@ import TransactionsList from "./vues/Transaction";
 import Demandes from "./vues/Demande/Demande";
 import { UserProvider } from "./services/UserContext";
 import EvenementsPage from "./vues/evenement/createEvent";
-import AccorderRessourcesPage from "./vues/evenement/AccorderRessourcesEtUtilisateursPage";
+
 import VoteForm from "./vues/ag/vote";
 import VoteResults from "./vues/ag/VoteResults";
 import DocumentsContainer from "./vues/Documents/DocumentContainer";

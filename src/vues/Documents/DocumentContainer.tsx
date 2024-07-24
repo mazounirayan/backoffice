@@ -3,10 +3,14 @@ import axios from 'axios';
 import FolderView from './Folderview';
 import './Documents.css';
 import Modal from 'react-modal';
+import { useAuth } from '../../services/AuthService';
+import Toastify from 'toastify-js';
 
 Modal.setAppElement('#root');
 
 const DocumentsContainer: React.FC = () => {
+  const { handleAccessForbidden } = useAuth();
+  const [loader, setLoader] = useState<boolean>(false);
   const [items, setItems] = useState<any[]>([]);
   const [breadcrumbs, setBreadcrumbs] = useState<any[]>([]);
   const [currentFolder, setCurrentFolder] = useState<any | null>(null);
@@ -23,6 +27,7 @@ const DocumentsContainer: React.FC = () => {
   }, []);
 
   const fetchRootItems = async () => {
+    setLoader(true);
     try {
       const response = await axios.post(
         `https://pa-api-0tcm.onrender.com/racine/${userId}`,
@@ -33,16 +38,23 @@ const DocumentsContainer: React.FC = () => {
       );
       setItems(response.data.racine || []);
     } catch (error) {
-      console.error('Error fetching root items:', error);
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        handleAccessForbidden();
+      } else {
+        console.error('Error fetching root items:', error);
+      }
+    } finally {
+      setLoader(false);
     }
   };
 
   const handleItemClick = async (item: any) => {
     if (item.Type === 'dossier') {
+      setLoader(true);
       try {
         const response = await axios.post(
           `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
-          { token, dossierId: item.id || item.dossierId },
+          { token, dossierId: item.id  },
           {
             headers: { Authorization: `Bearer ${token}` },
           }
@@ -51,7 +63,13 @@ const DocumentsContainer: React.FC = () => {
         setBreadcrumbs([...breadcrumbs, item]);
         setCurrentFolder(item);
       } catch (error) {
-        console.error('Error fetching folder contents:', error);
+        if (axios.isAxiosError(error) && error.response?.status === 403) {
+          handleAccessForbidden();
+        } else {
+          console.error('Error fetching folder contents:', error);
+        }
+      } finally {
+        setLoader(false);
       }
     } else {
       await handleFileClick(item);
@@ -59,11 +77,13 @@ const DocumentsContainer: React.FC = () => {
   };
 
   const handleFileClick = async (file: any) => {
+    setLoader(true);
     try {
-      const response = await axios.post(
+      console.log(file)
+        const response = await axios.post(
         `https://pa-api-0tcm.onrender.com/generate-sas-url/${userId}`,
         {
-          blobName: file.nomFichier,
+          blobName: file.nomFichier ||file.Nom ,
           token,
         }, {
             headers: { Authorization: `Bearer ${token}` },
@@ -74,11 +94,18 @@ const DocumentsContainer: React.FC = () => {
       setFileUrl(fileUrl);
       setIsPopupOpen(true);
     } catch (error) {
-      console.error('Error generating file URL:', error);
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        handleAccessForbidden();
+      } else {
+        console.error('Error generating file URL:', error);
+      }
+    } finally {
+      setLoader(false);
     }
   };
 
   const handleBreadcrumbClick = async (index: number) => {
+    setLoader(true);
     if (index === -1) {
       await fetchRootItems();
       setBreadcrumbs([]);
@@ -97,20 +124,34 @@ const DocumentsContainer: React.FC = () => {
         setBreadcrumbs(breadcrumbs.slice(0, index + 1));
         setCurrentFolder(clickedFolder);
       } catch (error) {
-        console.error('Error fetching folder contents:', error);
+        if (axios.isAxiosError(error) && error.response?.status === 403) {
+          handleAccessForbidden();
+        } else {
+          Toastify({
+            text: 'Erreur lors d\'ouvrire  le contenue du dossier .',
+            duration: 3000,
+            backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+          }).showToast();
+        //  console.error('Error fetching folder contents:', error);
+        }
+      } finally {
+        setLoader(false);
       }
     }
   };
 
   const handleNewFolderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoader(true);
     try {
+   
       const response = await axios.post(
         'https://pa-api-0tcm.onrender.com/dossiers',
         {
           nom: newFolderName,
           user: userId,
-          dossier: currentFolder ? currentFolder.dossierId : undefined,
+          dossier:  currentFolder   ? currentFolder.id : undefined,
+          
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -125,13 +166,19 @@ const DocumentsContainer: React.FC = () => {
       setShowNewFolderForm(false);
       setNewFolderName('');
     } catch (error) {
-      console.error('Error creating new folder:', error);
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        handleAccessForbidden();
+      } else {
+        console.error('Error creating new folder:', error);
+      }
+    } finally {
+      setLoader(false);
     }
   };
 
   const handleDeleteItem = async (item: any) => {
+    setLoader(true);
     try {
-     
       let deleteUrl = '';
       if (item.Type === 'fichier') {
         deleteUrl = `https://pa-api-0tcm.onrender.com/delete-document/${userId}`;
@@ -142,7 +189,9 @@ const DocumentsContainer: React.FC = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
       } else if (item.Type === 'dossier') {
-        deleteUrl = `https://pa-api-0tcm.onrender.com/dossiers/${item.id}`;
+        const id = item.dossierId || item.id;
+
+        deleteUrl = `https://pa-api-0tcm.onrender.com/dossiers/${id}`;
         await axios.delete(deleteUrl, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -151,18 +200,15 @@ const DocumentsContainer: React.FC = () => {
         return;
       }
   
-   
       if (currentFolder && item.id === currentFolder.id) {
-        
         await fetchRootItems();
         setBreadcrumbs([]);
         setCurrentFolder(null);
       } else {
-
         if (currentFolder) {
           const response = await axios.post(
             `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
-            { token, dossierId: currentFolder.id },
+            { token, Id: currentFolder.id },
             {
               headers: { Authorization: `Bearer ${token}` },
             }
@@ -171,11 +217,21 @@ const DocumentsContainer: React.FC = () => {
         }
       }
     } catch (error) {
-      console.error('Error deleting item:', error);
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        handleAccessForbidden();
+      } else {
+        console.error('Error deleting item:', error);
+      }
+    } finally {
+      setLoader(false);
     }
   };
-  
-  
+
+  if(loader){
+    return <div className="loader">
+    <div className="justify-content-center jimu-primary-loading"></div>
+  </div>
+  }
 
   return (
     <div className="documents-container">
@@ -192,7 +248,6 @@ const DocumentsContainer: React.FC = () => {
         onItemClick={handleItemClick}
         onDeleteItem={handleDeleteItem} 
       />
-
 
       <Modal
         isOpen={isPopupOpen}

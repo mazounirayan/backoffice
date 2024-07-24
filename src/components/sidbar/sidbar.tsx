@@ -15,8 +15,9 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import BallotIcon from '@mui/icons-material/Ballot';
-import HowToVoteIcon from '@mui/icons-material/HowToVote';
+import PaidIcon from '@mui/icons-material/Paid';
 import image from "../image/logo.png"
+import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 interface ItemProps {
   title: string;
   to: string;
@@ -141,7 +142,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               Data
             </Typography>
             <Item
-              title="gerer l'equipe"
+              title="gérer l'équipe"
               to="/team"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
@@ -158,14 +159,14 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
             <Item
               title="Document"
               to="/document"
-              icon={<ReceiptOutlinedIcon />}
+              icon={<DocumentScannerIcon />}
               selected={selected}
               setSelected={setSelected}
             />
                <Item
               title="Transaction"
               to="/transaction"
-              icon={<ReceiptOutlinedIcon />}
+              icon={<PaidIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -178,7 +179,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               Pages
             </Typography>
             <Item
-              title="Profile creation"
+              title="Creation Profile"
               to="/form"
               icon={<PersonOutlinedIcon />}
               selected={selected}
@@ -231,7 +232,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
+            {/* <Item
               title="Crée un vote "
               to="/createVote"
               icon={<BallotIcon />}
@@ -244,7 +245,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               icon={<HowToVoteIcon />}
               selected={selected}
               setSelected={setSelected}
-            />
+            /> */}
             <Typography
               variant="h6"
               color={colors.grey[300]}

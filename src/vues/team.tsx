@@ -124,11 +124,11 @@ const Team = () => {
 
   return (
     <Box m="20px">
-      <Header title="TEAM" subtitle="Managing the Team Members" />
+      <Header title="TEAM" subtitle="Gérer les membre l'équipe " />
       <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
-        <Typography variant="h6">Team Members</Typography>
+        <Typography variant="h6">membre d'équipe</Typography>
         <Button variant="contained" color="primary" onClick={handleAddMember}>
-          Add Member
+          ajouter un membre
         </Button>
       </Box>
       <Box
