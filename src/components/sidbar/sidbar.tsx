@@ -17,6 +17,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import BallotIcon from '@mui/icons-material/Ballot';
 import PaidIcon from '@mui/icons-material/Paid';
 import image from "../image/logo.png"
+import EventIcon from '@mui/icons-material/Event';
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 interface ItemProps {
   title: string;
@@ -218,7 +219,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
             <Item
               title="Evenement "
               to="/evenement"
-              icon={<AccountBoxIcon />}
+              icon={<EventIcon />}
               selected={selected}
               setSelected={setSelected}
             />
