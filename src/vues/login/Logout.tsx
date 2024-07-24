@@ -4,10 +4,12 @@ import {  useNavigate } from 'react-router-dom';
 
 const LogoutPage: React.FC = () => {
     const navigate = useNavigate(); 
-
+      const [loader, setLoader] = useState<boolean>(false);
   useEffect(() => {
     const logout = async () => {
       try {
+              setLoader(true);
+
      
         
         const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
@@ -34,12 +36,21 @@ const LogoutPage: React.FC = () => {
         navigate(`/`);
       } catch (error) {
         console.error('Erreur lors de la déconnexion:', error);
-      }
+      }finally{
+      setLoader(false);
+    }
+        
     };
 
     logout(); 
   }, []); 
- 
+
+    
+   if(loader){
+    return <div className="loader">
+    <div className="justify-content-center jimu-primary-loading"></div>
+  </div>
+  }
   return (
     <div>
       <p>Déconnexion en cours...</p>
