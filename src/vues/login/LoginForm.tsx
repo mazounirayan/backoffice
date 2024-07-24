@@ -6,6 +6,7 @@ import Toastify from 'toastify-js';
 import 'toastify-js/src/toastify.css';
 
 function Login() {
+  const [loader, setLoader] = useState<boolean>(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -53,16 +54,24 @@ function Login() {
       showToast("Please enter a valid email address", false);
       return;
     }
-
+    setLoader(true);
     try {
+
       await login(email, password);
       showToast("Login successful!");
       navigate('/');
     } catch (error) {
       setAuthError("Login failed. Please check your email and password.");
       showToast("Login failed. Please check your email and password.", false);
+    }finally{
+      setLoader(false);
     }
   };
+  if(loader){
+    return <div className="loader">
+    <div className="justify-content-center jimu-primary-loading"></div>
+  </div>
+  }
 
   return (
     <div className="login-box">
