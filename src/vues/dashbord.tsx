@@ -56,8 +56,7 @@ const Dashboard2 = () => {
                   <span className="itemKey">Numéro de téléphone: </span>
                   <span className="itemValue">{user?.numTel}</span>
                 </div>
-                <span className="editButton" onClick={() => setIsEditing(true)}>Modifier le mot de passe</span>
-
+           
               </div>
             </div>
           </div>

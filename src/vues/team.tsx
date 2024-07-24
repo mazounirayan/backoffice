@@ -27,10 +27,10 @@ const Team = () => {
           id: user.id,
           name: `${user.prenom} ${user.nom}`,
           email: user.email,
-          age: user.age || "N/A",
           phone: user.numTel || "N/A",
           access: user.role
         }));
+      console.log(response.data.Users[5])
         setRows(data);
       } catch (error) {
         console.error('Failed to fetch users', error);
@@ -40,11 +40,11 @@ const Team = () => {
   }, []);
 
   const handleClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    setAnchorEl(event.currentTarget); // Open the menu
+    setAnchorEl(event.currentTarget); 
   };
   
   const handleClose = () => {
-    setAnchorEl(null); // Close the menu
+    setAnchorEl(null); 
   };
 
   const handleAddMember = () => {
@@ -59,13 +59,7 @@ const Team = () => {
       flex: 1,
       cellClassName: "name-column--cell",
     },
-    {
-      field: "age",
-      headerName: "Age",
-      type: "number",
-      headerAlign: "left",
-      align: "left",
-    },
+
     {
       field: "phone",
       headerName: "Phone Number",

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -16,6 +16,7 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
   currentFolderId,
   onFileUploaded
 }) => {
+  const [loader, setLoader] = useState<boolean>(false);
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && userId && token) {
@@ -24,7 +25,7 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
       formData.append('token', token);
 
       try {
-        // Première requête : upload du fichier
+        setLoader(true);
         const uploadResponse = await axios.post(
           `https://pa-api-0tcm.onrender.com/upload-document/${userId}`,
           formData,
@@ -36,8 +37,8 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
           }
         );
 
-        // Deuxième requête : obtenir l'ID du token
-        console.log(file)
+      
+ 
         const idTokenResponse = await axios.post(
           `https://pa-api-0tcm.onrender.com/idToken/${userId}`,
           
@@ -48,10 +49,9 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
         );
 
        
-console.log(idTokenResponse.data.idToken[0].id)
-          const fileId=idTokenResponse.data.idToken[0].id
-          console.log(fileId)
-          console.log(   currentFolderId)
+
+          const fileId=idTokenResponse.data.idToken[0].id || undefined
+        
         const placeFileResponse = await axios.post(
           'https://pa-api-0tcm.onrender.com/dossiers',
           {
@@ -69,15 +69,24 @@ console.log(idTokenResponse.data.idToken[0].id)
         onFileUploaded({
           nomFichier: file.name,
           id: placeFileResponse.data.id,
-          Type: 'fichier'
+          Type: 'fichier',
+          isNewUpload: true
         });
+
       } catch (error) {
         console.error('Error uploading or placing file:', error);
         toast.error('Erreur lors du téléchargement ou du placement du fichier.');
+      }finally{
+        setLoader(false);
       }
     }
   };
 
+  if(loader){
+    return <div className="loader">
+    <div className="justify-content-center jimu-primary-loading"></div>
+  </div>
+  }
   return (
     <div className="upload-document">
       <input type="file" onChange={handleFileChange} />

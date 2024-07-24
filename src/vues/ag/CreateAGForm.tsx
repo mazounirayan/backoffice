@@ -20,7 +20,10 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
   const fetchEmails = async () => {
     try {
       const response = await axios.post('https://pa-api-0tcm.onrender.com/usersEmail');
-      return response.data.emails; 
+  
+      return response.data[0].emails; 
+
+      
     } catch (error) {
       Toastify({
         text: "Erreur lors de la récupération des e-mails.",
@@ -76,6 +79,8 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
       }).showToast();
 
       const emails = await fetchEmails();
+
+      
       await sendEmails(emails);
 
       navigate(`/createProposition/${response.data.id}`);

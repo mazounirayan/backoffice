@@ -49,6 +49,7 @@ const DocumentsContainer: React.FC = () => {
   };
 
   const handleItemClick = async (item: any) => {
+    
     if (item.Type === 'dossier') {
       setLoader(true);
       try {
@@ -72,10 +73,32 @@ const DocumentsContainer: React.FC = () => {
         setLoader(false);
       }
     } else {
+      if (item.isNewUpload) {
+        setItems(prevItems => [...prevItems, item]);
+      }
       await handleFileClick(item);
+      
     }
   };
-
+  const refreshCurrentFolder = async () => {
+    if (currentFolder) {
+      try {
+        const response = await axios.post(
+          `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
+          { token, dossierId: currentFolder.id },
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        setItems(response.data.arboDossier || []);
+      } catch (error) {
+        console.error('Error refreshing folder contents:', error);
+      }
+    } else {
+      await fetchRootItems();
+    }
+  };
+  
   const handleFileClick = async (file: any) => {
     setLoader(true);
     try {
@@ -164,7 +187,7 @@ const DocumentsContainer: React.FC = () => {
       };
       setItems([...items, newFolder]);
       setShowNewFolderForm(false);
-      setNewFolderName('');
+      setNewFolderName(newFolder.nom);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         handleAccessForbidden();
@@ -199,23 +222,25 @@ const DocumentsContainer: React.FC = () => {
         console.error('Unknown item type.');
         return;
       }
-  
-      if (currentFolder && item.id === currentFolder.id) {
-        await fetchRootItems();
-        setBreadcrumbs([]);
-        setCurrentFolder(null);
-      } else {
-        if (currentFolder) {
-          const response = await axios.post(
-            `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
-            { token, Id: currentFolder.id },
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          setItems(response.data.arboDossier || []);
-        }
-      }
+      setItems(prevItems => prevItems.filter(i => i.id !== item.id));
+
+
+      // if (currentFolder && item.id === currentFolder.id) {
+      //   await fetchRootItems();
+      //   setBreadcrumbs([]);
+      //   setCurrentFolder(null);
+      // } else {
+      //   if (currentFolder) {
+      //     const response = await axios.post(
+      //       `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
+      //       { token, Id: currentFolder.id },
+      //       {
+      //         headers: { Authorization: `Bearer ${token}` },
+      //       }
+      //     );
+      //     setItems(response.data.arboDossier || []);
+      //   }
+      // }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
         handleAccessForbidden();
@@ -247,6 +272,7 @@ const DocumentsContainer: React.FC = () => {
         onToggleNewFolderForm={() => setShowNewFolderForm(!showNewFolderForm)}
         onItemClick={handleItemClick}
         onDeleteItem={handleDeleteItem} 
+        refreshCurrentFolder={refreshCurrentFolder} 
       />
 
       <Modal

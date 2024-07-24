@@ -62,12 +62,13 @@ const New: React.FC<NewProps> = ({ title }) => {
     e.preventDefault();
 
 
-    if (!formValues.nom || !formValues.prenom || !formValues.email || !formValues.motDePasse) {
+    if (!formValues.nom || !formValues.prenom || !formValues.email || !formValues.numTel ||!formValues.motDePasse) {
       toast.error('Veuillez remplir tous les champs obligatoires.');
       return;
     }
 
     try {
+      console.log(formValues)
       const response = await fetch('https://pa-api-0tcm.onrender.com/auth/signup', {
         method: 'POST',
         headers: {

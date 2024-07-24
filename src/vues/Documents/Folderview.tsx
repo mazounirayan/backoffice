@@ -14,11 +14,12 @@ interface FolderViewProps {
   onToggleNewFolderForm: () => void;
   onItemClick: (item: any) => void;
   onDeleteItem: (id: string) => void; 
+  refreshCurrentFolder: () => void;
 }
 
 const FolderView: React.FC<FolderViewProps> = ({
   items = [], breadcrumbs, currentFolder, showNewFolderForm, newFolderName,
-  onBreadcrumbClick, onNewFolderSubmit, onNewFolderNameChange, onToggleNewFolderForm, onItemClick, onDeleteItem
+  onBreadcrumbClick, onNewFolderSubmit, onNewFolderNameChange, onToggleNewFolderForm, onItemClick, onDeleteItem,refreshCurrentFolder  
 }) => {
   const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
   const userId = user.id;
@@ -37,9 +38,15 @@ const FolderView: React.FC<FolderViewProps> = ({
           userId={userId} 
           token={token} 
           currentFolderId={ currentFolder ? currentFolder.id : null}
+       
+        
+       
+          onFileUploaded={(newFile: any) => {
+            onItemClick(newFile);
+            refreshCurrentFolder();
+          }}
 
-
-          onFileUploaded={(newFile: any) => onItemClick(newFile)}
+      
         />
       </div>
       {showNewFolderForm && (
@@ -62,11 +69,11 @@ const FolderView: React.FC<FolderViewProps> = ({
                 <div onClick={() => onItemClick(item)}>
                   {item.Type === 'dossier' ? (
                     <div className="folder">
-                      <span role="img" aria-label="folder">📁</span> {item.nomFichier || item.Nom}
+                      <span role="img" aria-label="folder">📁</span> {item.nomFichier || item.nom}
                     </div>
                   ) : (
                     <div className="file">
-                      <span role="img" aria-label="file">📄</span> {item.nomFichier || item.Nom}
+                      <span role="img" aria-label="file">📄</span> {item.nomFichier || item.nom}
                     </div>
                   )}
                 </div>
