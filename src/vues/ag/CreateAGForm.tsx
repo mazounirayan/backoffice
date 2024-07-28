@@ -12,18 +12,15 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
   const [type, setType] = useState('normal');
   const [quorum, setQuorum] = useState(1);
   const [description, setDescription] = useState('');
+  const [dateError, setDateError] = useState('');
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const navigate = useNavigate();
 
-
   const fetchEmails = async () => {
     try {
       const response = await axios.post('https://pa-api-0tcm.onrender.com/usersEmail');
-  
-      return response.data[0].emails; 
-
-      
+      return response.data[0].emails;
     } catch (error) {
       Toastify({
         text: "Erreur lors de la récupération des e-mails.",
@@ -33,7 +30,6 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
       return '';
     }
   };
-
 
   const sendEmails = async (emails: string) => {
     try {
@@ -67,6 +63,13 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
       return;
     }
 
+    const today = new Date().toISOString().split('T')[0];
+    
+    if (date < today) {
+      setDateError("La date ne peut pas être antérieure à aujourd'hui.");
+      return;
+    }
+
     try {
       const ag = { nom, date, type, quorum, description };
       const response = await axios.post('https://pa-api-0tcm.onrender.com/ags', ag);
@@ -79,9 +82,7 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
       }).showToast();
 
       const emails = await fetchEmails();
-
-      
-      await sendEmails(emails);
+      // await sendEmails(emails);
 
       navigate(`/createProposition/${response.data.id}`);
     } catch (error) {
@@ -122,9 +123,14 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
         type="date"
         variant="outlined"
         value={date}
-        onChange={(e) => setDate(e.target.value)}
+        onChange={(e) => {
+          setDate(e.target.value);
+          if (dateError) setDateError('');
+        }}
         sx={{ marginBottom: '20px' }}
         required
+        error={Boolean(dateError)}
+        helperText={dateError}
       />
       <TextField
         fullWidth

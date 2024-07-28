@@ -6,7 +6,7 @@ type CreateSondageFormProps = {
   onSondageSubmit: (nom: string, date: string, description: string) => void;
 };
 
-const CreateSondageForm: React.FC<CreateSondageFormProps> = ({ agId, onSondageSubmit }) => {
+const CreateSondageForm: React.FC<CreateSondageFormProps> = ({  onSondageSubmit }) => {
   const [nom, setNom] = useState('');
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');

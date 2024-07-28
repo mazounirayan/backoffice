@@ -3,7 +3,7 @@ import Image from "../components/image/logo.png";
 import "./single.scss";
 import { useAuth } from "../services/AuthService";
 
-const Dashboard2 = () => {
+const Profile = () => {
   const { user, updatePassword } = useAuth();
   const [newPassword, setNewPassword] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -67,4 +67,4 @@ const Dashboard2 = () => {
   );
 };
 
-export default Dashboard2;
+export default Profile;

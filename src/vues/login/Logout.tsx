@@ -23,7 +23,7 @@ const LogoutPage: React.FC = () => {
   const response = await axios.delete(
     `https://pa-api-0tcm.onrender.com/auth/logout/${loggedInUser.id}`,
     {   data: {
-      token: token  // Envoyer le token dans le corps de la requête
+      token: token  
     }}
   );
   console.log(response.data);
@@ -36,6 +36,9 @@ const LogoutPage: React.FC = () => {
         navigate(`/`);
       } catch (error) {
         console.error('Erreur lors de la déconnexion:', error);
+        localStorage.removeItem('token');
+        localStorage.removeItem('loggedInUser');
+        navigate(`/`);
       }finally{
       setLoader(false);
     }

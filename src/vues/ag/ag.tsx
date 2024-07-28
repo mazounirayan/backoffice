@@ -4,6 +4,7 @@ import { Ag } from './types';
 import { format, isPast, isToday, parseISO } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../../services/UserContext';
+import { Button, Box, Typography } from '@mui/material';
 
 const AgList: React.FC = () => {
   const [ags, setAgs] = useState<Ag[]>([]);
@@ -44,7 +45,6 @@ const AgList: React.FC = () => {
       });
 
       if (response.ok) {
-      
         setAgs(ags.filter(ag => ag.id !== id));
       } else {
         console.error('Failed to delete AG');
@@ -52,6 +52,10 @@ const AgList: React.FC = () => {
     } catch (error) {
       console.error('Error deleting AG:', error);
     }
+  };
+
+  const handleModifyAg = (id: number) => {
+    navigate(`/ags/${id}/modify`);
   };
 
   const getStatus = (dateString: string) => {
@@ -62,26 +66,30 @@ const AgList: React.FC = () => {
   };
 
   return (
-    <div>
+    <Box>
       {ags.map((ag) => (
-        <div key={ag.id} style={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
-          <h3>{ag.nom}</h3>
-          <p>{ag.description}</p>
-          <p><strong>Date:</strong> {format(parseISO(ag.date), 'yyyy-MM-dd')} ({getStatus(ag.date)})</p>
+        <Box key={ag.id} sx={{ border: '1px solid #ccc', margin: '10px', padding: '10px' }}>
+          <Typography variant="h5">{ag.nom}</Typography>
+          <Typography>{ag.description}</Typography>
+          <Typography><strong>Date:</strong> {format(parseISO(ag.date), 'yyyy-MM-dd')} ({getStatus(ag.date)})</Typography>
           {isToday(parseISO(ag.date)) && (
             <>
-              
               {!hasUserVoted(ag.id) ? (
-                <button onClick={() => handleOpenAg(ag.id)}>Ouvrir</button>
+                <Button onClick={() => handleOpenAg(ag.id)} variant="contained" color="primary" sx={{ mr: 1 }}>Ouvrir</Button>
               ) : (
-                <p>Vous avez déjà voté</p>
+                <Typography>Vous avez déjà voté</Typography>
               )}
             </>
           )}
-          {user?.role === 'Administrateur' && <button onClick={() => handleDeleteAg(ag.id)}>Supprimer</button>} {/* Bouton de suppression visible seulement pour les administrateurs */}
-        </div>
+          {user?.role === 'Administrateur' && (
+            <>
+              <Button onClick={() => handleDeleteAg(ag.id)} variant="contained" color="error" sx={{ mr: 1 }}>Supprimer</Button>
+              <Button onClick={() => handleModifyAg(ag.id)} variant="contained" color="secondary">Modifier</Button>
+            </>
+          )}
+        </Box>
       ))}
-    </div>
+    </Box>
   );
 };
 

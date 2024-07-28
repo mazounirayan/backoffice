@@ -1,0 +1,25 @@
+.home {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+  }
+  
+  .box {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    flex: 1;
+    min-width: 300px;
+  }
+  
+  .box1 {
+    flex: 100%;
+    text-align: center;
+  }
+  
+  .box2, .box3, .box4, .box5, .box6, .box7, .box8, .box9 {
+    flex: 1 1 calc(33.333% - 40px);
+  }
+  

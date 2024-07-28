@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import "./css/new.scss";
 import { SelectChangeEvent } from '@mui/material';
 import { tokens } from '../components/theme/theme';
+import { useNavigate } from "react-router-dom";
 
 
 interface NewProps {
@@ -26,13 +27,14 @@ interface FormValues {
 
 const New: React.FC<NewProps> = ({ title }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const colors = tokens(theme.palette.mode);
   const [formValues, setFormValues] = useState<FormValues>({
     nom: '',
     prenom: '',
     email: '',
     motDePasse: '',
-    role: 'Visiteur',
+    role: 'Utilisateur',
     estBenevole: false,
     numTel: '',
     profession: '',
@@ -80,7 +82,7 @@ const New: React.FC<NewProps> = ({ title }) => {
 
       if (response.ok) {
         toast.success('Utilisateur créé avec succès');
-       
+        navigate("/team");
       }  else if (data && data.email) {
         toast.error(data.email);
       } else {
@@ -162,9 +164,9 @@ const New: React.FC<NewProps> = ({ title }) => {
                 onChange={handleRoleChange}
                 label="Rôle"
               >
-                <MenuItem value="Visiteur">Visiteur</MenuItem>
+                <MenuItem value="Utilisateur">Utilisateur</MenuItem>
                 <MenuItem value="Administrateur">Administrateur</MenuItem>
-                <MenuItem value="Adherent">Adherent</MenuItem>
+       
               </Select>
             </FormControl>
             <TextField

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Topbar from "./components/navbar/navbar";
 import Sidebar from "./components/sidbar/sidbar";
-import Dashboard from "./vues/home";
+import Dashboard from "./vues/Dashboard";
 import Contacts from "./vues/visiteur";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./components/theme/theme";
@@ -10,31 +10,39 @@ import Team from "./vues/team";
 import New from "./vues/new";
 import FAQ from "./vues/FAQ";
 import Calendar from "./vues/calendrier";
-import Dashboard2 from "./vues/dashbord";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import LoginForm from './vues/login/LoginForm';
 import { AuthProvider } from './services/AuthService';
 import PrivateRoute from './services/PrivateRoute';
 import CreateVote from "./vues/createvote";
-
 import DisplayVotes from "./vues/ag/vote";
-import Payment from "./vues/payment/payment";
 import AgList from "./vues/ag/ag";
-import   VotePage from "./vues/vote/vote";
 import CreateAGForm from "./vues/ag/CreateAGForm";
-
 import CreatePropositionForm from "./vues/ag/propostions";
 import AgDetail from "./vues/ag/AgDetail";
 import LogoutPage from "./vues/login/Logout";
-import TransactionsList from "./vues/Transaction";
+import TransactionsList from "./vues/Transaction/Transaction";
 import Demandes from "./vues/Demande/Demande";
 import { UserProvider } from "./services/UserContext";
 import EvenementsPage from "./vues/evenement/createEvent";
-
 import VoteForm from "./vues/ag/vote";
 import VoteResults from "./vues/ag/VoteResults";
 import DocumentsContainer from "./vues/Documents/DocumentContainer";
+import ModifyAg from "./vues/ag/AgEdit";
+import VotingSystem from "./vues/vote/vote";
+import AdherentsManagement from "./vues/adherant/adherant";
+import CotisationsPage from "./vues/Transaction/CotisationsPage";
+import Info from "./vues/Dashboard";
+
+import StatisticsDashboard from "./vues/Transaction/dashbordStat";
+import GestionEvenements from "./vues/evenement/GestionEvent";
+import Profile from "./vues/Profile";
+import AdvancedVotingSystem from "./vues/vote/voteAvancer";
+import CreateSurveyPage from "./vues/vote/CreateSurveyPage";
+import ResultsPage from "./vues/vote/resultPage";
+import VotePage from "./vues/vote/votePage";
+
 
 
 function App() {
@@ -77,13 +85,14 @@ function App() {
                   path="/ags/:id" 
                   element={<PrivateRoute element={<AgDetail   />} />}
                 />
-                <Route path="/vote1" element={<PrivateRoute element={<VotePage />} />} />
-                <Route path="/stripe" element={<PrivateRoute element={<Payment />} />} />
+                <Route path="/vote1" element={<PrivateRoute element={<VotingSystem />} />} />
+                <Route path="/vote2" element={<PrivateRoute element={<AdvancedVotingSystem />} />} />
+         
                 <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
                 <Route path="/team" element={<PrivateRoute element={<Team />} />} />
                 <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
                 <Route path="/form" element={<PrivateRoute element={<New  title={"Créer un nouvel utilisateur"}  />} />} />
-                <Route path="/Account" element={<PrivateRoute element={<Dashboard2 />} />} />
+                <Route path="/Account" element={<PrivateRoute element={<Profile />} />} />
                 <Route path="/faq" element={<PrivateRoute element={<FAQ />} />} />
                 <Route path="/calendar" element={<PrivateRoute element={<Calendar />} />} />
                 <Route path="/createVote" element={<PrivateRoute element={<CreateVote />} />} />
@@ -99,7 +108,18 @@ function App() {
                 
                 <Route path="/VoteResults" element={<PrivateRoute element={<VoteResults />} />} />
                 <Route path="/evenement" element={<PrivateRoute element={<EvenementsPage />} />} />
-            
+                <Route path="/evenementEdit" element={<PrivateRoute element={<GestionEvenements />} />} />
+               
+                <Route path="/stats" element={<PrivateRoute element={<StatisticsDashboard />} />} />
+                
+                <Route path="/ags/:id/modify" element={<PrivateRoute element={<ModifyAg />} />} />
+                <Route path="/Adherent" element={<PrivateRoute element={<AdherentsManagement />} />} />
+                <Route path="/Adherent" element={<PrivateRoute element={<AdherentsManagement />} />} />
+              
+                <Route path="/Cotisation" element={<PrivateRoute element={<CotisationsPage />} />} />
+              
+
+                
               </Routes>
             </main>
           </div>

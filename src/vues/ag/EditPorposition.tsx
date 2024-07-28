@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   TextField,
@@ -11,21 +11,44 @@ import {
   useTheme,
 } from '@mui/material';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { tokens } from '../../components/theme/theme';
 
 interface PropositionFormProps {
-  agId: string; 
+  agId: string;
+  propositionId: string;
   [key: string]: string | undefined; 
 }
 
-const CreatePropositionForm: React.FC = () => {
+const EditPropositionForm: React.FC = () => {
+  const { agId, propositionId } = useParams<PropositionFormProps>();
   const [question, setQuestion] = useState('');
   const [type, setType] = useState('checkbox');
   const [choix, setChoix] = useState<string[]>(['', '']);
-  const { agId } = useParams<PropositionFormProps>();
+  const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  useEffect(() => {
+    const fetchProposition = async () => {
+      if (!propositionId) return console.log("test");
+
+      try {
+        const response = await axios.get(`https://pa-api-0tcm.onrender.com/propositions/${propositionId}`);
+        const { question, type, choix } = response.data;
+        setQuestion(question);
+        setType(type);
+        setChoix(choix);
+      
+      } catch (error) {
+        console.error('Error fetching proposition details:', error);
+      }finally{  setIsLoading(false);}
+    };
+
+    fetchProposition();
+  }, [propositionId]);
+
   const handleAddChoice = () => {
     setChoix([...choix, '']);
   };
@@ -42,16 +65,23 @@ const CreatePropositionForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (question.trim() === '') {
+      alert('Question is required');
+      return;
+    }
+
     try {
-      await axios.post('https://pa-api-0tcm.onrender.com/propositions', { question, type, choix, ag: agId });
-      // Reset form
-      setQuestion('');
-      setType('checkbox');
-      setChoix(['', '']);
+      await axios.patch(`https://pa-api-0tcm.onrender.com/propositions/${propositionId}`, { question, type, choix });
+      alert('Proposition updated successfully');
+      navigate(`/ags/${agId}`);
     } catch (error) {
-      console.error('Error creating proposition', error);
+      console.error('Error updating proposition', error);
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <Box
@@ -66,7 +96,7 @@ const CreatePropositionForm: React.FC = () => {
       }}
     >
       <Typography variant="h4" component="h1" gutterBottom>
-        Create a Proposition for AG {agId} 
+        Edit Proposition for AG {agId}
       </Typography>
       <TextField
         fullWidth
@@ -81,7 +111,7 @@ const CreatePropositionForm: React.FC = () => {
         <Select value={type} onChange={(e) => setType(e.target.value as string)}>
           <MenuItem value="checkbox">Checkbox</MenuItem>
           <MenuItem value="radio">Radio</MenuItem>
-    
+          <MenuItem value="text">Text</MenuItem>
         </Select>
       </FormControl>
       {choix.map((choice, index) => (
@@ -101,7 +131,7 @@ const CreatePropositionForm: React.FC = () => {
       ))}
       <Box sx={{ display: 'flex', gap: '5px', marginTop: '20px' }}>
         <Button variant="contained" sx={{ bgcolor: colors.greenAccent[500] }} onClick={handleSubmit}>
-          Create Proposition
+          Update Proposition
         </Button>
         <Button variant="contained" onClick={handleAddChoice}>
           Add Choice
@@ -111,4 +141,4 @@ const CreatePropositionForm: React.FC = () => {
   );
 };
 
-export default CreatePropositionForm;
+export default EditPropositionForm;

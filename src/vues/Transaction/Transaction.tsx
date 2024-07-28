@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Typography, useTheme, CircularProgress, Alert } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
-import Header from "../components/Header";
+import Header from "../../components/Header";
 
 interface Transaction {
     id: number;
@@ -19,7 +19,9 @@ const Transactions: React.FC = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [totalMontant, setTotalMontant] = useState<number>(0);
+    const [totalDonations, setTotalDonations] = useState<number>(0);
+    const [totalCotisations, setTotalCotisations] = useState<number>(0);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -27,16 +29,31 @@ const Transactions: React.FC = () => {
                 const response = await axios.get('https://pa-api-0tcm.onrender.com/transactions');
                 const data = response.data.Transactions.map((transaction: Transaction) => ({
                     id: transaction.id,
-                    montant: transaction.montant ,
+                    montant: transaction.montant,
                     type: transaction.type,
                     methodePaiement: transaction.methodePaiement || "N/A",
                     emailVisiteur: transaction.emailVisiteur || "N/A",
                     evenement: transaction.evenement,
                     dateTransaction: transaction.dateTransaction
-                   
+                }));
                 
+                // Calculer les totaux
+                let total = 0;
+                let donations = 0;
+                let cotisations = 0;
+                data.forEach((transaction: Transaction) => {
+                    total += transaction.montant;
+                    if (transaction.type.toLowerCase() === 'don') {
+                        donations += transaction.montant;
+                    } else if (transaction.type.toLowerCase() === 'cotisation') {
+                        cotisations += transaction.montant;
+                    }
+                });
+                
+                setTotalMontant(total);
+                setTotalDonations(donations);
+                setTotalCotisations(cotisations);
 
-                  }));
                 setTransactions(data);
                 setLoading(false);
             } catch (error) {
@@ -46,14 +63,6 @@ const Transactions: React.FC = () => {
         };
         fetchData();
     }, []);
-
-    const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
 
     const columns: GridColDef[] = [
         { field: "id", headerName: "ID", width: 90 },
@@ -83,6 +92,11 @@ const Transactions: React.FC = () => {
     return (
         <Box m="20px">
             <Header title="Transactions" subtitle="Gestion des Transactions" />
+            <Box mb="20px">
+                <Typography variant="h6">Total Montant: {totalMontant} €</Typography>
+                <Typography variant="h6">Total Donations: {totalDonations} €</Typography>
+                <Typography variant="h6">Total Cotisations: {totalCotisations} €</Typography>
+            </Box>
             <Box
                 m="40px 0 0 0"
                 height="75vh"
@@ -119,7 +133,6 @@ const Transactions: React.FC = () => {
                     checkboxSelection
                     rows={transactions}
                     columns={columns}
-               
                     slots={{ toolbar: GridToolbar }}
                 />
             </Box>

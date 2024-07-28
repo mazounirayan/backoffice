@@ -148,6 +148,22 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
+                <Item
+              title="Adherent"
+              to="/Adherent"
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+                      <Item
+              title="Cotisation"
+              to="/Cotisation"
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+             
+            
             <Item
               title="Information Inscription"
               to="/contacts"
@@ -166,6 +182,13 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
                <Item
               title="Transaction"
               to="/transaction"
+              icon={<PaidIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+                     <Item
+              title="Stats"
+              to="/stats"
               icon={<PaidIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -222,7 +245,14 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
-
+                 <Item
+              title="evenementEdit "
+              to="/evenementEdit"
+              icon={<AccountBoxIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+         
 
 
           <Item
@@ -232,7 +262,8 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
-            {/* <Item
+  
+            <Item
               title="Crée un vote "
               to="/createVote"
               icon={<BallotIcon />}
@@ -242,10 +273,10 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               <Item
               title="Votez "
               to="/vote"
-              icon={<HowToVoteIcon />}
+              icon={<BallotIcon />}
               selected={selected}
               setSelected={setSelected}
-            /> */}
+            />
             <Typography
               variant="h6"
               color={colors.grey[300]}
