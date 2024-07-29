@@ -60,6 +60,7 @@ const VotePage: React.FC = () => {
   const [snackbar, setSnackbar] = useState<{ open: boolean, message: string }>({ open: false, message: '' });
   const [votes, setVotes] = useState<Vote[]>([]);
   const [voteStatus, setvoteStatus] = useState<string>("n'as pas encore commencer ");
+  const [selectedPropositionId, setSelectedPropositionId] = useState<number | null>(null);
 
 
   useEffect(() => {
@@ -84,14 +85,14 @@ const VotePage: React.FC = () => {
     if (!selectedChoix || !sondage) return;
 
     const voteKey = `vote_${sondageId}`;
-
+    const isSecondRound = sondage.nom.includes("2ème tour");
     try {
       const response = await fetch(`${API_BASE_URL}/votes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           choix: selectedChoix,
-          numTour: 1,
+          numTour: isSecondRound ? 2 : 1, 
           proposition: sondage.propositions[0].id,
           user: JSON.parse(localStorage.getItem('loggedInUser') || '{}').id
         })
@@ -101,7 +102,8 @@ const VotePage: React.FC = () => {
 
       localStorage.setItem(voteKey, 'true');
       setSnackbar({ open: true, message: 'Vote enregistré avec succès!' });
-    
+      localStorage.setItem("dejavote",voteKey)
+      navigate(`/vote`);
     } catch (error) {
       console.error('Error submitting vote:', error);
       setSnackbar({ open: true, message: 'Erreur lors de l\'enregistrement du vote' });
@@ -109,6 +111,15 @@ const VotePage: React.FC = () => {
   };
 
   useEffect(() => {
+    const voteKey = `vote_${sondageId}`;
+    if ( localStorage.getItem("dejavote") == voteKey )
+        {
+          setSnackbar({ open: true, message: 'Vous avez deja voter ' });
+          navigate(`/vote`);
+        }
+
+
+
     if (sondage) {
       const endDate = new Date(sondage.dateFin);
       const interval = setInterval(() => {
@@ -121,8 +132,8 @@ const VotePage: React.FC = () => {
      
         if (now > endDate) {
           clearInterval(interval);
-         alert("depasser")
-         /* navigate(`/results/${sondageId}`);*/
+         alert("temps depasser ")
+          navigate(`/results/${sondageId}`);
         }
       }, 10000); // Vérifie toutes les 10 secondes
       return () => clearInterval(interval);

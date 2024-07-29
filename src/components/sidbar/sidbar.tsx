@@ -4,21 +4,29 @@ import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
 import "react-pro-sidebar/dist/css/styles.css";
 import { tokens } from "../theme/theme";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
-import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
-import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
-import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
+
+// Importation des nouvelles icônes
+import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
+import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
+import AttachMoneyOutlinedIcon from '@mui/icons-material/AttachMoneyOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import MonetizationOnOutlinedIcon from '@mui/icons-material/MonetizationOnOutlined';
+import ShowChartOutlinedIcon from '@mui/icons-material/ShowChartOutlined';
+import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
+import EventAvailableOutlinedIcon from '@mui/icons-material/EventAvailableOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import HowToVoteOutlinedIcon from '@mui/icons-material/HowToVoteOutlined';
+import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
+import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
-import BallotIcon from '@mui/icons-material/Ballot';
-import PaidIcon from '@mui/icons-material/Paid';
 import image from "../image/logo.png"
-import EventIcon from '@mui/icons-material/Event';
-import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 interface ItemProps {
   title: string;
   to: string;
@@ -53,24 +61,24 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
 
   return (
     <Box
-    sx={{
-      "& .pro-sidebar-inner": {
-        background: `${colors.primary[400]} !important`,
-      },
-      "& .pro-icon-wrapper": {
-        backgroundColor: "transparent !important",
-      },
-      "& .pro-inner-item": {
-        padding: "5px 35px 5px 20px !important",
-      },
-      "& .pro-inner-item:hover": {
-        color: "#868dfb !important",
-      },
-      "& .pro-menu-item.active": {
-        color: "#6870fa !important",
-      },
-    }}
-  >
+      sx={{
+        "& .pro-sidebar-inner": {
+          background: `${colors.primary[400]} !important`,
+        },
+        "& .pro-icon-wrapper": {
+          backgroundColor: "transparent !important",
+        },
+        "& .pro-inner-item": {
+          padding: "5px 35px 5px 20px !important",
+        },
+        "& .pro-inner-item:hover": {
+          color: "#868dfb !important",
+        },
+        "& .pro-menu-item.active": {
+          color: "#6870fa !important",
+        },
+      }}
+    >
       <ProSidebar collapsed={isCollapsed}>
         <Menu iconShape="square">
           {/* LOGO AND MENU ICON */}
@@ -90,18 +98,18 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                <Box display="flex" justifyContent="center" alignItems="center">
-                <img
+                  <Box display="flex" justifyContent="center" alignItems="center">
+                  <img
                   alt="profile-user"
                   width="100px"
                   height="100px"
                   src={image}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
-              </Box>
+                  </Box>
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
-                  <MenuOutlinedIcon />
+                  <InfoOutlinedIcon />
                 </IconButton>
               </Box>
             )}
@@ -109,7 +117,6 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
 
           {!isCollapsed && (
             <Box mb="25px">
-          
               {/* <Box textAlign="center">
                 <Typography
                   variant="h2"
@@ -130,14 +137,14 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
             <Item
               title="Dashboard"
               to="/"
-              icon={<HomeOutlinedIcon />}
+              icon={<DashboardOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-     <Item
-              title="Download le java "
+            <Item
+              title="Download le java"
               to="/DownloadPage"
-              icon={<HomeOutlinedIcon />}
+              icon={<DashboardOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -149,67 +156,61 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               Data
             </Typography>
             <Item
-              title="gérer l'équipe"
+              title="Gérer l'équipe"
               to="/team"
-              icon={<PeopleOutlinedIcon />}
+              icon={<GroupOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-                <Item
+            <Item
               title="Adherent"
               to="/Adherent"
-              icon={<PeopleOutlinedIcon />}
+              icon={<PersonAddOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-
-              <Item
+            <Item
               title="VisiteursManagement"
               to="/visiteur"
-              icon={<PeopleOutlinedIcon />}
+              icon={<PersonSearchOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-
-                      <Item
+            <Item
               title="Cotisation"
               to="/Cotisation"
-              icon={<PeopleOutlinedIcon />}
+              icon={<AttachMoneyOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-             
-            
             <Item
               title="Information Inscription"
               to="/contacts"
-              icon={<ContactsOutlinedIcon />}
+              icon={<InfoOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-               
             <Item
               title="Document"
               to="/document"
-              icon={<DocumentScannerIcon />}
+              icon={<DescriptionOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-               <Item
+            <Item
               title="Transaction"
               to="/transaction"
-              icon={<PaidIcon />}
+              icon={<MonetizationOnOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-                     <Item
+            <Item
               title="Stats"
               to="/stats"
-              icon={<PaidIcon />}
+              icon={<ShowChartOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-
             <Typography
               variant="h6"
               color={colors.grey[300]}
@@ -220,25 +221,24 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
             <Item
               title="Creation Profile"
               to="/form"
-              icon={<PersonOutlinedIcon />}
+              icon={<PersonAddAltOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="Calendrier"
               to="/calendar"
-              icon={<CalendarTodayOutlinedIcon />}
+              icon={<CalendarMonthOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
               title="FAQ Page"
               to="/faq"
-              icon={<HelpOutlineOutlinedIcon />}
+              icon={<HelpOutlineIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-
             <Typography
               variant="h6"
               color={colors.grey[300]}
@@ -247,49 +247,44 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               Charts
             </Typography>
             <Item
-              title="Profile "
+              title="Profile"
               to="/Account"
-              icon={<AccountBoxIcon />}
+              icon={<AccountCircleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-               
             <Item
-              title="Evenement "
+              title="Evenement"
               to="/evenement"
-              icon={<EventIcon />}
+              icon={<EventAvailableOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-                 <Item
-              title="evenementEdit "
-              to="/evenementEdit"
-              icon={<AccountBoxIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-         
-
-
-          <Item
-              title="Crée un AG "
-              to="/createAG"
-              icon={<BallotIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-  
             <Item
-              title="Crée un vote "
-              to="/createVote"
-              icon={<BallotIcon />}
+              title="EvenementEdit"
+              to="/evenementEdit"
+              icon={<EditOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-              <Item
-              title="Votez "
+            <Item
+              title="Crée un AG"
+              to="/createAG"
+              icon={<AddCircleOutlineIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Crée un vote"
+              to="/createVote"
+              icon={<HowToVoteOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Votez"
               to="/vote"
-              icon={<BallotIcon />}
+              icon={<BallotOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -298,16 +293,15 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               color={colors.grey[300]}
               sx={{ m: "15px 0 5px 20px" }}
             >
-              connexion
+              Connexion
             </Typography>
             <Item
-              title="Logout "
+              title="Logout"
               to="/logout"
-              icon={< ExitToAppIcon />}
+              icon={<LogoutOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
-       
           </Box>
         </Menu>
       </ProSidebar>

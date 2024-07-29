@@ -38,7 +38,7 @@ import Info from "./vues/Dashboard";
 import StatisticsDashboard from "./vues/Transaction/dashbordStat";
 import GestionEvenements from "./vues/evenement/GestionEvent";
 import Profile from "./vues/Profile";
-import AdvancedVotingSystem from "./vues/vote/voteAvancer";
+
 import VisiteursManagement from "./vues/visiteur/visitieur";
 import SondageSystem from "./vues/vote/SondageSystem";
 import SondageListPage from "./vues/vote/SondageList";
@@ -110,7 +110,6 @@ function App() {
 
 
 
-                <Route path="/vote1" element={<PrivateRoute element={<AdvancedVotingSystem />} />} />
                 <Route path="/document" element={<PrivateRoute element={<DocumentsContainer />} />} />
                 <Route path="/ag" element={<PrivateRoute element={<AgList />} />} />
                 <Route path="/logout" element={<PrivateRoute element={<LogoutPage />} />} />
