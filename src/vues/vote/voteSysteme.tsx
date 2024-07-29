@@ -128,14 +128,13 @@ const VotePage: React.FC = () => {
       const topTwoChoices = sortedChoices.slice(0, 2).map(choice => choice[0]);
   
       const hasMajority = sortedChoices.length > 0 && sortedChoices[0][1] > filteredVotes.length / 2;
-
+      console.log(hasMajority)
       if (hasMajority) {
-        // Redirect to results page if there is an absolute majority
+    
         navigate(`/results/${sondageId}`);
       } else {
-        // Create new sondage and proposition if no absolute majority
         await createNewSondage(voteCounts);
-        navigate(`/vote/${sondageId}`); // Redirect to the voting page for the new round
+        navigate(`/vote/${sondageId}`); 
       }
 
 
@@ -193,9 +192,9 @@ const VotePage: React.FC = () => {
   const createNewSondage = async (voteCounts: number) => {
     const sortedChoices = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
     const topTwoChoices = sortedChoices.slice(0, 2).map(choice => choice[0]);
-  
+      console.log(topTwoChoices)
     try {
-      // Create the new survey
+   
       const surveyResponse = await fetch(`${API_BASE_URL}/sondages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -205,7 +204,7 @@ const VotePage: React.FC = () => {
           dateDebut: new Date().toISOString(),
           dateFin: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
           typeSondage: "DEUX_TOURS",
-          propositions: 1 // Initial empty list
+          
         })
       });
   
