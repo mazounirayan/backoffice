@@ -3,9 +3,9 @@ import Breadcrumbs from './Breadcrumbs';
 import UploadDocument from './UploadDoc';
 
 interface FolderViewProps {
-  items: any[];
-  breadcrumbs: any[];
-  currentFolder: any | null;
+  items: any;
+  breadcrumbs: Array<{ id: number; nomFichier?: string; Nom?: string; }>;
+  currentFolder: { id: number } | null;
   showNewFolderForm: boolean;
   newFolderName: string;
   onBreadcrumbClick: (index: number) => void;
@@ -13,19 +13,19 @@ interface FolderViewProps {
   onNewFolderNameChange: (name: string) => void;
   onToggleNewFolderForm: () => void;
   onItemClick: (item: any) => void;
-  onDeleteItem: (id: string) => void; 
+  onDeleteItem: (item:any ) => void; 
   refreshCurrentFolder: () => void;
 }
 
 const FolderView: React.FC<FolderViewProps> = ({
-  items = [], breadcrumbs, currentFolder, showNewFolderForm, newFolderName,
+  items , breadcrumbs, currentFolder, showNewFolderForm, newFolderName,
   onBreadcrumbClick, onNewFolderSubmit, onNewFolderNameChange, onToggleNewFolderForm, onItemClick, onDeleteItem,refreshCurrentFolder  
 }) => {
-  const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
-  const userId = user.id;
+  const user =  JSON.parse(localStorage.getItem('loggedInUser') || '');
   const token = localStorage.getItem('token');
 
-  
+
+ 
   return (
     <div className="folder-view">
       <Breadcrumbs
@@ -35,18 +35,16 @@ const FolderView: React.FC<FolderViewProps> = ({
       <div className="folder-actions">
         <button onClick={onToggleNewFolderForm}>New Folder</button>
         <UploadDocument 
-          userId={userId} 
+          userId={user.id} 
           token={token} 
-          currentFolderId={ currentFolder ? currentFolder.id : null}
+          currentFolderId={currentFolder?.id ?? null}
        
         
        
-          onFileUploaded={(newFile: any) => {
+          onFileUploaded={(newFile) => {
             onItemClick(newFile);
             refreshCurrentFolder();
           }}
-
-      
         />
       </div>
       {showNewFolderForm && (
@@ -63,17 +61,17 @@ const FolderView: React.FC<FolderViewProps> = ({
       )}
       <div className="folder-contents">
         {Array.isArray(items) && items.length > 0 ? (
-          items.map((item, index) => (
-            <div key={`${item.Type}-${item.id || index}`} className="item-container">
+          items.map((item) => (
+            <div key={`${item.Type}-${item.id }`} className="item-container">
               <div>
                 <div onClick={() => onItemClick(item)}>
                   {item.Type === 'dossier' ? (
                     <div className="folder">
-                      <span role="img" aria-label="folder">📁</span> {item.nomFichier || item.nom}
+                      <span role="img" aria-label="folder">📁 </span> {item.nomFichier || item.Nom || item.nom}
                     </div>
                   ) : (
                     <div className="file">
-                      <span role="img" aria-label="file">📄</span> {item.nomFichier || item.nom}
+                      <span role="img" aria-label="file">📄</span> {item.nomFichier || item.Nom}
                     </div>
                   )}
                 </div>
@@ -84,7 +82,7 @@ const FolderView: React.FC<FolderViewProps> = ({
         ) : (
           <div className="empty-folder">
             <div className="empty-folder-icon">📁</div>
-            <p>This folder is empty</p>
+            <p>le dossier  est vide</p>
           
           </div>
         )}

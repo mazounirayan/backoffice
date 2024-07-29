@@ -1,6 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Select, MenuItem, Button, SelectChangeEvent, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControlLabel, Checkbox } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Select,
+  MenuItem,
+  Button,
+  SelectChangeEvent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  FormControlLabel,
+  Checkbox,
+} from '@mui/material';
 
 interface Demande {
   id: number;
@@ -12,6 +26,7 @@ interface Demande {
   evenementDemandes: any[];
   aideProjetDemandes: any[];
   parrainageDemandes: any[];
+  parrain?: number; // Added for parrainage
 }
 
 const Demandes: React.FC = () => {
@@ -20,9 +35,14 @@ const Demandes: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<string>('Evénement');
   const [openNbPlaceDialog, setOpenNbPlaceDialog] = useState<boolean>(false);
+  const [openParrainageDialog, setOpenParrainageDialog] = useState<boolean>(false);
+  const [openFinancementDialog, setOpenFinancementDialog] = useState<boolean>(false);
   const [currentDemande, setCurrentDemande] = useState<Demande | null>(null);
   const [nbPlace, setNbPlace] = useState<number | string>('');
   const [estReserve, setEstReserve] = useState<boolean>(false);
+  const [users, setUsers] = useState<{ id: number; name: string }[]>([]);
+  const [selectedUser, setSelectedUser] = useState<number | null>(null);
+  const [financementData, setFinancementData] = useState<{ titre: string; description: string; budget: number; deadline: string } | null>(null);
 
   useEffect(() => {
     axios.get('https://pa-api-0tcm.onrender.com/demandes')
@@ -36,13 +56,37 @@ const Demandes: React.FC = () => {
       });
   }, []);
 
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('https://pa-api-0tcm.onrender.com/users');
+      setUsers(response.data.users);
+    } catch (error) {
+      setError('Erreur lors de la récupération des utilisateurs');
+    }
+  };
+
   const handleTypeChange = (event: SelectChangeEvent<string>) => {
     setSelectedType(event.target.value as string);
   };
 
   const handleAccept = (demande: Demande) => {
-    setCurrentDemande(demande);
-    setOpenNbPlaceDialog(true);
+    if (demande.type === 'Parrainage') {
+      setCurrentDemande(demande);
+      fetchUsers();
+      setOpenParrainageDialog(true);
+    } else if (demande.type === 'Projet') {
+      setCurrentDemande(demande);
+      setFinancementData({
+        titre: demande.aideProjetDemandes[0].titre,
+        description: demande.aideProjetDemandes[0].descriptionProjet,
+        budget: demande.aideProjetDemandes[0].budget,
+        deadline: new Date(demande.aideProjetDemandes[0].deadline).toISOString().split('T')[0]
+      });
+      setOpenFinancementDialog(true);
+    } else {
+      setCurrentDemande(demande);
+      setOpenNbPlaceDialog(true);
+    }
   };
 
   const handleNbPlaceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,38 +99,106 @@ const Demandes: React.FC = () => {
 
   const handleDialogClose = () => {
     setOpenNbPlaceDialog(false);
+    setOpenParrainageDialog(false);
+    setOpenFinancementDialog(false);
     setNbPlace('');
     setEstReserve(false);
+    setSelectedUser(null);
   };
 
   const handleDialogSubmit = async () => {
     if (!currentDemande) return;
 
     try {
-      await axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${currentDemande.id}`, { statut: 'acceptée' });
+      if (currentDemande.type === 'Evénement') {
+        await axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${currentDemande.id}`, { statut: 'Acceptée' });
 
-      const response = await axios.post('https://pa-api-0tcm.onrender.com/evenements', {
-        nom: currentDemande.evenementDemandes[0].titre, // Vous devrez peut-être ajuster cette ligne en fonction de la structure de votre demande
-        date: currentDemande.evenementDemandes[0].date,
-        description: currentDemande.evenementDemandes[0].description,
-        lieu: currentDemande.evenementDemandes[0].lieu,
-        estReserve,
-        nbPlace
+        await axios.post('https://pa-api-0tcm.onrender.com/evenements', {
+          nom: currentDemande.evenementDemandes[0].titre,
+          date: currentDemande.evenementDemandes[0].date,
+          description: currentDemande.evenementDemandes[0].description,
+          lieu: currentDemande.evenementDemandes[0].lieu,
+          estReserve,
+          nbPlace
+        });
+
+        setDemandes(demandes.map(demande =>
+          demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée' } : demande
+        ));
+      } else if (currentDemande.type === 'Parrainage') {
+        if (selectedUser === null) {
+          setError('Veuillez sélectionner un parrain.');
+          return;
+        }
+
+        await axios.patch(`https://pa-api-0tcm.onrender.com/parrainage-demandes/${currentDemande.id}`, {
+          parrain: selectedUser
+        });
+
+        setDemandes(demandes.map(demande =>
+          demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée', parrain: selectedUser } : demande
+        ));
+      } else if (currentDemande.type === 'Projet') {
+        if (financementData) {
+          await axios.post('https://pa-api-0tcm.onrender.com/aide-projet-demandes', {
+            titre: financementData.titre,
+            descriptionProjet: financementData.description,
+            budget: financementData.budget,
+            deadline: financementData.deadline
+          });
+
+          setDemandes(demandes.map(demande =>
+            demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée' } : demande
+          ));
+        }
+      }
+      handleDialogClose();
+    } catch (error) {
+      setError('Erreur lors de la mise à jour de la demande');
+    }
+  };
+
+  const handleParrainageSubmit = async () => {
+    if (!currentDemande || selectedUser === null) return;
+
+    try {
+      await axios.patch(`https://pa-api-0tcm.onrender.com/parrainage-demandes/${currentDemande.id}`, {
+        parrain: selectedUser
       });
 
       setDemandes(demandes.map(demande =>
-        demande.id === currentDemande.id ? { ...demande, statut: 'acceptée' } : demande
+        demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée', parrain: selectedUser } : demande
       ));
       handleDialogClose();
     } catch (error) {
-      setError('Erreur lors de la mise à jour de la demande ou de l\'envoi de l\'événement');
-      handleDialogClose();
+      setError('Erreur lors de la mise à jour de la demande de parrainage');
     }
   };
-  const handleAction = (id: number, action: 'acceptée' | 'refusée') => {
-    axios.patch('https://pa-api-0tcm.onrender.com/demandes/${id}', { statut: action })
+
+  const handleFinancementSubmit = async () => {
+    if (!currentDemande || !financementData) return;
+
+    try {
+      await axios.post('https://pa-api-0tcm.onrender.com/aide-projet-demandes', {
+        titre: financementData.titre,
+        descriptionProjet: financementData.description,
+        budget: financementData.budget,
+        deadline: financementData.deadline
+      });
+
+      setDemandes(demandes.map(demande =>
+        demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée' } : demande
+      ));
+      handleDialogClose();
+    } catch (error) {
+      setError('Erreur lors de la mise à jour de la demande de financement');
+    }
+  };
+
+  const handleAction = (id: number, action: 'Acceptée' | 'Refusée') => {
+    axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${id}`, { statut: action })
       .then(response => {
-        setDemandes(demandes.map(demande => 
+        setDemandes(demandes.map(demande =>
           demande.id === id ? { ...demande, statut: action } : demande
         ));
       })
@@ -131,7 +243,7 @@ const Demandes: React.FC = () => {
         </Box>
         <Box sx={{ marginTop: 2 }}>
           <Button variant="contained" color="primary" onClick={() => handleAccept(demande)} sx={{ marginRight: 1 }}>Accepter</Button>
-          <Button variant="contained" color="secondary" onClick={() => handleAction(demande.id, 'refusée')}>Refuser</Button>
+          <Button variant="contained" color="secondary" onClick={() => handleAction(demande.id, 'Refusée')}>Refuser</Button>
         </Box>
       </Box>
     ));
@@ -150,6 +262,7 @@ const Demandes: React.FC = () => {
       </Box>
       {renderDemandesByType(selectedType)}
 
+      {/* Dialog for Event Details */}
       <Dialog open={openNbPlaceDialog} onClose={handleDialogClose}>
         <DialogTitle>Ajouter un Événement</DialogTitle>
         <DialogContent>
@@ -178,6 +291,76 @@ const Demandes: React.FC = () => {
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">Annuler</Button>
           <Button onClick={handleDialogSubmit} color="primary">Enregistrer</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog for Parrainage */}
+      <Dialog open={openParrainageDialog} onClose={handleDialogClose}>
+        <DialogTitle>Attribuer un Parrain</DialogTitle>
+        <DialogContent>
+          <Select
+            value={selectedUser ?? ''}
+            onChange={(e) => setSelectedUser(Number(e.target.value))}
+            fullWidth
+          >
+            {users.map(user => (
+              <MenuItem key={user.id} value={user.id}>{user.name}</MenuItem>
+            ))}
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">Annuler</Button>
+          <Button onClick={handleParrainageSubmit} color="primary">Enregistrer</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog for Financement */}
+      <Dialog open={openFinancementDialog} onClose={handleDialogClose}>
+        <DialogTitle>Ajouter une Aide au Projet</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="titre"
+            label="Titre"
+            fullWidth
+            variant="standard"
+            value={financementData?.titre ?? ''}
+            onChange={(e) => setFinancementData(prev => ({ ...prev!, titre: e.target.value }))}
+          />
+          <TextField
+            margin="dense"
+            id="description"
+            label="Description"
+            fullWidth
+            variant="standard"
+            value={financementData?.description ?? ''}
+            onChange={(e) => setFinancementData(prev => ({ ...prev!, description: e.target.value }))}
+          />
+          <TextField
+            margin="dense"
+            id="budget"
+            label="Budget"
+            type="number"
+            fullWidth
+            variant="standard"
+            value={financementData?.budget ?? ''}
+            onChange={(e) => setFinancementData(prev => ({ ...prev!, budget: Number(e.target.value) }))}
+          />
+          <TextField
+            margin="dense"
+            id="deadline"
+            label="Deadline"
+            type="date"
+            fullWidth
+            variant="standard"
+            value={financementData?.deadline ?? ''}
+            onChange={(e) => setFinancementData(prev => ({ ...prev!, deadline: e.target.value }))}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="primary">Annuler</Button>
+          <Button onClick={handleFinancementSubmit} color="primary">Enregistrer</Button>
         </DialogActions>
       </Dialog>
     </Box>

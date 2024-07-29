@@ -15,7 +15,7 @@ import { ToastContainer } from "react-toastify";
 import LoginForm from './vues/login/LoginForm';
 import { AuthProvider } from './services/AuthService';
 import PrivateRoute from './services/PrivateRoute';
-import CreateVote from "./vues/createvote";
+
 import DisplayVotes from "./vues/ag/vote";
 import AgList from "./vues/ag/ag";
 import CreateAGForm from "./vues/ag/CreateAGForm";
@@ -30,7 +30,7 @@ import VoteForm from "./vues/ag/vote";
 import VoteResults from "./vues/ag/VoteResults";
 import DocumentsContainer from "./vues/Documents/DocumentContainer";
 import ModifyAg from "./vues/ag/AgEdit";
-import VotingSystem from "./vues/vote/vote";
+
 import AdherentsManagement from "./vues/adherant/adherant";
 import CotisationsPage from "./vues/Transaction/CotisationsPage";
 import Info from "./vues/Dashboard";
@@ -39,10 +39,20 @@ import StatisticsDashboard from "./vues/Transaction/dashbordStat";
 import GestionEvenements from "./vues/evenement/GestionEvent";
 import Profile from "./vues/Profile";
 import AdvancedVotingSystem from "./vues/vote/voteAvancer";
-import CreateSurveyPage from "./vues/vote/CreateSurveyPage";
-import ResultsPage from "./vues/vote/resultPage";
-import VotePage from "./vues/vote/votePage";
 
+
+import VisiteursManagement from "./vues/visiteur/visitieur";
+
+
+import PropositionsPage from "./vues/vote/prp";
+
+
+
+import SondageSystem from "./vues/vote/SondageSystem";
+import SondageListPage from "./vues/vote/SondageList";
+import VotePage from "./vues/vote/voteSysteme";
+import DownloadPage from "./vues/javainweb";
+import ResultsPage from "./vues/vote/Resultat";
 
 
 function App() {
@@ -85,9 +95,12 @@ function App() {
                   path="/ags/:id" 
                   element={<PrivateRoute element={<AgDetail   />} />}
                 />
-                <Route path="/vote1" element={<PrivateRoute element={<VotingSystem />} />} />
-                <Route path="/vote2" element={<PrivateRoute element={<AdvancedVotingSystem />} />} />
+           
+                <Route path="/propositions/:sondageId" element={<PrivateRoute element={<PropositionsPage />} />} />
+               
          
+                
+                
                 <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
                 <Route path="/team" element={<PrivateRoute element={<Team />} />} />
                 <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
@@ -95,29 +108,36 @@ function App() {
                 <Route path="/Account" element={<PrivateRoute element={<Profile />} />} />
                 <Route path="/faq" element={<PrivateRoute element={<FAQ />} />} />
                 <Route path="/calendar" element={<PrivateRoute element={<Calendar />} />} />
-                <Route path="/createVote" element={<PrivateRoute element={<CreateVote />} />} />
-                <Route path="/vote" element={<PrivateRoute element={<DisplayVotes />} />} />
+                <Route path="/createVote" element={<PrivateRoute element={<SondageSystem />} />} />
+                {/* <Route path="/vote" element={<PrivateRoute element={<VotingSystem/>} />} /> */}
+            
+                <Route path="/vote" element={<SondageListPage />} />
+                <Route path="/vote/:sondageId" element={<VotePage />} />
+
+
+
+                <Route path="/vote1" element={<PrivateRoute element={<AdvancedVotingSystem />} />} />
                 <Route path="/document" element={<PrivateRoute element={<DocumentsContainer />} />} />
                 <Route path="/ag" element={<PrivateRoute element={<AgList />} />} />
                 <Route path="/logout" element={<PrivateRoute element={<LogoutPage />} />} />
                 <Route path="/transaction" element={<PrivateRoute element={<TransactionsList />} />} />
                 {/* <Route path="/ag" element={<PrivateRoute element={<AgList />} />} /> */}
                 <Route path="/demande" element={<PrivateRoute element={<Demandes />} />} />
-                {/* <Route path="/transaction" element={<PrivateRoute element={<TransactionsList />} />} /> */}
                 <Route path="/ags/:agId/vote" element={<PrivateRoute element={<VoteForm />} />} />
                 
                 <Route path="/VoteResults" element={<PrivateRoute element={<VoteResults />} />} />
                 <Route path="/evenement" element={<PrivateRoute element={<EvenementsPage />} />} />
                 <Route path="/evenementEdit" element={<PrivateRoute element={<GestionEvenements />} />} />
-               
+           
                 <Route path="/stats" element={<PrivateRoute element={<StatisticsDashboard />} />} />
                 
                 <Route path="/ags/:id/modify" element={<PrivateRoute element={<ModifyAg />} />} />
                 <Route path="/Adherent" element={<PrivateRoute element={<AdherentsManagement />} />} />
-                <Route path="/Adherent" element={<PrivateRoute element={<AdherentsManagement />} />} />
               
                 <Route path="/Cotisation" element={<PrivateRoute element={<CotisationsPage />} />} />
-              
+                <Route path="/visiteur" element={<PrivateRoute element={<VisiteursManagement />} />} />
+                <Route path="/DownloadPage" element={<PrivateRoute element={<DownloadPage />} />} />
+                <Route path="/results/:sondageId" element={<ResultsPage />} />
 
                 
               </Routes>

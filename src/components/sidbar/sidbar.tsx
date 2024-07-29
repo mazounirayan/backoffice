@@ -134,7 +134,13 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
-
+     <Item
+              title="Download le java "
+              to="/DownloadPage"
+              icon={<HomeOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Typography
               variant="h6"
               color={colors.grey[300]}
@@ -156,6 +162,15 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
+
+              <Item
+              title="VisiteursManagement"
+              to="/visiteur"
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
                       <Item
               title="Cotisation"
               to="/Cotisation"

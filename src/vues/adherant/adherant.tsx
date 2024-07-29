@@ -126,18 +126,18 @@ const AdherentsManagement: React.FC = () => {
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nom", headerName: "Nom", flex: 1 },
-    { field: "prenom", headerName: "Prénom", flex: 1 },
+    { field: "nom", headerName: "Nom", flex: 0.75  },
+    { field: "prenom", headerName: "Prénom", flex: 0.75  },
     { field: "email", headerName: "Email", flex: 1 },
     { field: "numTel", headerName: "Téléphone", flex: 1 },
     { field: "profession", headerName: "Profession", flex: 1 },
     {
       field: "actions",
       headerName: "Actions",
-      flex: 1,
+      flex: 2,
       renderCell: (params) => (
         <Box>
-          <Button variant="contained" color="secondary" onClick={() => handleEditAdherent(params.row)}>Modifier</Button>
+          <Button variant="contained" color="secondary" sx={{ mr: 1 }} onClick={() => handleEditAdherent(params.row)}>Modifier</Button>
           <Button variant="contained" color="error" sx={{ mr: 1 }} onClick={() => handleDeleteAdherent(params.row.id)}>Supprimer</Button>
           <Button variant="contained" color="warning" onClick={() => handleBanAdherent(params.row.id)}>Bannir</Button>
         </Box>

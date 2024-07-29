@@ -18,7 +18,7 @@ interface Election {
   title: string;
   status: ElectionStatus;
   type: ElectionType;
-  turnout: number;
+ 
 }
 
 interface SnackbarState {
@@ -26,7 +26,7 @@ interface SnackbarState {
   message: string;
 }
 
-const VotingSystem: React.FC = () => {
+const AdvancedVotingSystem: React.FC = () => {
   const [elections, setElections] = useState<Election[]>([]);
   const [currentElection, setCurrentElection] = useState<Election | null>(null);
   const [activeStep, setActiveStep] = useState<number>(0);
@@ -40,11 +40,10 @@ const VotingSystem: React.FC = () => {
   }, []);
 
   const fetchElections = async (): Promise<void> => {
-    // Simulation de l'appel API
     const mockElections: Election[] = [
-      { id: 1, title: "Élection du conseil d'administration", status: 'en cours', type: 'majoritaire', turnout: 65 },
-      { id: 2, title: "Modification des statuts", status: 'terminé', type: 'proportionnel', turnout: 78 },
-      { id: 3, title: "Choix du nouveau logo", status: 'à venir', type: 'préférentiel', turnout: 0 },
+      { id: 1, title: "Élection du conseil d'administration", status: 'en cours', type: 'majoritaire' },
+      { id: 2, title: "Modification des statuts", status: 'terminé', type: 'proportionnel' },
+      { id: 3, title: "Choix du nouveau logo", status: 'à venir', type: 'préférentiel'},
     ];
     setElections(mockElections);
   };
@@ -65,7 +64,7 @@ const VotingSystem: React.FC = () => {
       title: newElectionTitle,
       status: 'à venir',
       type: newElectionType,
-      turnout: 0
+
     };
     setElections([...elections, newElection]);
     setOpenDialog(false);
@@ -134,8 +133,7 @@ const VotingSystem: React.FC = () => {
                 sx={{ marginRight: 1 }}
               />
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <People sx={{ fontSize: 16, marginRight: 0.5 }} />
-                <Typography variant="body2">{`Participation: ${election.turnout}%`}</Typography>
+               
               </Box>
             </Box>
           </CardContent>
@@ -250,4 +248,4 @@ const VotingSystem: React.FC = () => {
   );
 };
 
-export default VotingSystem;
+export default AdvancedVotingSystem;

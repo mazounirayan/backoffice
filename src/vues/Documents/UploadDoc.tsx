@@ -17,15 +17,42 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
   onFileUploaded
 }) => {
   const [loader, setLoader] = useState<boolean>(false);
+ if (!token){ const token =  localStorage.getItem('token')||""};
+
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    const { data: folderContent } = await axios.post(
+      `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
+      { token, dossierId: currentFolderId || 0 },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+
+
+
     const file = event.target.files?.[0];
-    if (file && userId && token) {
+    if (folderContent.arboDossier){
+      console.log(file)
+      console.log(folderContent.arboDossier )
+      const fileExists = folderContent.arboDossier.some((item: any) => item.nomFichier === file!.name||file!.name ===item.Nom);
+      if (fileExists) {
+        toast.error('Le fichier existe déjà dans ce dossier.');
+        setLoader(false);
+        return;
+      }
+    }
+
+
+
+  
+    if (!file || !userId || !token) return;
+console.log(token)
       const formData = new FormData();
       formData.append('file', file);
       formData.append('token', token);
-
+      setLoader(true);
       try {
-        setLoader(true);
+       
         const uploadResponse = await axios.post(
           `https://pa-api-0tcm.onrender.com/upload-document/${userId}`,
           formData,
@@ -36,39 +63,35 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
             },
           }
         );
-
+     
       
  
-        const idTokenResponse = await axios.post(
+    
+        console.log("file name " , file.name)
+        const { data: idTokenResponse } = await axios.post(
           `https://pa-api-0tcm.onrender.com/idToken/${userId}`,
-          
-           { name: file.name ,token},
-           {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { name: file.name, token },
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
        
 
-          const fileId=idTokenResponse.data.idToken[0].id || undefined
+
+        console.log( "id token reponse ",idTokenResponse)
+        console.log( "currentFolderId"  ,currentFolderId)
         
-        const placeFileResponse = await axios.post(
-          'https://pa-api-0tcm.onrender.com/dossiers',
-          {
-            nom: file.name,
-            user: userId,
-            token: fileId,
-            dossier: currentFolderId || undefined
-          },
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const fileId=idTokenResponse.idToken[0].id || undefined
+        
+          const { data: placeFileResponse } = await axios.post(
+            'https://pa-api-0tcm.onrender.com/dossiers',
+            { nom: file.name, user: userId, token: fileId, dossier: currentFolderId || 0 },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          console.log(placeFileResponse)
 
         toast.success(`Fichier ${file.name} téléchargé et placé avec succès !`);
         onFileUploaded({
-          nomFichier: file.name,
-          id: placeFileResponse.data.id,
+          nom: file.name,
+          id: placeFileResponse.id,
           Type: 'fichier',
           isNewUpload: true
         });
@@ -79,7 +102,7 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
       }finally{
         setLoader(false);
       }
-    }
+    
   };
 
   if(loader){
