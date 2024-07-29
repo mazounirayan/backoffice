@@ -82,7 +82,7 @@ const CreateAGForm: React.FC<{ onAGCreated: (ag: any) => void }> = ({ onAGCreate
       }).showToast();
 
       const emails = await fetchEmails();
-      // await sendEmails(emails);
+      await sendEmails(emails);
 
       navigate(`/createProposition/${response.data.id}`);
     } catch (error) {

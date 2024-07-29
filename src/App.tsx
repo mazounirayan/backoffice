@@ -87,10 +87,13 @@ function App() {
                   element={<PrivateRoute element={<AgDetail   />} />}
                 />
            
-               
+                 <Route
+                  path="/stat/:id" 
+                  element={<PrivateRoute element={<VoteStatistics   />} />}
+                />
            
-           <Route path="/VoteStatistics" element={<PrivateRoute element={<VoteStatistics />} />} />
-                
+           {/* <Route path="/VoteStatistics" element={<PrivateRoute element={<VoteStatistics />} />} />
+                 */}
                 
                 <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
                 <Route path="/team" element={<PrivateRoute element={<Team />} />} />

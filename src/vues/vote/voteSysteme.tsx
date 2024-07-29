@@ -59,6 +59,8 @@ const VotePage: React.FC = () => {
   const [selectedChoix, setSelectedChoix] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean, message: string }>({ open: false, message: '' });
   const [votes, setVotes] = useState<Vote[]>([]);
+  const [voteStatus, setvoteStatus] = useState<string>("n'as pas encore commencer ");
+
 
   useEffect(() => {
     fetchSondage();
@@ -111,9 +113,12 @@ const VotePage: React.FC = () => {
       const endDate = new Date(sondage.dateFin);
       const interval = setInterval(() => {
         const now = new Date();
-        console.log(endDate,"fin")
-        console.log(now,"debut")
-
+        const stat =
+        now < now ? "Le vote n'a pas encore commencé" :
+          now > endDate ? "Le vote est terminé" :
+            "Le vote est en cours";
+        setvoteStatus(stat)
+     
         if (now > endDate) {
           clearInterval(interval);
          alert("depasser")
@@ -124,13 +129,7 @@ const VotePage: React.FC = () => {
     }
   }, [sondage, sondageId, navigate]);
 
-  const now = new Date();
-  const startDate = new Date(sondage?.dateDebut || '');
-  const endDate = new Date(sondage?.dateFin || '');
-  const voteStatus =
-    now < startDate ? "Le vote n'a pas encore commencé" :
-      now > endDate ? "Le vote est terminé" :
-        "Le vote est en cours";
+
 
   if (!sondage) return <Typography>Chargement...</Typography>;
 
