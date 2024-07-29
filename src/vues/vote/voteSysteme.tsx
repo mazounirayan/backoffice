@@ -115,6 +115,31 @@ const VotePage: React.FC = () => {
       localStorage.setItem(voteKey, 'true');
       setSnackbar({ open: true, message: 'Vote enregistré avec succès!' });
       fetchVotes();
+      const votesResponse = await fetch(`${API_BASE_URL}/votes`);
+      if (!votesResponse.ok) throw new Error('Failed to fetch votes');
+      
+      const votesData = await votesResponse.json();
+      const filteredVotes = votesData.Votes.filter((vote: Vote) => vote.proposition.id === sondage?.propositions[0].id);
+      const voteCounts :number = filteredVotes.reduce((acc: any, vote: Vote) => {
+        acc[vote.choix] = (acc[vote.choix] || 0) + 1;
+        return acc;
+      }, {});
+      const sortedChoices = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
+      const topTwoChoices = sortedChoices.slice(0, 2).map(choice => choice[0]);
+  
+      const hasMajority = sortedChoices.length > 0 && sortedChoices[0][1] > filteredVotes.length / 2;
+
+      if (hasMajority) {
+        // Redirect to results page if there is an absolute majority
+        navigate(`/results/${sondageId}`);
+      } else {
+        // Create new sondage and proposition if no absolute majority
+        await createNewSondage(voteCounts);
+        navigate(`/vote/${sondageId}`); // Redirect to the voting page for the new round
+      }
+
+
+
     } catch (error) {
       console.error('Error submitting vote:', error);
       setSnackbar({ open: true, message: 'Erreur lors de l\'enregistrement du vote' });
@@ -122,15 +147,26 @@ const VotePage: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!sondage || votes.length === 0) return;
+    if (sondage) {
+      const now = new Date();
+      const endDate = new Date(sondage.dateFin);
 
-    const now = new Date();
-    const endDate = new Date(sondage.dateFin);
-
-    if (now > endDate) {
-      calculateResults();
+      if (now > endDate) {
+        
+        calculateResults()
+      } else {
+    
+        const interval = setInterval(() => {
+          const now = new Date();
+          if (now > endDate) {
+            clearInterval(interval);
+            navigate(`/results/${sondageId}`);
+          }
+        }, 10000); 
+        return () => clearInterval(interval);
+      }
     }
-  }, [votes, sondage]);
+  }, [sondage, sondageId, navigate]);
 
   const calculateResults = () => {
     if (!sondage) return;
@@ -157,9 +193,10 @@ const VotePage: React.FC = () => {
   const createNewSondage = async (voteCounts: number) => {
     const sortedChoices = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
     const topTwoChoices = sortedChoices.slice(0, 2).map(choice => choice[0]);
-
+  
     try {
-      const response = await fetch(`${API_BASE_URL}/sondages`, {
+      // Create the new survey
+      const surveyResponse = await fetch(`${API_BASE_URL}/sondages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -167,25 +204,36 @@ const VotePage: React.FC = () => {
           description: `Deuxième tour pour ${sondage?.nom}`,
           dateDebut: new Date().toISOString(),
           dateFin: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          propositions: [
-            {
-              question: sondage?.propositions[0].question,
-              choix: topTwoChoices,
-              type: 'radio'
-            }
-          ]
+          typeSondage: "DEUX_TOURS",
+          propositions: 1 // Initial empty list
         })
       });
-
-      if (!response.ok) throw new Error('Failed to create new sondage');
-
-      setSnackbar({ open: true, message: 'Nouveau sondage créé pour le second tour' });
+  
+      if (!surveyResponse.ok) throw new Error('Failed to create new sondage');
+      
+      const newSurvey = await surveyResponse.json();
+  
+      // Create the new proposition for the new survey
+      const propositionResponse = await fetch(`${API_BASE_URL}/propositions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: sondage?.propositions[0].question,
+          choix: topTwoChoices,
+          type: 'radio',
+          sondage: newSurvey.id
+        })
+      });
+  
+      if (!propositionResponse.ok) throw new Error('Failed to create new proposition');
+  
+      setSnackbar({ open: true, message: 'Nouveau sondage et proposition créés pour le second tour' });
     } catch (error) {
       console.error('Error creating new sondage:', error);
       setSnackbar({ open: true, message: 'Erreur lors de la création du nouveau sondage' });
     }
   };
-
+  
   const now = new Date();
   const startDate = new Date(sondage?.dateDebut || '');
   const endDate = new Date(sondage?.dateFin || '');

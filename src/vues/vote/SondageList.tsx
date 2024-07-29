@@ -13,7 +13,7 @@ interface Sondage {
   dateFin: string;
   description: string;
   typeSondage: string;
-  nombreVotants: number; // Nombre total de votants
+  nombreVotants: number; 
 }
 
 const SondagesListPage: React.FC = () => {
