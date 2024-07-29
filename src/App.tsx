@@ -88,7 +88,7 @@ function App() {
                 />
            
                  <Route
-                  path="/stat/:id" 
+                  path="/stats/:sondageId" 
                   element={<PrivateRoute element={<VoteStatistics   />} />}
                 />
            

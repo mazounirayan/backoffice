@@ -52,7 +52,8 @@ const DocumentsContainer: React.FC = () => {
     if (item.Type === 'dossier') {
       setLoader(true);
       try {
-        console.log("arboDossier",userId , "token")
+        console.log("dossierId",item.id)
+        
         const { data } = await axios.post(
           `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
           { token, dossierId: item.id },

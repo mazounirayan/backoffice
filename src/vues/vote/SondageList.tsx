@@ -20,6 +20,7 @@ const SondagesListPage: React.FC = () => {
   const [sondages, setSondages] = useState<Sondage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchSondages = async () => {
       try {
@@ -42,6 +43,11 @@ const SondagesListPage: React.FC = () => {
     console.log(`Voir les statistiques pour le sondage ID: ${id}`);
   };
 
+  const handleVote = (id: number) => {
+    navigate(`/vote/${id}`);
+    console.log(`Voir les statistiques pour le sondage ID: ${id}`);
+  };
+  
   if (isLoading) {
     return <CircularProgress />;
   }
@@ -53,11 +59,24 @@ const SondagesListPage: React.FC = () => {
       </Typography>
       <List>
         {sondages.map((sondage) => (
-          <ListItem button component={Link} to={`/vote/${sondage.id}`} key={sondage.id}>
+          <ListItem key={sondage.id} button>
             <ListItemText
-              primary={sondage.nom}
+              primary={
+                <Link to={`/vote/${sondage.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  {sondage.nom}
+                </Link>
+              }
               secondary={`Nombre de votants : ${sondage.nombreVotants ?? 'Non disponible'}`}
             />
+
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleVote(sondage.id)}
+              sx={{ ml: 2 }} // Ajout d'un margin-left pour espacer le bouton du texte
+            >
+              votez 
+            </Button>
             <Button
               variant="contained"
               color="primary"
