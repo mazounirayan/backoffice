@@ -93,10 +93,7 @@ const VotePage: React.FC = () => {
     if (!selectedChoix || !sondage) return;
 
     const voteKey = `vote_${sondageId}`;
-    if (localStorage.getItem(voteKey)) {
-      setSnackbar({ open: true, message: 'Vous avez déjà voté.' });
-      return;
-    }
+
 
     try {
       const response = await fetch(`${API_BASE_URL}/votes`, {
@@ -106,7 +103,7 @@ const VotePage: React.FC = () => {
           choix: selectedChoix,
           numTour: 1,
           proposition: sondage.propositions[0].id,
-          user: 1
+          user: JSON.parse(localStorage.getItem('loggedInUser') || '{}').id
         })
       });
 
