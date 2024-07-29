@@ -108,7 +108,7 @@ const VoteStatistics: React.FC = () => {
             fetchVotes();
             fetchSondages();
         }
-      }, 10000);
+      }, 1000);
 
   
 
