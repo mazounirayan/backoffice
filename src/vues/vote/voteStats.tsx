@@ -62,6 +62,7 @@ const VoteStatistics: React.FC = () => {
   const [statistics, setStatistics] = useState<SondageStatistics | null>(null);
   const [winners, setWinners] = useState<string | null>(null);
   const [secondRoundNeeded, setSecondRoundNeeded] = useState<boolean>(false);
+  const [isSondageFinished, setIsSondageFinished] = useState<boolean>(false);
   const navigate = useNavigate();
   const { sondageId } = useParams<{ sondageId?: string }>();
 
@@ -91,10 +92,33 @@ const VoteStatistics: React.FC = () => {
         console.error('Error fetching sondages:', error);
       }
     };
+    
+    const checkSondageStatus = () => {
+        if (sondage) {
+          const now = new Date();
+          const endDate = new Date(sondage.dateFin);
+          setIsSondageFinished(now > endDate);
+        }
+      };
+      fetchVotes();
+      fetchSondages();
+      const intervalId = setInterval(() => {
+        checkSondageStatus();
+        if (isSondageFinished) {
+            fetchVotes();
+            fetchSondages();
+        }
+      }, 10000);
 
-    fetchVotes();
-    fetchSondages();
-  }, [sondageId]);
+  
+
+
+
+
+
+
+      return () => clearInterval(intervalId);
+  }, [sondageId,isSondageFinished]);
 
   useEffect(() => {
     if (votes.length > 0 && sondage) {
@@ -244,50 +268,59 @@ const VoteStatistics: React.FC = () => {
         Statistiques des Votes
       </Typography>
       <Typography variant="h5" color="primary" gutterBottom>
-        {statistics.sondageNom}
+        {sondage?.nom}
       </Typography>
       <Typography variant="subtitle1" gutterBottom>
-        <strong>Type de Sondage:</strong> {statistics.typeSondage}
+        <strong>Type de Sondage:</strong> {sondage?.typeSondage}
       </Typography>
-      {statistics.propositions.map(stat => (
-        <Paper key={stat.propositionId} elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
-          <Typography variant="h6" gutterBottom>
-            {stat.question}
-          </Typography>
-          <List>
-            {stat.choices.map(choice => (
-              <ListItem key={choice.choice}>
-                <ListItemText
-                  primary={`${choice.choice}: ${choice.count} vote(s)`}
-                  secondary={`${choice.percentage.toFixed(2)}%`}
-                />
-              </ListItem>
-            ))}
-          </List>
-          <Divider sx={{ marginY: 1 }} />
-          <Typography variant="subtitle2">
-            <strong>Total de Votes:</strong> {stat.totalVotes}
-          </Typography>
-        </Paper>
-      ))}
-      {winners && (
-        <Typography variant="h6" color="success.main" gutterBottom>
-          <strong>Gagnant:</strong> {winners}
+      
+      {!isSondageFinished ? (
+        <Typography variant="h6" color="textSecondary">
+          Le sondage n'est pas encore terminé. Les résultats seront disponibles après {sondage?.dateFin}.
         </Typography>
-      )}
-      {secondRoundNeeded && (
-        <Box mt={3} display="flex" flexDirection="column" alignItems="center">
-          <Typography variant="body1" gutterBottom>
-            Un second tour est nécessaire.
-          </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            onClick={createSecondRound}
-          >
-            Créer le deuxième tour
-          </Button>
-        </Box>
+      ) : (
+        <>
+          {statistics && statistics.propositions.map(stat => (
+            <Paper key={stat.propositionId} elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
+              <Typography variant="h6" gutterBottom>
+                {stat.question}
+              </Typography>
+              <List>
+                {stat.choices.map(choice => (
+                  <ListItem key={choice.choice}>
+                    <ListItemText
+                      primary={`${choice.choice}: ${choice.count} vote(s)`}
+                      secondary={`${choice.percentage.toFixed(2)}%`}
+                    />
+                  </ListItem>
+                ))}
+              </List>
+              <Divider sx={{ marginY: 1 }} />
+              <Typography variant="subtitle2">
+                <strong>Total de Votes:</strong> {stat.totalVotes}
+              </Typography>
+            </Paper>
+          ))}
+          {winners && (
+            <Typography variant="h6" color="success.main" gutterBottom>
+              <strong>Gagnant:</strong> {winners}
+            </Typography>
+          )}
+          {secondRoundNeeded && (
+            <Box mt={3} display="flex" flexDirection="column" alignItems="center">
+              <Typography variant="body1" gutterBottom>
+                Un second tour est nécessaire.
+              </Typography>
+              <Button 
+                variant="contained" 
+                color="primary" 
+                onClick={createSecondRound}
+              >
+                Créer le deuxième tour
+              </Button>
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );

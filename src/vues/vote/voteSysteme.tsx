@@ -56,12 +56,10 @@ const VotePage: React.FC = () => {
   const { sondageId } = useParams<{ sondageId: string }>();
   const navigate = useNavigate();
   const [sondage, setSondage] = useState<Sondage | null>(null);
-  const [selectedChoix, setSelectedChoix] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean, message: string }>({ open: false, message: '' });
   const [votes, setVotes] = useState<Vote[]>([]);
   const [voteStatus, setvoteStatus] = useState<string>("n'as pas encore commencer ");
-  const [selectedPropositionId, setSelectedPropositionId] = useState<number | null>(null);
-
+  const [selectedChoix, setSelectedChoix] = useState<Record<number, string>>({});
 
   useEffect(() => {
     fetchSondage();
@@ -82,33 +80,38 @@ const VotePage: React.FC = () => {
 
 
   const handleVote = async () => {
-    if (!selectedChoix || !sondage) return;
-
+    if (!sondage || Object.keys(selectedChoix).length === 0) return;
+  
     const voteKey = `vote_${sondageId}`;
     const isSecondRound = sondage.nom.includes("2ème tour");
+  
     try {
-      const response = await fetch(`${API_BASE_URL}/votes`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          choix: selectedChoix,
-          numTour: isSecondRound ? 2 : 1, 
-          proposition: sondage.propositions[0].id,
-          user: JSON.parse(localStorage.getItem('loggedInUser') || '{}').id
+      const votePromises = Object.entries(selectedChoix).map(([propositionId, choix]) =>
+        fetch(`${API_BASE_URL}/votes`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            choix: choix,
+            numTour: isSecondRound ? 2 : 1,
+            proposition: parseInt(propositionId),
+            user: JSON.parse(localStorage.getItem('loggedInUser') || '{}').id
+          })
         })
-      });
-
-      if (!response.ok) throw new Error('Failed to submit vote');
-
+      );
+  
+      const responses = await Promise.all(votePromises);
+      if (responses.some(response => !response.ok)) throw new Error('Failed to submit vote');
+  
       localStorage.setItem(voteKey, 'true');
-      setSnackbar({ open: true, message: 'Vote enregistré avec succès!' });
-      localStorage.setItem("dejavote",voteKey)
+      setSnackbar({ open: true, message: 'Votes enregistrés avec succès!' });
+      localStorage.setItem("dejavote", voteKey);
       navigate(`/vote`);
     } catch (error) {
-      console.error('Error submitting vote:', error);
-      setSnackbar({ open: true, message: 'Erreur lors de l\'enregistrement du vote' });
+      console.error('Error submitting votes:', error);
+      setSnackbar({ open: true, message: 'Erreur lors de l\'enregistrement des votes' });
     }
   };
+
 
   useEffect(() => {
     const voteKey = `vote_${sondageId}`;
@@ -152,36 +155,39 @@ const VotePage: React.FC = () => {
         {voteStatus}
       </Typography>
 
-      {sondage.propositions.map((proposition) => (
-        <Card key={proposition.id} sx={{ marginTop: 2 }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>{proposition.question}</Typography>
-            <RadioGroup
-              value={selectedChoix}
-              onChange={(e) => setSelectedChoix(e.target.value)}
-            >
-              {proposition.choix.map((choix, index) => (
-                <FormControlLabel
-                  key={index}
-                  value={choix}
-                  control={<Radio />}
-                  label={choix}
-                />
-              ))}
-            </RadioGroup>
-          </CardContent>
-        </Card>
-      ))}
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleVote}
-        sx={{ marginTop: 2 }}
+    {sondage.propositions.map((proposition) => (
+  <Card key={proposition.id} sx={{ marginTop: 2 }}>
+    <CardContent>
+      <Typography variant="h6" gutterBottom>{proposition.question}</Typography>
+      <RadioGroup
+        value={selectedChoix[proposition.id] || ''}
+        onChange={(e) => setSelectedChoix({
+          ...selectedChoix,
+          [proposition.id]: e.target.value
+        })}
       >
-        Voter
-      </Button>
+        {proposition.choix.map((choix, index) => (
+          <FormControlLabel
+            key={index}
+            value={choix}
+            control={<Radio />}
+            label={choix}
+          />
+        ))}
+      </RadioGroup>
+    </CardContent>
+  </Card>
+))}
 
+<Button
+  variant="contained"
+  color="primary"
+  onClick={handleVote}
+  disabled={Object.keys(selectedChoix).length !== sondage.propositions.length}
+  sx={{ marginTop: 2 }}
+>
+  Voter
+</Button>
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
