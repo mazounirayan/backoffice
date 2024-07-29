@@ -44,7 +44,7 @@ import AdvancedVotingSystem from "./vues/vote/voteAvancer";
 import VisiteursManagement from "./vues/visiteur/visitieur";
 
 
-import PropositionsPage from "./vues/vote/prp";
+
 
 
 
@@ -96,7 +96,6 @@ function App() {
                   element={<PrivateRoute element={<AgDetail   />} />}
                 />
            
-                <Route path="/propositions/:sondageId" element={<PrivateRoute element={<PropositionsPage />} />} />
                
          
                 
