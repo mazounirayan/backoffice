@@ -4,6 +4,7 @@ import {
   Box, Typography, Button, Card, CardContent, RadioGroup,
   FormControlLabel, Radio, Snackbar
 } from '@mui/material';
+import data from '../../services/data';
 
 const API_BASE_URL = 'https://pa-api-0tcm.onrender.com';
 
@@ -58,11 +59,10 @@ const VotePage: React.FC = () => {
   const [selectedChoix, setSelectedChoix] = useState<string | null>(null);
   const [snackbar, setSnackbar] = useState<{ open: boolean, message: string }>({ open: false, message: '' });
   const [votes, setVotes] = useState<Vote[]>([]);
-  const [showResultsButton, setShowResultsButton] = useState(false);
 
   useEffect(() => {
     fetchSondage();
-    fetchVotes();
+  
   }, [sondageId]);
 
   const fetchSondage = async () => {
@@ -77,23 +77,11 @@ const VotePage: React.FC = () => {
     }
   };
 
-  const fetchVotes = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/votes`);
-      if (!response.ok) throw new Error('Erreur lors de la récupération des votes');
-      const data = await response.json();
-      setVotes(data.Votes);
-    } catch (error) {
-      console.error('Error fetching votes:', error);
-      setSnackbar({ open: true, message: 'Erreur lors de la récupération des votes' });
-    }
-  };
 
   const handleVote = async () => {
     if (!selectedChoix || !sondage) return;
 
     const voteKey = `vote_${sondageId}`;
-
 
     try {
       const response = await fetch(`${API_BASE_URL}/votes`, {
@@ -111,31 +99,7 @@ const VotePage: React.FC = () => {
 
       localStorage.setItem(voteKey, 'true');
       setSnackbar({ open: true, message: 'Vote enregistré avec succès!' });
-      fetchVotes();
-      const votesResponse = await fetch(`${API_BASE_URL}/votes`);
-      if (!votesResponse.ok) throw new Error('Failed to fetch votes');
-      
-      const votesData = await votesResponse.json();
-      const filteredVotes = votesData.Votes.filter((vote: Vote) => vote.proposition.id === sondage?.propositions[0].id);
-      const voteCounts :number = filteredVotes.reduce((acc: any, vote: Vote) => {
-        acc[vote.choix] = (acc[vote.choix] || 0) + 1;
-        return acc;
-      }, {});
-      const sortedChoices = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
-      const topTwoChoices = sortedChoices.slice(0, 2).map(choice => choice[0]);
-  
-      const hasMajority = sortedChoices.length > 0 && sortedChoices[0][1] > filteredVotes.length / 2;
-      console.log(hasMajority)
-      if (hasMajority) {
     
-        navigate(`/results/${sondageId}`);
-      } else {
-        await createNewSondage(voteCounts);
-        navigate(`/vote/${sondageId}`); 
-      }
-
-
-
     } catch (error) {
       console.error('Error submitting vote:', error);
       setSnackbar({ open: true, message: 'Erreur lors de l\'enregistrement du vote' });
@@ -144,92 +108,22 @@ const VotePage: React.FC = () => {
 
   useEffect(() => {
     if (sondage) {
-      const now = new Date();
       const endDate = new Date(sondage.dateFin);
+      const interval = setInterval(() => {
+        const now = new Date();
+        console.log(endDate,"fin")
+        console.log(now,"debut")
 
-      if (now > endDate) {
-        
-        calculateResults()
-      } else {
-    
-        const interval = setInterval(() => {
-          const now = new Date();
-          if (now > endDate) {
-            clearInterval(interval);
-            navigate(`/results/${sondageId}`);
-          }
-        }, 10000); 
-        return () => clearInterval(interval);
-      }
+        if (now > endDate) {
+          clearInterval(interval);
+         alert("depasser")
+         /* navigate(`/results/${sondageId}`);*/
+        }
+      }, 10000); // Vérifie toutes les 10 secondes
+      return () => clearInterval(interval);
     }
   }, [sondage, sondageId, navigate]);
 
-  const calculateResults = () => {
-    if (!sondage) return;
-
-    const propositionId = sondage.propositions[0].id;
-    const filteredVotes = votes.filter(vote => vote.proposition.id === propositionId);
-
-    const voteCounts:number = filteredVotes.reduce((acc: any, vote: Vote) => {
-      acc[vote.choix] = (acc[vote.choix] || 0) + 1;
-      return acc;
-    }, {});
-
-    const totalVotes = filteredVotes.length;
-    const maxVotes = Math.max(...Object.values(voteCounts));
-    const majority = maxVotes > totalVotes / 2;
-
-    if (majority) {
-      setShowResultsButton(true);
-    } else {
-      createNewSondage(voteCounts);
-    }
-  };
-
-  const createNewSondage = async (voteCounts: number) => {
-    const sortedChoices = Object.entries(voteCounts).sort((a, b) => b[1] - a[1]);
-    const topTwoChoices = sortedChoices.slice(0, 2).map(choice => choice[0]);
-      console.log(topTwoChoices)
-    try {
-   
-      const surveyResponse = await fetch(`${API_BASE_URL}/sondages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          nom: `${sondage?.nom} - Second Tour`,
-          description: `Deuxième tour pour ${sondage?.nom}`,
-          dateDebut: new Date().toISOString(),
-          dateFin: new Date(new Date().getTime() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-          typeSondage: "DEUX_TOURS",
-          
-        })
-      });
-  
-      if (!surveyResponse.ok) throw new Error('Failed to create new sondage');
-      
-      const newSurvey = await surveyResponse.json();
-  
-      // Create the new proposition for the new survey
-      const propositionResponse = await fetch(`${API_BASE_URL}/propositions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          question: sondage?.propositions[0].question,
-          choix: topTwoChoices,
-          type: 'radio',
-          sondage: newSurvey.id
-        })
-      });
-  
-      if (!propositionResponse.ok) throw new Error('Failed to create new proposition');
-  
-      setSnackbar({ open: true, message: 'Nouveau sondage et proposition créés pour le second tour' });
-    } catch (error) {
-      console.error('Error creating new sondage:', error);
-      setSnackbar({ open: true, message: 'Erreur lors de la création du nouveau sondage' });
-    }
-  };
-  
   const now = new Date();
   const startDate = new Date(sondage?.dateDebut || '');
   const endDate = new Date(sondage?.dateFin || '');
@@ -277,17 +171,6 @@ const VotePage: React.FC = () => {
       >
         Voter
       </Button>
-
-      {showResultsButton && (
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => navigate(`/results/${sondage.id}`)}
-          sx={{ marginTop: 2 }}
-        >
-          Voir les résultats
-        </Button>
-      )}
 
       <Snackbar
         open={snackbar.open}

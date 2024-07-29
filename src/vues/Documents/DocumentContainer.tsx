@@ -158,7 +158,7 @@ const DocumentsContainer: React.FC = () => {
       
       const { data } = await axios.post(
         'https://pa-api-0tcm.onrender.com/dossiers',
-        { nom: newFolderName, user: userId, dossier: currentFolder?.id },
+        { nom: newFolderName, user: userId, dossier: currentFolder?.id, type:'Dossier' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const newFolder = { ...data, Type: 'dossier' };

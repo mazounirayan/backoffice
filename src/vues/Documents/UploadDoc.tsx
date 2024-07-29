@@ -80,10 +80,10 @@ console.log(token)
         console.log( "currentFolderId"  ,currentFolderId)
         
         const fileId=idTokenResponse.idToken[0].id || undefined
-        
+
           const { data: placeFileResponse } = await axios.post(
             'https://pa-api-0tcm.onrender.com/dossiers',
-            { nom: file.name, user: userId, token: fileId, dossier: currentFolderId || 0 },
+            { nom: file.name, user: userId, token: fileId, dossier: currentFolderId || 0, type: 'Fichier' },
             { headers: { Authorization: `Bearer ${token}` } }
           );
           console.log(placeFileResponse)

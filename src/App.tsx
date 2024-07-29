@@ -45,6 +45,7 @@ import SondageListPage from "./vues/vote/SondageList";
 import VotePage from "./vues/vote/voteSysteme";
 import DownloadPage from "./vues/javainweb";
 import ResultsPage from "./vues/vote/Resultat";
+import VoteStatistics from "./vues/vote/voteStats";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
@@ -87,7 +88,8 @@ function App() {
                 />
            
                
-         
+           
+           <Route path="/VoteStatistics" element={<PrivateRoute element={<VoteStatistics />} />} />
                 
                 
                 <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
