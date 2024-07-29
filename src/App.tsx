@@ -39,22 +39,12 @@ import StatisticsDashboard from "./vues/Transaction/dashbordStat";
 import GestionEvenements from "./vues/evenement/GestionEvent";
 import Profile from "./vues/Profile";
 import AdvancedVotingSystem from "./vues/vote/voteAvancer";
-
-
 import VisiteursManagement from "./vues/visiteur/visitieur";
-
-
-
-
-
-
 import SondageSystem from "./vues/vote/SondageSystem";
 import SondageListPage from "./vues/vote/SondageList";
 import VotePage from "./vues/vote/voteSysteme";
 import DownloadPage from "./vues/javainweb";
 import ResultsPage from "./vues/vote/Resultat";
-
-
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
