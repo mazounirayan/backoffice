@@ -29,6 +29,7 @@ interface VoteData {
   propositionId: string;
   userId: string;
   choices: { [key: string]: any };
+  numTour : number ; 
 }
 
 const VoteForm: React.FC = () => {
@@ -108,6 +109,7 @@ const VoteForm: React.FC = () => {
         propositionId: selectedProposition.id,
         userId: loggedInUser.id,
         choices: selectedChoices,
+        numTour:1
       };
       await axios.post('https://pa-api-0tcm.onrender.com/votes', voteData);
       Toastify({
