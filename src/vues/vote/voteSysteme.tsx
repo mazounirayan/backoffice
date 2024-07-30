@@ -60,6 +60,8 @@ const VotePage: React.FC = () => {
   const [votes, setVotes] = useState<Vote[]>([]);
   const [voteStatus, setVoteStatus] = useState<string>("n'a pas encore commencé");
   const [selectedChoix, setSelectedChoix] = useState<Record<number, string>>({});
+  const [dejavoter, setDejavoter] = useState<boolean>(false);
+
 
   useEffect(() => {
     fetchSondage();
@@ -103,8 +105,8 @@ const VotePage: React.FC = () => {
       
       toast.success('Votes enregistrés avec succès!');
       localStorage.setItem("dejavote", voteKey);
-      alert("vous avez deja voter ")
-      navigate(`/vote`);
+     
+      navigate(`/results/${sondageId}`);
     } catch (error) {
       console.error('Error submitting votes:', error);
       toast.error('Erreur lors de l\'enregistrement des votes');
@@ -113,8 +115,9 @@ const VotePage: React.FC = () => {
 
   useEffect(() => {
     const voteKey = `vote_${sondageId}`;
+
     if (localStorage.getItem("dejavote") === voteKey) {
-    
+      setDejavoter(true)
       alert("vous avez deja voter ")
     
     }
@@ -166,6 +169,7 @@ const VotePage: React.FC = () => {
                   value={choix}
                   control={<Radio />}
                   label={choix}
+                  disabled={dejavoter}
                 />
               ))}
             </RadioGroup>
