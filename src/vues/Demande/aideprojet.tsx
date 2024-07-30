@@ -37,8 +37,7 @@ interface AideProjet {
   descriptionProjet: string;
   budget: number;
   deadline: string;
-  visiteur: Visiteur | null;
-  adherent: Adherent | null;
+
 }
 
 interface ApiResponse {
@@ -148,28 +147,7 @@ const ProjectPage: React.FC = () => {
             <Typography variant="body2" color="textSecondary">
               Deadline: {new Date(projet.deadline).toLocaleDateString()}
             </Typography>
-            {projet.visiteur && (
-              <Box mt={2} mb={2}>
-                <Typography variant="subtitle1">Visitor Info</Typography>
-                <Typography variant="body2">
-                  {projet.visiteur.nom} {projet.visiteur.prenom}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Email: {projet.visiteur.email}
-                </Typography>
-              </Box>
-            )}
-            {projet.adherent && (
-              <Box mt={2} mb={2}>
-                <Typography variant="subtitle1">Adherent Info</Typography>
-                <Typography variant="body2">
-                  {projet.adherent.nom} {projet.adherent.prenom}
-                </Typography>
-                <Typography variant="body2" color="textSecondary">
-                  Email: {projet.adherent.email}
-                </Typography>
-              </Box>
-            )}
+       
             <Box mt={2}>
               <Button variant="contained" color="error" onClick={() => handleDelete(projet.id)}>
                 Delete

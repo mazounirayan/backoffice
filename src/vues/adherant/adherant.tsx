@@ -23,7 +23,7 @@ interface Adherent {
   numTel: string;
   adresse: string;
   profession: string;
-  parrain: { id: number; prenom: string; nom: string };
+  parrain: { id: number};
   estBenevole: boolean;
   estBanie?: boolean; // Ajouté pour gérer l'état de bannissement
 }
@@ -133,7 +133,7 @@ const AdherentsManagement: React.FC = () => {
   const handleDeleteAdherent = async (id: number) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet adhérent ?')) {
       try {
-        await axios.delete(`https://pa-api-0tcm.onrender.com/adherents/${id}`);
+        await axios.delete(`https://pa-api-0tcm.onrender.com/adherentsUser/${id}`);
         fetchAdherents();
         toast.success('Adhérent supprimé avec succès.');
       } catch (error) {
@@ -225,7 +225,7 @@ const AdherentsManagement: React.FC = () => {
             control={<Checkbox name="estBenevole" checked={editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : selectedAdherent?.estBenevole || false} onChange={handleInputChange} />}
             label="Est bénévole"
           />
-          <Select name="parrain" value={editedAdherent.parrain?.id || ''} onChange={handleSelectChange} fullWidth>
+          <Select name="parrain" value={editedAdherent.parrain?.id } onChange={handleSelectChange} fullWidth>
             <MenuItem value="">
               <em>None</em>
             </MenuItem>

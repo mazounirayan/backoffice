@@ -201,13 +201,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Information Inscription"
-              to="/contacts"
-              icon={<InfoOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+       
             <Item
               title="Document"
               to="/document"
@@ -236,20 +230,8 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
             >
               Pages
             </Typography>
-            <Item
-              title="Creation Profile"
-              to="/form"
-              icon={<PersonAddAltOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item
-              title="Calendrier"
-              to="/calendar"
-              icon={<CalendarMonthOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+       
+         
             <Item
               title="FAQ Page"
               to="/faq"

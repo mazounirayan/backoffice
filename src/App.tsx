@@ -139,6 +139,7 @@ function App() {
                 <Route path="/UnbanManagement" element={<PrivateRoute element={<UnbanManagement />} />} />
 
                 <Route path="/ProjectPage" element={<PrivateRoute element={<ProjectPage />} />} />
+                <Route path="/form" element={<PrivateRoute element={<New  title={"Créer un nouvel utilisateur"}  />} />} />
                 
               </Routes>
             </main>

@@ -78,7 +78,7 @@ const VisiteursManagement: React.FC = () => {
         }, {} as Partial<Visiteur>);
   
         if (Object.keys(updatedFields).length > 0) {
-          await axios.patch(`https://pa-api-0tcm.onrender.com/visiteursUser/${selectedVisiteur.id}`, updatedFields, {
+          await axios.patch(`https://pa-api-0tcm.onrender.com/visiteurs/${selectedVisiteur.id}`, updatedFields, {
             headers: { Authorization: `Bearer ${token}` }
           });
         }
