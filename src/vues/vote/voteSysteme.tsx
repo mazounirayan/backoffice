@@ -99,10 +99,11 @@ const VotePage: React.FC = () => {
 
       const responses = await Promise.all(votePromises);
       if (responses.some(response => !response.ok)) throw new Error('Failed to submit vote');
-
-      localStorage.setItem(voteKey, 'true');
+      const voteKey = `vote_${sondageId}`;
+      
       toast.success('Votes enregistrés avec succès!');
       localStorage.setItem("dejavote", voteKey);
+      alert("vous avez deja voter ")
       navigate(`/vote`);
     } catch (error) {
       console.error('Error submitting votes:', error);
@@ -113,8 +114,9 @@ const VotePage: React.FC = () => {
   useEffect(() => {
     const voteKey = `vote_${sondageId}`;
     if (localStorage.getItem("dejavote") === voteKey) {
-      toast.info('Vous avez déjà voté');
-      navigate(`/vote`);
+    
+      alert("vous avez deja voter ")
+    
     }
 
     if (sondage) {
