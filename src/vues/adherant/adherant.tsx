@@ -152,9 +152,12 @@ console.log(editedAdherent)
     { field: "id", headerName: "ID", flex: 0.5 },
     { field: "nom", headerName: "Nom", flex: 0.75  },
     { field: "prenom", headerName: "Prénom", flex: 0.75  },
-    { field: "email", headerName: "Email", flex: 1 },
-    { field: "numTel", headerName: "Téléphone", flex: 1 },
-    { field: "profession", headerName: "Profession", flex: 1 },
+    { field: "email", headerName: "Email", flex: 0.5 },
+    { field: "numTel", headerName: "Téléphone", flex: 0.5 },
+    { field: "profession", headerName: "Profession", flex: 0.5 },
+    { field: "profession", headerName: "Profession", flex: 0.5 },
+    { field: "le parrain", headerName: "parrain", flex: 0.5 },
+    
     {
       field: "actions",
       headerName: "Actions",
@@ -207,6 +210,7 @@ console.log(editedAdherent)
           <TextField name="numTel" label="Téléphone" value={editedAdherent.numTel || selectedAdherent?.numTel || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="adresse" label="Adresse" value={editedAdherent.adresse || selectedAdherent?.adresse || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="profession" label="Profession" value={editedAdherent.profession || selectedAdherent?.profession || ''} onChange={handleInputChange} fullWidth margin="normal" />
+         
           <FormControlLabel
             control={<Checkbox name="estBenevole" checked={editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : selectedAdherent?.estBenevole || false} onChange={handleInputChange} />}
             label="Est bénévole"
