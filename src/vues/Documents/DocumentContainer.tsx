@@ -5,6 +5,7 @@ import Modal from 'react-modal';
 import { useAuth } from '../../services/AuthService';
 import Toastify from 'toastify-js';
 import FolderView from './Folderview';
+import { ta } from 'date-fns/locale';
 
 Modal.setAppElement('#root');
 
@@ -232,16 +233,21 @@ const DocumentsContainer: React.FC = () => {
     }
   };
 
-  const handleMoveItem = async (item: any, targetFolderId: number) => {
+  const handleMoveItem = async (item: any, targetFolderId: number|null) => {
     setLoader(true);
     try {
-      console.log(item.id)
-      console.log(targetFolderId)
+      console.log('Déplacer', item, 'dans', targetFolderId);
+
+      if(targetFolderId === 0){
+        targetFolderId = null;
+      }
+
       const { data } = await axios.patch(
         `https://pa-api-0tcm.onrender.com/dossiers/${item.id}`,
         { dossier: targetFolderId},
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      console.log(data)
       setItems(prevItems => prevItems.filter(i => i.id !== item.id));
       refreshCurrentFolder();
     } catch (error) {

@@ -59,11 +59,19 @@ const FolderView: React.FC<FolderViewProps> = ({
     e.preventDefault();
   };
 
+  const handleBreadcrumbDrop = (item: any, targetFolderId: number) => {
+    if (item.id !== targetFolderId) {
+      console.log('Déplacer', item, 'dans', targetFolderId);
+      onMoveItem(item, targetFolderId);
+    }
+  };
+
   return (
     <div className="folder-view" onDrop={handleEmptyDrop} onDragOver={handleDragOver}>
       <Breadcrumbs
         breadcrumbs={breadcrumbs}
         onBreadcrumbClick={onBreadcrumbClick}
+        onBreadcrumbDrop={handleBreadcrumbDrop} // Passer la nouvelle méthode
       />
       <div className="folder-actions">
         <button onClick={onToggleNewFolderForm}>New Folder</button>
