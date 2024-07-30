@@ -34,7 +34,6 @@ const DocumentsContainer: React.FC = () => {
         { token },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log('data racine', data)
       setItems(data.racine || []);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
@@ -51,7 +50,6 @@ const DocumentsContainer: React.FC = () => {
     if (item.Type === 'dossier') {
       setLoader(true);
       try {
-        console.log("arboDossier", userId, "token")
         const { data } = await axios.post(
           `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
           { token, dossierId: item.id },
@@ -97,7 +95,6 @@ const DocumentsContainer: React.FC = () => {
   const handleFileClick = async (file: any) => {
     setLoader(true);
     try {
-      console.log(file)
       const { data } = await axios.post(
         `https://pa-api-0tcm.onrender.com/generate-sas-url/${userId}`,
         { blobName: file.VraiNom || file.nomFichier, token },
@@ -142,7 +139,6 @@ const DocumentsContainer: React.FC = () => {
             duration: 3000,
             backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
           }).showToast();
-          //  console.error('Error fetching folder contents:', error);
         }
       } finally {
         setLoader(false);
@@ -160,7 +156,6 @@ const DocumentsContainer: React.FC = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const newFolder = { ...data, Type: 'dossier' };
-      console.log(newFolder);
       setItems([...items, newFolder]);
       setShowNewFolderForm(false);
       setNewFolderName('');
@@ -181,8 +176,6 @@ const DocumentsContainer: React.FC = () => {
       let deleteUrl = '';
       if (item.Type === 'fichier') {
         const id = item.dossierId || item.id;
-
-        console.log(item);
         deleteUrl = `https://pa-api-0tcm.onrender.com/delete-document/${userId}`;
         try {
           await axios.post(deleteUrl, { blobName: item.VraiNom, token: token }, { headers: { Authorization: `Bearer ${token}` } });
@@ -216,7 +209,6 @@ const DocumentsContainer: React.FC = () => {
     }
 };
 
-
   const handleChangeName = async (item: any, newName: string) => {
     setLoader(true);
     try {
@@ -234,6 +226,29 @@ const DocumentsContainer: React.FC = () => {
         //handleAccessForbidden();
       } else {
         console.error('Error updating item name:', error);
+      }
+    } finally {
+      setLoader(false);
+    }
+  };
+
+  const handleMoveItem = async (item: any, targetFolderId: number) => {
+    setLoader(true);
+    try {
+      console.log(item.id)
+      console.log(targetFolderId)
+      const { data } = await axios.patch(
+        `https://pa-api-0tcm.onrender.com/dossiers/${item.id}`,
+        { dossier: targetFolderId},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setItems(prevItems => prevItems.filter(i => i.id !== item.id));
+      refreshCurrentFolder();
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        //handleAccessForbidden();
+      } else {
+        console.error('Error moving item:', error);
       }
     } finally {
       setLoader(false);
@@ -263,6 +278,7 @@ const DocumentsContainer: React.FC = () => {
         onItemClick={handleItemClick}
         onDeleteItem={handleDeleteItem}
         onChangeName={handleChangeName}
+        onMoveItem={handleMoveItem} // Ajout de la méthode de déplacement
         refreshCurrentFolder={refreshCurrentFolder}
       />
 

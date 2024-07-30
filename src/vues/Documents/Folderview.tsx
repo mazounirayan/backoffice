@@ -15,21 +15,21 @@ interface FolderViewProps {
   onItemClick: (item: any) => void;
   onDeleteItem: (item: any) => void;
   refreshCurrentFolder: () => void;
-  onChangeName: (item: any, newName: string) => void; // Change the signature
+  onChangeName: (item: any, newName: string) => void;
+  onMoveItem: (item: any, targetFolderId: number) => void; // Nouvelle méthode pour déplacer les éléments
 }
 
 const FolderView: React.FC<FolderViewProps> = ({
   items, breadcrumbs, currentFolder, showNewFolderForm, newFolderName,
-  onBreadcrumbClick, onNewFolderSubmit, onNewFolderNameChange, onToggleNewFolderForm, onItemClick, onDeleteItem, refreshCurrentFolder, onChangeName
+  onBreadcrumbClick, onNewFolderSubmit, onNewFolderNameChange, onToggleNewFolderForm, onItemClick, onDeleteItem, refreshCurrentFolder, onChangeName, onMoveItem
 }) => {
   const user = JSON.parse(localStorage.getItem('loggedInUser') || '');
   const token = localStorage.getItem('token');
 
   const [editingItemId, setEditingItemId] = useState<number | null>(null);
-  const [newItemName, setNewItemName] = useState<{ [key: number]: string }>({}); // Changed to store names per item
+  const [newItemName, setNewItemName] = useState<{ [key: number]: string }>({});
 
   const handleNameChange = (item: any) => {
-    console.log("item",item);
     setEditingItemId(item.id);
     setNewItemName(prevNames => ({ ...prevNames, [item.id]: item.nomFichier || item.Nom || '' }));
   };
@@ -39,8 +39,28 @@ const FolderView: React.FC<FolderViewProps> = ({
     setEditingItemId(null);
   };
 
+  const handleDragStart = (e: React.DragEvent, item: any) => {
+    e.dataTransfer.setData('item', JSON.stringify(item));
+  };
+
+  const handleDrop = (e: React.DragEvent, targetFolderId: number, itemType: string) => {
+    const item = JSON.parse(e.dataTransfer.getData('item'));
+    if (itemType === 'dossier' && item.id !== targetFolderId) {
+      onMoveItem(item, targetFolderId);
+    }
+  };
+
+  const handleEmptyDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    // Action à effectuer lorsqu'un élément est déposé dans le vide (peut-être une alerte ou rien)
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
   return (
-    <div className="folder-view">
+    <div className="folder-view" onDrop={handleEmptyDrop} onDragOver={handleDragOver}>
       <Breadcrumbs
         breadcrumbs={breadcrumbs}
         onBreadcrumbClick={onBreadcrumbClick}
@@ -72,37 +92,42 @@ const FolderView: React.FC<FolderViewProps> = ({
       <div className="folder-contents">
         {Array.isArray(items) && items.length > 0 ? (
           items.map((item) => (
-            <div key={`${item.Type}-${item.id}`} className="item-container">
-              <div>
-                <div onClick={() => onItemClick(item)}>
-                  {item.Type === 'dossier' ? (
-                    <div className="folder">
-                      <span role="img" aria-label="folder">📁</span> {item.nomFichier || item.Nom || item.nom}
-                    </div>
-                  ) : (
-                    <div className="file">
-                      <span role="img" aria-label="file">📄</span> {item.nomFichier || item.Nom}
-                    </div>
-                  )}
-                </div>
-                {editingItemId === item.id ? (
-                  <div>
-                    <input 
-                      type="text" 
-                      value={newItemName[item.id] || ''} // Get the name for the specific item
-                      onChange={(e) => setNewItemName(prevNames => ({ ...prevNames, [item.id]: e.target.value }))} 
-                      placeholder="New name"
-                    />
-                    <button onClick={() => handleNameSubmit(item)}>Save</button>
-                    <button onClick={() => setEditingItemId(null)}>Cancel</button>
+            <div 
+              key={`${item.Type}-${item.id}`} 
+              className="item-container" 
+              draggable 
+              onDragStart={(e) => handleDragStart(e, item)}
+              onDrop={(e) => handleDrop(e, item.id, item.Type)} 
+              onDragOver={handleDragOver}
+            >
+              <div onClick={() => onItemClick(item)}>
+                {item.Type === 'dossier' ? (
+                  <div className="folder">
+                    <span role="img" aria-label="folder">📁</span> {item.nomFichier || item.Nom || item.nom}
                   </div>
                 ) : (
-                  <>
-                    <button onClick={() => onDeleteItem(item)}>Delete</button>
-                    <button onClick={() => handleNameChange(item)}>Change de nom</button>
-                  </>
+                  <div className="file">
+                    <span role="img" aria-label="file">📄</span> {item.nomFichier || item.Nom}
+                  </div>
                 )}
               </div>
+              {editingItemId === item.id ? (
+                <div>
+                  <input 
+                    type="text" 
+                    value={newItemName[item.id] || ''} 
+                    onChange={(e) => setNewItemName(prevNames => ({ ...prevNames, [item.id]: e.target.value }))} 
+                    placeholder="New name"
+                  />
+                  <button onClick={() => handleNameSubmit(item)}>Save</button>
+                  <button onClick={() => setEditingItemId(null)}>Cancel</button>
+                </div>
+              ) : (
+                <>
+                  <button onClick={() => onDeleteItem(item)}>Delete</button>
+                  <button onClick={() => handleNameChange(item)}>Change de nom</button>
+                </>
+              )}
             </div>
           ))
         ) : (

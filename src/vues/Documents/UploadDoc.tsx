@@ -46,7 +46,7 @@ const UploadDocument: React.FC<UploadDocumentProps> = ({
 
   
     if (!file || !userId || !token) return;
-console.log(token)
+      console.log(token)
       const formData = new FormData();
       formData.append('file', file);
       formData.append('token', token);
