@@ -26,6 +26,9 @@ import HowToVoteOutlinedIcon from '@mui/icons-material/HowToVoteOutlined';
 import BallotOutlinedIcon from '@mui/icons-material/BallotOutlined';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import InstallDesktopIcon from '@mui/icons-material/InstallDesktop';
+
 import image from "../image/logo.png"
 interface ItemProps {
   title: string;
@@ -141,10 +144,17 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Typography
+              variant="h6"
+              color={colors.grey[300]}
+              sx={{ m: "15px 0 5px 20px" }}
+            >
+              java 
+            </Typography>
             <Item
               title="Download le java"
               to="/DownloadPage"
-              icon={<DashboardOutlinedIcon />}
+              icon={<InstallDesktopIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -271,7 +281,7 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
                <Item
               title="ProjectPage"
               to="/ProjectPage"
-              icon={<EventAvailableOutlinedIcon />}
+              icon={<AssignmentTurnedInIcon />}
               selected={selected}
               setSelected={setSelected}
             />
