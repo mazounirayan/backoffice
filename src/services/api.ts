@@ -56,7 +56,7 @@ export interface DocumentLink {
 export const getDocumentlien = async (blobName :string , token: string,iduser:number): Promise<DocumentLink> => {
   try {
     const response = await api.post(`/generate-sas-url/${iduser}`, 
-    { blobName , token }, 
+    { blobName:blobName , token:token }, 
     { headers: { Authorization: `Bearer ${token}` } })
     return response.data;
   } catch (error) {

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import FolderView from './Folderview';
 import './Documents.css';
 import Modal from 'react-modal';
 import { useAuth } from '../../services/AuthService';
 import Toastify from 'toastify-js';
+import FolderView from './Folderview';
 
 Modal.setAppElement('#root');
 
@@ -18,8 +18,8 @@ const DocumentsContainer: React.FC = () => {
   const [newFolderName, setNewFolderName] = useState('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const token = localStorage.getItem('token')|| "";
-  const user =  JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+  const token = localStorage.getItem('token') || "";
+  const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
   const userId = user.id;
 
   useEffect(() => {
@@ -34,7 +34,7 @@ const DocumentsContainer: React.FC = () => {
         { token },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      console.log('data racine',data)
+      console.log('data racine', data)
       setItems(data.racine || []);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
@@ -48,12 +48,10 @@ const DocumentsContainer: React.FC = () => {
   };
 
   const handleItemClick = async (item: any) => {
-    
     if (item.Type === 'dossier') {
       setLoader(true);
       try {
-        console.log("dossierId",item.id)
-        
+        console.log("arboDossier", userId, "token")
         const { data } = await axios.post(
           `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
           { token, dossierId: item.id },
@@ -64,7 +62,7 @@ const DocumentsContainer: React.FC = () => {
         setCurrentFolder(item);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 403) {
-         // handleAccessForbidden();
+          // handleAccessForbidden();
         } else {
           console.error('Error fetching folder contents:', error);
         }
@@ -76,9 +74,9 @@ const DocumentsContainer: React.FC = () => {
         setItems(prevItems => [...prevItems, item]);
       }
       await handleFileClick(item);
-      
     }
   };
+
   const refreshCurrentFolder = async () => {
     if (currentFolder) {
       try {
@@ -95,14 +93,14 @@ const DocumentsContainer: React.FC = () => {
       await fetchRootItems();
     }
   };
-  
+
   const handleFileClick = async (file: any) => {
     setLoader(true);
     try {
       console.log(file)
       const { data } = await axios.post(
         `https://pa-api-0tcm.onrender.com/generate-sas-url/${userId}`,
-        { blobName: file.nomFichier || file.Nom|| file.nom, token },
+        { blobName: file.VraiNom || file.nomFichier, token },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setFileUrl(data.sasUrl);
@@ -137,14 +135,14 @@ const DocumentsContainer: React.FC = () => {
         setCurrentFolder(clickedFolder);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 403) {
-         // handleAccessForbidden();
+          // handleAccessForbidden();
         } else {
           Toastify({
             text: 'Erreur lors d\'ouvrire  le contenue du dossier .',
             duration: 3000,
             backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
           }).showToast();
-        //  console.error('Error fetching folder contents:', error);
+          //  console.error('Error fetching folder contents:', error);
         }
       } finally {
         setLoader(false);
@@ -156,22 +154,19 @@ const DocumentsContainer: React.FC = () => {
     e.preventDefault();
     setLoader(true);
     try {
-      
       const { data } = await axios.post(
         'https://pa-api-0tcm.onrender.com/dossiers',
-        { nom: newFolderName, user: userId, dossier: currentFolder?.id, type:'Dossier' },
+        { nom: newFolderName, nomUtilisateur: newFolderName, user: userId, dossier: currentFolder?.id, type: 'Dossier' },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const newFolder = { ...data, Type: 'dossier' };
-      console.log(newFolder)
-      console.log(items)
-      
+      console.log(newFolder);
       setItems([...items, newFolder]);
       setShowNewFolderForm(false);
-      setNewFolderName(newFolder.nom);
+      setNewFolderName('');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
-       // handleAccessForbidden();
+        // handleAccessForbidden();
       } else {
         console.error('Error creating new folder:', error);
       }
@@ -185,11 +180,22 @@ const DocumentsContainer: React.FC = () => {
     try {
       let deleteUrl = '';
       if (item.Type === 'fichier') {
-        deleteUrl = `https://pa-api-0tcm.onrender.com/delete-document/${userId}`;
-        await axios.post(deleteUrl, { blobName: item.nomFichier, token }, { headers: { Authorization: `Bearer ${token}` } });
-      } else if (item.Type === 'dossier') {
         const id = item.dossierId || item.id;
 
+        console.log(item);
+        deleteUrl = `https://pa-api-0tcm.onrender.com/delete-document/${userId}`;
+        try {
+          await axios.post(deleteUrl, { blobName: item.VraiNom, token: token }, { headers: { Authorization: `Bearer ${token}` } });
+        } catch (error) {
+          console.error('Error deleting document:', error);
+        }
+        
+        deleteUrl = `https://pa-api-0tcm.onrender.com/dossiers/${id}`;
+        await axios.delete(deleteUrl, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } else if (item.Type === 'dossier') {
+        const id = item.dossierId || item.id;
         deleteUrl = `https://pa-api-0tcm.onrender.com/dossiers/${id}`;
         await axios.delete(deleteUrl, {
           headers: { Authorization: `Bearer ${token}` },
@@ -199,39 +205,47 @@ const DocumentsContainer: React.FC = () => {
         return;
       }
       setItems(prevItems => prevItems.filter(i => i.id !== item.id));
-
-
-      // if (currentFolder && item.id === currentFolder.id) {
-      //   await fetchRootItems();
-      //   setBreadcrumbs([]);
-      //   setCurrentFolder(null);
-      // } else {
-      //   if (currentFolder) {
-      //     const response = await axios.post(
-      //       `https://pa-api-0tcm.onrender.com/arboDossier/${userId}`,
-      //       { token, Id: currentFolder.id },
-      //       {
-      //         headers: { Authorization: `Bearer ${token}` },
-      //       }
-      //     );
-      //     setItems(response.data.arboDossier || []);
-      //   }
-      // }
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 403) {
-      //  handleAccessForbidden();
+        // handleAccessForbidden();
       } else {
         console.error('Error deleting item:', error);
       }
     } finally {
       setLoader(false);
     }
+};
+
+
+  const handleChangeName = async (item: any, newName: string) => {
+    setLoader(true);
+    try {
+      const id = item.dossierId || item.id;
+      await axios.patch(
+        `https://pa-api-0tcm.onrender.com/dossiers/${id}`,
+        { nomUtilisateur: newName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setItems(prevItems =>
+        prevItems.map(i => (i.id === item.id ? { ...i, nomFichier: newName, Nom: newName } : i))
+      );
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 403) {
+        //handleAccessForbidden();
+      } else {
+        console.error('Error updating item name:', error);
+      }
+    } finally {
+      setLoader(false);
+    }
   };
 
-  if(loader){
-    return <div className="loader">
-    <div className="justify-content-center jimu-primary-loading"></div>
-  </div>
+  if (loader) {
+    return (
+      <div className="loader">
+        <div className="justify-content-center jimu-primary-loading"></div>
+      </div>
+    );
   }
 
   return (
@@ -247,8 +261,9 @@ const DocumentsContainer: React.FC = () => {
         onNewFolderNameChange={setNewFolderName}
         onToggleNewFolderForm={() => setShowNewFolderForm(prev => !prev)}
         onItemClick={handleItemClick}
-        onDeleteItem={handleDeleteItem} 
-        refreshCurrentFolder={refreshCurrentFolder} 
+        onDeleteItem={handleDeleteItem}
+        onChangeName={handleChangeName}
+        refreshCurrentFolder={refreshCurrentFolder}
       />
 
       <Modal

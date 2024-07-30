@@ -4,7 +4,7 @@ import axios from "axios";
     try {
       const response = await axios.post(
         `https://pa-api-0tcm.onrender.com/generate-sas-url/${userId}`,
-        { blobName: name, token },
+        { blobName: name, token: token },
         {
           headers: {
             Authorization: `Bearer ${token}`,
