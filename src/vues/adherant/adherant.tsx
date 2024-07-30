@@ -39,7 +39,7 @@ const AdherentsManagement: React.FC = () => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
   const [error, setError] = useState<string | null>(null);
-  console.log(editedAdherent);
+  console.log(editedAdherent.parrain);
 
   useEffect(() => {
     fetchAdherents();
@@ -49,6 +49,7 @@ const AdherentsManagement: React.FC = () => {
   const fetchAdherents = async () => {
     try {
       const response = await axios.get('https://pa-api-0tcm.onrender.com/adherents?estBanie=false');
+      console.log(response.data.Adherents)
       setAdherents(response.data.Adherents);
     } catch (error) {
       console.error('Erreur lors de la récupération des adhérents:', error);
@@ -82,6 +83,7 @@ const AdherentsManagement: React.FC = () => {
     }));
   };
 
+
   const handleEditAdherent = (adherent: Adherent) => {
     setSelectedAdherent(adherent);
     setEditedAdherent({ ...adherent });
@@ -112,6 +114,7 @@ const AdherentsManagement: React.FC = () => {
         }, {} as Partial<Adherent>);
   
         if (Object.keys(updatedFields).length > 0) {
+          console.log(updatedFields.parrain)
           await axios.patch(`https://pa-api-0tcm.onrender.com/adherentsUser/${selectedAdherent.id}`, updatedFields, {
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -133,7 +136,13 @@ const AdherentsManagement: React.FC = () => {
   const handleDeleteAdherent = async (id: number) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet adhérent ?')) {
       try {
-        await axios.delete(`https://pa-api-0tcm.onrender.com/adherentsUser/${id}`);
+        await axios.delete(`https://pa-api-0tcm.onrender.com/adherentsUser/${id}`
+          ,{
+            headers: { Authorization: `Bearer ${token}` }
+          }
+        );
+        
+
         fetchAdherents();
         toast.success('Adhérent supprimé avec succès.');
       } catch (error) {
@@ -167,7 +176,7 @@ const AdherentsManagement: React.FC = () => {
     { field: "email", headerName: "Email", flex: 0.5 },
     { field: "numTel", headerName: "Téléphone", flex: 0.5 },
     { field: "profession", headerName: "Profession", flex: 0.5 },
-    { field: "parrain", headerName: "Parrain", flex: 0.5 },
+    { field: "parrain.id", headerName: "Parrain.id", flex: 0.5 ,renderCell: (params) => params.row.parrain?.id },
     {
       field: "actions",
       headerName: "Actions",

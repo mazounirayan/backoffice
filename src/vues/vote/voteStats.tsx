@@ -274,11 +274,12 @@ const VoteStatistics: React.FC = () => {
         <strong>Type de Sondage:</strong> {sondage?.typeSondage}
       </Typography>
       
-      {!isSondageFinished ? (
+      {/* {!isSondageFinished ? (
         <Typography variant="h6" color="textSecondary">
           Le sondage n'est pas encore terminé. Les résultats seront disponibles après {sondage?.dateFin}.
         </Typography>
-      ) : (
+      ) : */}
+       (
         <>
           {statistics && statistics.propositions.map(stat => (
             <Paper key={stat.propositionId} elevation={3} sx={{ padding: 2, marginBottom: 2 }}>
@@ -321,7 +322,8 @@ const VoteStatistics: React.FC = () => {
             </Box>
           )}
         </>
-      )}
+      )
+      {/* } */}
     </Box>
   );
 };
