@@ -3,20 +3,20 @@ import { Box, Typography, Button, Container, Divider, Accordion, AccordionSummar
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { tokens } from "../components/theme/theme";
 import { useTheme } from "@mui/material";
-
+//https://github.com/mazounirayan/jar/releases/download/mazounirayan/ecafclientjava.jar
 const DownloadPage: React.FC = () => {
   // URLs des fichiers .jar hébergés sur GitHub Releases
-  const applicationUrl = 'https://github.com/username/repository/releases/download/v1.0/ecafclientjava.jar';
+  const applicationUrl = 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/ecafclientjava.jar';
   const plugins = [
-    { name: 'calculator-plugin-impl.jar', url: 'https://github.com/username/repository/releases/download/v1.0/calculator-plugin-impl.jar' },
-    { name: 'kanban-plugin-impl.jar', url: 'https://github.com/username/repository/releases/download/v1.0/kanban-plugin-impl.jar' },
-    { name: 'note-plugin-impl.jar', url: 'https://github.com/username/repository/releases/download/v1.0/note-plugin-impl.jar' }
+    { name: 'calculator-plugin-impl.jar', url: 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/calculator-plugin-impl.jar' },
+    { name: 'kanban-plugin-impl.jar', url: 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/kanban-plugin-impl.jar' },
+    { name: 'note-plugin-impl.jar', url: 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/note-plugin-impl.jar' }
   ];
   const themes = [
-    { name: 'blue-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/blue-theme-plugin.jar' },
-    { name: 'dark-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/dark-theme-plugin.jar' },
-    { name: 'nature-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/nature-theme-plugin.jar' },
-    { name: 'violet-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/violet-theme-plugin.jar' }
+    { name: 'blue-theme-plugin.jar', url: 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/blue-theme-plugin.jar' },
+    { name: 'dark-theme-plugin.jar', url: 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/dark-theme-plugin.jar' },
+    { name: 'nature-theme-plugin.jar', url: 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/nature-theme-plugin.jar' },
+    { name: 'violet-theme-plugin.jar', url: 'https://github.com/mazounirayan/jar/releases/download/mazounirayan/violet-theme-plugin.jar' }
   ];
 
   const theme = useTheme();
