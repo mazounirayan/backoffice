@@ -1,9 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Box, Typography, useTheme, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControlLabel, Checkbox } from "@mui/material";
+import { Box, Typography, useTheme, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, FormControlLabel, Checkbox, Select, MenuItem, SelectChangeEvent } from "@mui/material";
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../components/theme/theme"; // Assurez-vous que ce chemin est correct
 import Header from "../../components/Header"; // Assurez-vous que ce chemin est correct
+
+interface User {
+  id: number;
+  nom: string;
+  prenom: string;
+}
 
 interface Adherent {
   id: number;
@@ -15,7 +21,7 @@ interface Adherent {
   numTel: string;
   adresse: string;
   profession: string;
-  parrain: number;
+  parrain:  {id:number;prenom:string;nom:string};
   estBenevole: boolean;
   estBanie?: boolean; // Ajouté pour gérer l'état de bannissement
 }
@@ -24,15 +30,17 @@ const AdherentsManagement: React.FC = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [adherents, setAdherents] = useState<Adherent[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedAdherent, setSelectedAdherent] = useState<Adherent | null>(null);
   const [editedAdherent, setEditedAdherent] = useState<Partial<Adherent>>({});
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
   const [error, setError] = useState<string | null>(null);
-
+console.log(editedAdherent)
   useEffect(() => {
     fetchAdherents();
+    fetchUsers();
   }, []);
 
   const fetchAdherents = async () => {
@@ -44,11 +52,28 @@ const AdherentsManagement: React.FC = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | { name?: string; value: unknown }>) => {
-    const { name, value } = e.target as { name: string; value: unknown };
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('https://pa-api-0tcm.onrender.com/users');
+      setUsers(response.data.Users);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des utilisateurs:', error);
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setEditedAdherent(prev => ({
       ...prev,
       [name]: name === 'estBenevole' ? (e.target as HTMLInputElement).checked : value
+    }));
+  };
+
+  const handleSelectChange = (event: SelectChangeEvent<number>) => {
+    const { name, value } = event.target;
+    setEditedAdherent(prev => ({
+      ...prev,
+      [name]: value
     }));
   };
 
@@ -65,7 +90,6 @@ const AdherentsManagement: React.FC = () => {
   };
 
   const handleSaveAdherent = async () => {
-
     if (editedAdherent.age && editedAdherent.age < 16) {
       setError("L'âge doit être supérieur ou égal à 16 ans.");
       return;
@@ -87,7 +111,7 @@ const AdherentsManagement: React.FC = () => {
           });
         }
       } else {
-        const newAdherent = { ...editedAdherent, estBanie: false, parrain: 0 ,    estBenevole: editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : false};
+        const newAdherent = { ...editedAdherent, estBanie: false, parrain: editedAdherent.parrain?.id , estBenevole: editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : false};
         await axios.post('https://pa-api-0tcm.onrender.com/auth/signupAdherent', newAdherent);
       }
       fetchAdherents();
@@ -172,28 +196,37 @@ const AdherentsManagement: React.FC = () => {
       </Box>
 
       <Dialog open={openDialog} onClose={handleCloseDialog}>
-      <DialogTitle>{selectedAdherent ? 'Modifier l\'adhérent' : 'Ajouter un adhérent'}</DialogTitle>
-      <DialogContent>
-        {error && <Typography color="error">{error}</Typography>}
-        <TextField name="nom" label="Nom" value={editedAdherent.nom || selectedAdherent?.nom || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <TextField name="prenom" label="Prénom" value={editedAdherent.prenom || selectedAdherent?.prenom || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <TextField name="email" label="Email" value={editedAdherent.email || selectedAdherent?.email || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <TextField name="motDePasse" label="Mot de Passe" type="password" value={editedAdherent.motDePasse || selectedAdherent?.motDePasse || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <TextField name="age" label="Âge" type="number" value={editedAdherent.age || selectedAdherent?.age || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <TextField name="numTel" label="Téléphone" value={editedAdherent.numTel || selectedAdherent?.numTel || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <TextField name="adresse" label="Adresse" value={editedAdherent.adresse || selectedAdherent?.adresse || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <TextField name="profession" label="Profession" value={editedAdherent.profession || selectedAdherent?.profession || ''} onChange={handleInputChange} fullWidth margin="normal" />
-        <FormControlLabel
-          control={<Checkbox name="estBenevole" checked={editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : selectedAdherent?.estBenevole || false} onChange={handleInputChange} />}
-          label="Est bénévole"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleCloseDialog}>Annuler</Button>
-        <Button onClick={handleSaveAdherent} color="primary">Enregistrer</Button>
-      </DialogActions>
-</Dialog>
-
+        <DialogTitle>{selectedAdherent ? 'Modifier l\'adhérent' : 'Ajouter un adhérent'}</DialogTitle>
+        <DialogContent>
+          {error && <Typography color="error">{error}</Typography>}
+          <TextField name="nom" label="Nom" value={editedAdherent.nom || selectedAdherent?.nom || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="prenom" label="Prénom" value={editedAdherent.prenom || selectedAdherent?.prenom || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="email" label="Email" value={editedAdherent.email || selectedAdherent?.email || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="motDePasse" label="Mot de Passe" type="password" value={editedAdherent.motDePasse || selectedAdherent?.motDePasse || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="age" label="Âge" type="number" value={editedAdherent.age || selectedAdherent?.age || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="numTel" label="Téléphone" value={editedAdherent.numTel || selectedAdherent?.numTel || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="adresse" label="Adresse" value={editedAdherent.adresse || selectedAdherent?.adresse || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <TextField name="profession" label="Profession" value={editedAdherent.profession || selectedAdherent?.profession || ''} onChange={handleInputChange} fullWidth margin="normal" />
+          <FormControlLabel
+            control={<Checkbox name="estBenevole" checked={editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : selectedAdherent?.estBenevole || false} onChange={handleInputChange} />}
+            label="Est bénévole"
+          />
+          <Select name="parrain" value={editedAdherent.parrain?.id || ''} onChange={handleSelectChange} fullWidth >
+            <MenuItem value="">
+              <em>None</em>
+            </MenuItem>
+            {users.map(user => (
+              <MenuItem key={user.id} value={user.id}>
+                {user.nom} {user.prenom}
+              </MenuItem>
+            ))}
+          </Select>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Annuler</Button>
+          <Button onClick={handleSaveAdherent} color="primary">Enregistrer</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

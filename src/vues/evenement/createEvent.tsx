@@ -26,7 +26,18 @@ interface Demande {
   evenementDemandes: any[];
   aideProjetDemandes: any[];
   parrainageDemandes: any[];
-  parrain?: number; // Added for parrainage
+  parrain?: number; 
+  adherent?:  {
+    id: number,
+    }; 
+  visiteur?:  {
+    id: number,
+    }; 
+}
+
+interface User {
+  id: number;
+  name: string;
 }
 
 const Demandes: React.FC = () => {
@@ -40,10 +51,11 @@ const Demandes: React.FC = () => {
   const [currentDemande, setCurrentDemande] = useState<Demande | null>(null);
   const [nbPlace, setNbPlace] = useState<number | string>('');
   const [estReserve, setEstReserve] = useState<boolean>(false);
-  const [users, setUsers] = useState<{ id: number; name: string }[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<number | null>(null);
   const [financementData, setFinancementData] = useState<{ titre: string; description: string; budget: number; deadline: string } | null>(null);
-
+  const token = localStorage.getItem('token');
+  console.log(selectedUser)
   useEffect(() => {
     axios.get('https://pa-api-0tcm.onrender.com/demandes')
       .then(response => {
@@ -59,7 +71,7 @@ const Demandes: React.FC = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get('https://pa-api-0tcm.onrender.com/users');
-      setUsers(response.data.users);
+      setUsers(response.data.Users);
     } catch (error) {
       setError('Erreur lors de la récupération des utilisateurs');
     }
@@ -72,10 +84,14 @@ const Demandes: React.FC = () => {
   const handleAccept = (demande: Demande) => {
     if (demande.type === 'Parrainage') {
       setCurrentDemande(demande);
-      fetchUsers();
+      fetchUsers(); // Fetch users when accepting a parrainage request
       setOpenParrainageDialog(true);
     } else if (demande.type === 'Projet') {
+      console.log("demande",demande)
+
       setCurrentDemande(demande);
+
+      console.log(demande)
       setFinancementData({
         titre: demande.aideProjetDemandes[0].titre,
         description: demande.aideProjetDemandes[0].descriptionProjet,
@@ -84,6 +100,7 @@ const Demandes: React.FC = () => {
       });
       setOpenFinancementDialog(true);
     } else {
+      console.log(currentDemande)
       setCurrentDemande(demande);
       setOpenNbPlaceDialog(true);
     }
@@ -130,9 +147,16 @@ const Demandes: React.FC = () => {
           setError('Veuillez sélectionner un parrain.');
           return;
         }
+     console.log(currentDemande)
+        await axios.patch(`https://pa-api-0tcm.onrender.com/adherentsUser/${currentDemande.adherent?.id}`, {
+          parrain: selectedUser,
+        }, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
 
-        await axios.patch(`https://pa-api-0tcm.onrender.com/parrainage-demandes/${currentDemande.id}`, {
-          parrain: selectedUser
+        await axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${currentDemande.id}`, {
+        
+          statut: 'Acceptée'
         });
 
         setDemandes(demandes.map(demande =>
@@ -140,11 +164,17 @@ const Demandes: React.FC = () => {
         ));
       } else if (currentDemande.type === 'Projet') {
         if (financementData) {
-          await axios.post('https://pa-api-0tcm.onrender.com/aide-projet-demandes', {
+          console.log('Financement Data:', financementData);
+          console.log('Current Demande:', currentDemande);
+          
+          await axios.post('https://pa-api-0tcm.onrender.com/aide-projets', {
             titre: financementData.titre,
             descriptionProjet: financementData.description,
             budget: financementData.budget,
-            deadline: financementData.deadline
+            deadline: financementData.deadline,
+            adherent: currentDemande.adherent!.id || undefined  ,
+            visiteur: currentDemande.visiteur!.id || undefined
+          
           });
 
           setDemandes(demandes.map(demande =>
@@ -158,42 +188,34 @@ const Demandes: React.FC = () => {
     }
   };
 
-  const handleParrainageSubmit = async () => {
-    if (!currentDemande || selectedUser === null) return;
-
-    try {
-      await axios.patch(`https://pa-api-0tcm.onrender.com/parrainage-demandes/${currentDemande.id}`, {
-        parrain: selectedUser
-      });
-
-      setDemandes(demandes.map(demande =>
-        demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée', parrain: selectedUser } : demande
-      ));
-      handleDialogClose();
-    } catch (error) {
-      setError('Erreur lors de la mise à jour de la demande de parrainage');
-    }
-  };
-
   const handleFinancementSubmit = async () => {
     if (!currentDemande || !financementData) return;
-
+  
     try {
-      await axios.post('https://pa-api-0tcm.onrender.com/aide-projet-demandes', {
+      console.log('Financement Data:', financementData);
+      console.log('Current Demande:', currentDemande);
+  
+      const adherentId = currentDemande.adherent ? currentDemande.adherent.id : undefined;
+      const visiteurId = currentDemande.visiteur ? currentDemande.visiteur.id : undefined;
+  
+      await axios.post('https://pa-api-0tcm.onrender.com/aide-projets', {
         titre: financementData.titre,
         descriptionProjet: financementData.description,
         budget: financementData.budget,
-        deadline: financementData.deadline
+        deadline: new Date(financementData.deadline).toISOString(),
+        adherent: adherentId,
+        visiteur: visiteurId
       });
-
+  
       setDemandes(demandes.map(demande =>
         demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée' } : demande
       ));
       handleDialogClose();
     } catch (error) {
-      setError('Erreur lors de la mise à jour de la demande de financement');
+      console.log('Erreur lors de la mise à jour de la demande de financement');
     }
   };
+  
 
   const handleAction = (id: number, action: 'Acceptée' | 'Refusée') => {
     axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${id}`, { statut: action })
@@ -211,42 +233,43 @@ const Demandes: React.FC = () => {
   if (error) return <p>{error}</p>;
 
   const renderDemandesByType = (type: string) => {
-    return demandes.filter(demande => demande.type === type).map(demande => (
-      <Box key={demande.id} sx={{ border: '1px solid #ddd', padding: 2, marginBottom: 2, borderRadius: 2 }}>
-        <Typography variant="h6">ID: {demande.id}</Typography>
-        <Typography>Type: {demande.type}</Typography>
-        <Typography>Date de demande: {new Date(demande.dateDemande).toLocaleString()}</Typography>
-        <Typography>Statut: {demande.statut}</Typography>
-        <Typography>Email Visiteur: {demande.emailVisiteur}</Typography>
-        <Box>
-          {demande.type === 'Evénement' && demande.evenementDemandes.map(event => (
-            <Box key={event.id} sx={{ marginTop: 1 }}>
-              <Typography variant="subtitle1">Titre: {event.titre}</Typography>
-              <Typography>Date: {new Date(event.date).toLocaleString()}</Typography>
-              <Typography>Description: {event.description}</Typography>
-              <Typography>Lieu: {event.lieu}</Typography>
-            </Box>
-          ))}
-          {demande.type === 'Projet' && demande.aideProjetDemandes.map(projet => (
-            <Box key={projet.id} sx={{ marginTop: 1 }}>
-              <Typography variant="subtitle1">Titre: {projet.titre}</Typography>
-              <Typography>Description: {projet.descriptionProjet}</Typography>
-              <Typography>Budget: {projet.budget}</Typography>
-              <Typography>Deadline: {new Date(projet.deadline).toLocaleString()}</Typography>
-            </Box>
-          ))}
-          {demande.type === 'Parrainage' && demande.parrainageDemandes.map(parrainage => (
-            <Box key={parrainage.id} sx={{ marginTop: 1 }}>
-              <Typography variant="subtitle1">Détails: {parrainage.detailsParrainage}</Typography>
-            </Box>
-          ))}
+    return demandes
+      .filter(demande => demande.type === type)
+      .map(demande => (
+        <Box key={demande.id} sx={{ border: '1px solid gray', padding: 2, marginBottom: 2 }}>
+          <Typography variant="h6">Demande ID: {demande.id}</Typography>
+          <Typography>Date de la demande: {new Date(demande.dateDemande).toLocaleString()}</Typography>
+          <Typography>Statut: {demande.statut}</Typography>
+          <Typography>Email Visiteur: {demande.emailVisiteur}</Typography>
+          <Box>
+            {demande.type === 'Evénement' && demande.evenementDemandes.map(event => (
+              <Box key={event.id} sx={{ marginTop: 1 }}>
+                <Typography variant="subtitle1">Titre: {event.titre}</Typography>
+                <Typography>Date: {new Date(event.date).toLocaleString()}</Typography>
+                <Typography>Description: {event.description}</Typography>
+                <Typography>Lieu: {event.lieu}</Typography>
+              </Box>
+            ))}
+            {demande.type === 'Projet' && demande.aideProjetDemandes.map(projet => (
+              <Box key={projet.id} sx={{ marginTop: 1 }}>
+                <Typography variant="subtitle1">Titre: {projet.titre}</Typography>
+                <Typography>Description: {projet.descriptionProjet}</Typography>
+                <Typography>Budget: {projet.budget}</Typography>
+                <Typography>Deadline: {new Date(projet.deadline).toLocaleString()}</Typography>
+              </Box>
+            ))}
+            {demande.type === 'Parrainage' && demande.parrainageDemandes.map(parrainage => (
+              <Box key={parrainage.id} sx={{ marginTop: 1 }}>
+                <Typography variant="subtitle1">Détails: {parrainage.detailsParrainage}</Typography>
+              </Box>
+            ))}
+          </Box>
+          <Box sx={{ marginTop: 2 }}>
+            <Button variant="contained" color="primary" onClick={() => handleAccept(demande)} sx={{ marginRight: 1 }}>Accepter</Button>
+            <Button variant="contained" color="secondary" onClick={() => handleAction(demande.id, 'Refusée')}>Refuser</Button>
+          </Box>
         </Box>
-        <Box sx={{ marginTop: 2 }}>
-          <Button variant="contained" color="primary" onClick={() => handleAccept(demande)} sx={{ marginRight: 1 }}>Accepter</Button>
-          <Button variant="contained" color="secondary" onClick={() => handleAction(demande.id, 'Refusée')}>Refuser</Button>
-        </Box>
-      </Box>
-    ));
+      ));
   };
 
   return (
@@ -310,7 +333,7 @@ const Demandes: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleDialogClose} color="primary">Annuler</Button>
-          <Button onClick={handleParrainageSubmit} color="primary">Enregistrer</Button>
+          <Button onClick={handleDialogSubmit} color="primary">Enregistrer</Button>
         </DialogActions>
       </Dialog>
 

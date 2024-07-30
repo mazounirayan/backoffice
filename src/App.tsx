@@ -46,6 +46,8 @@ import VotePage from "./vues/vote/voteSysteme";
 import DownloadPage from "./vues/javainweb";
 import ResultsPage from "./vues/vote/Resultat";
 import VoteStatistics from "./vues/vote/voteStats";
+import UnbanManagement from "./vues/visiteur/unbanManagement";
+import ProjectPage from "./vues/Demande/aideprojet";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
@@ -131,7 +133,9 @@ function App() {
                 <Route path="/visiteur" element={<PrivateRoute element={<VisiteursManagement />} />} />
                 <Route path="/DownloadPage" element={<PrivateRoute element={<DownloadPage />} />} />
                 <Route path="/results/:sondageId" element={<ResultsPage />} />
+                <Route path="/UnbanManagement" element={<PrivateRoute element={<UnbanManagement />} />} />
 
+                <Route path="/ProjectPage" element={<PrivateRoute element={<ProjectPage />} />} />
                 
               </Routes>
             </main>

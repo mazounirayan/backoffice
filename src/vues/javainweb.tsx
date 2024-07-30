@@ -1,21 +1,27 @@
 import React from 'react';
-import { Box, Typography, Button, Container } from '@mui/material';
+import { Box, Typography, Button, Container, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { tokens } from "../components/theme/theme";
-import {  useTheme } from "@mui/material";
-const DownloadPage: React.FC = () => {
-  // URLs des fichiers .jar hébergés sur Azure Blob Storage
-  const applicationUrl = 'https://drive.google.com/file/d/1ZJFr2nhWr0AaI9U2-F3L5FLXgE0Ywwe2/view?usp=drive_link';
-  const plugin1Url = 'https://drive.google.com/file/d/1UzxyhxCbH2cuRr_oV2rPoysm82T83QS9/view?usp=drive_link';
-  const plugin2Url = 'https://drive.google.com/file/d/1JDupZOY9XpwwXSrBcKic9vAT4LWed5f6/view?usp=sharing';
-  const plugin3Url = 'https://drive.google.com/file/d/1mPqAaStjoCJu0ArYr-nxks4suGG3iy1u/view?usp=sharing';
- 
-  const themejar =[""]
+import { useTheme } from "@mui/material";
 
- 
- 
- 
+const DownloadPage: React.FC = () => {
+  // URLs des fichiers .jar hébergés sur GitHub Releases
+  const applicationUrl = 'https://github.com/username/repository/releases/download/v1.0/ecafclientjava.jar';
+  const plugins = [
+    { name: 'calculator-plugin-impl.jar', url: 'https://github.com/username/repository/releases/download/v1.0/calculator-plugin-impl.jar' },
+    { name: 'kanban-plugin-impl.jar', url: 'https://github.com/username/repository/releases/download/v1.0/kanban-plugin-impl.jar' },
+    { name: 'note-plugin-impl.jar', url: 'https://github.com/username/repository/releases/download/v1.0/note-plugin-impl.jar' }
+  ];
+  const themes = [
+    { name: 'blue-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/blue-theme-plugin.jar' },
+    { name: 'dark-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/dark-theme-plugin.jar' },
+    { name: 'nature-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/nature-theme-plugin.jar' },
+    { name: 'violet-theme-plugin.jar', url: 'https://github.com/username/repository/releases/download/v1.0/violet-theme-plugin.jar' }
+  ];
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
   return (
     <Container>
       <Box
@@ -24,13 +30,13 @@ const DownloadPage: React.FC = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          height: '100vh',
+          minHeight: '100vh',
           backgroundColor: 'grey',
           padding: 4,
         }}
       >
         <Typography variant="h4" gutterBottom>
-          Téléchargement de l'application Java
+          Téléchargement de l'application Java et des Plugins
         </Typography>
         <Typography variant="body1" paragraph>
           Vous pouvez télécharger l'application Java ainsi que les plugins nécessaires en utilisant les liens ci-dessous. Suivez les instructions pour installer et exécuter les fichiers téléchargés.
@@ -52,56 +58,104 @@ const DownloadPage: React.FC = () => {
         <Typography variant="body1" paragraph>
           4. **Installer les Plugins**: Pour utiliser les plugins, placez les fichiers `.jar` dans le répertoire approprié de l'application ou suivez les instructions spécifiques fournies avec les plugins.
         </Typography>
-        
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            mt: 4,
-          }}
-        >
+
+        <Divider sx={{ my: 4, width: '100%' }} />
+
+        <Box sx={{ width: '100%', mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Application Principale
+          </Typography>
           <Button
             variant="contained"
             color="primary"
             href={applicationUrl}
-            download="application.jar"
+            download="ecafclientjava.jar"
             sx={{ mb: 2 }}
           >
             Télécharger l'application Java (.jar)
           </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            href={plugin1Url}
-            download="plugin1.jar"
-            sx={{ mb: 2 }}
-          >
-            Télécharger Plugin 1 (.jar)
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            href={plugin2Url}
-            download="plugin2.jar"
-            sx={{ mb: 2 }}
-          >
-            Télécharger Plugin 2 (.jar)
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            href={plugin3Url}
-            download="plugin3.jar"
-            sx={{ mb: 2 }}
-          >
-            Télécharger Plugin 3 (.jar)
-          </Button>
-          
         </Box>
-        
+
+        <Divider sx={{ my: 4, width: '100%' }} />
+
+        <Box sx={{ width: '100%', mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Plugins
+          </Typography>
+          {plugins.map(plugin => (
+            <Button
+              key={plugin.name}
+              variant="contained"
+              color="secondary"
+              href={plugin.url}
+              download={plugin.name}
+              sx={{ mb: 2 }}
+            >
+              Télécharger {plugin.name}
+            </Button>
+          ))}
+        </Box>
+
+        <Divider sx={{ my: 4, width: '100%' }} />
+
+        <Box sx={{ width: '100%', mb: 4 }}>
+          <Typography variant="h5" gutterBottom>
+            Thèmes
+          </Typography>
+          {themes.map(theme => (
+            <Button
+              key={theme.name}
+              variant="contained"
+              color="success"
+              href={theme.url}
+              download={theme.name}
+              sx={{ mb: 2 }}
+            >
+              Télécharger {theme.name}
+            </Button>
+          ))}
+        </Box>
+
+        <Divider sx={{ my: 4, width: '100%' }} />
+
+        <Typography variant="h6" gutterBottom>
+          FAQ
+        </Typography>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Comment installer Java sur mon ordinateur ?</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Pour installer Java, visitez le site officiel de [Java SE Downloads](https://www.oracle.com/java/technologies/javase-downloads.html),
+              téléchargez l'installateur approprié pour votre système d'exploitation, et suivez les instructions fournies.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Comment exécuter un fichier .jar ?</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Ouvrez une ligne de commande ou un terminal, naviguez jusqu'au répertoire contenant votre fichier .jar, puis exécutez la commande:
+              <pre>java -jar nom-du-fichier.jar</pre>
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography>Où dois-je placer les plugins téléchargés ?</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>
+              Les plugins doivent être placés dans le répertoire approprié de votre application. Consultez la documentation de l'application pour plus de détails sur l'emplacement exact.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+
         <Typography variant="body2" sx={{ mt: 4 }}>
-          Si vous rencontrez des problèmes lors du téléchargement ou de l'installation, veuillez consulter notre [FAQ](#) ou nous contacter à support@example.com.
+          Si vous rencontrez des problèmes lors du téléchargement ou de l'installation, veuillez consulter notre FAQ ou nous contacter à support@example.com.
         </Typography>
       </Box>
     </Container>

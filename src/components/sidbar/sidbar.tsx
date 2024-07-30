@@ -176,6 +176,14 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
+                <Item
+              title="UnbanManagement"
+              to="/UnbanManagement"
+              icon={<PersonSearchOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            
             <Item
               title="Cotisation"
               to="/Cotisation"
@@ -254,12 +262,20 @@ const Sidebar: React.FC<{ isSidebar: boolean }> = ({ isSidebar }) => {
               setSelected={setSelected}
             />
             <Item
-              title="Evenement"
+              title="Demande"
               to="/evenement"
               icon={<EventAvailableOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
+               <Item
+              title="ProjectPage"
+              to="/ProjectPage"
+              icon={<EventAvailableOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            
             <Item
               title="EvenementEdit"
               to="/evenementEdit"
