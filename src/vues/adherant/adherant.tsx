@@ -23,7 +23,7 @@ interface Adherent {
   numTel: string;
   adresse: string;
   profession: string;
-  parrain: { id: number};
+  parrain: { id: number,nom:string};
   estBenevole: boolean;
   estBanie?: boolean; // Ajouté pour gérer l'état de bannissement
 }
@@ -75,13 +75,14 @@ const AdherentsManagement: React.FC = () => {
     }));
   };
 
-  const handleSelectChange = (event: SelectChangeEvent<number>) => {
+  const handleSelectChange = (event: SelectChangeEvent<number | null>) => {
     const { name, value } = event.target;
     setEditedAdherent(prev => ({
       ...prev,
-      [name]: value
+      [name]: value === "" ? null : value
     }));
   };
+  
 
 
   const handleEditAdherent = (adherent: Adherent) => {
@@ -115,6 +116,7 @@ const AdherentsManagement: React.FC = () => {
   
         if (Object.keys(updatedFields).length > 0) {
           console.log(updatedFields.parrain)
+     
           await axios.patch(`https://pa-api-0tcm.onrender.com/adherentsUser/${selectedAdherent.id}`, updatedFields, {
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -133,6 +135,7 @@ const AdherentsManagement: React.FC = () => {
     }
   };
 
+  
   const handleDeleteAdherent = async (id: number) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet adhérent ?')) {
       try {
@@ -176,7 +179,7 @@ const AdherentsManagement: React.FC = () => {
     { field: "email", headerName: "Email", flex: 0.5 },
     { field: "numTel", headerName: "Téléphone", flex: 0.5 },
     { field: "profession", headerName: "Profession", flex: 0.5 },
-    { field: "parrain.id", headerName: "Parrain.id", flex: 0.5 ,renderCell: (params) => params.row.parrain?.id },
+    { field: "parrain.id", headerName: "Parrain.id", flex: 0.5 ,renderCell: (params) => params.row.parrain?.nom },
     {
       field: "actions",
       headerName: "Actions",
