@@ -10,10 +10,9 @@ interface Visiteur {
   nom: string;
   prenom: string;
   email: string;
-  motDePasse: string;
   age: number;
   numTel: string;
-  adresse: string;
+
   profession: string;
   estBenevole: boolean;
   estBanie?: boolean; 
@@ -85,7 +84,7 @@ const VisiteursManagement: React.FC = () => {
         }
       } else {
         const newVisiteur = { ...editedVisiteur, estBanie: false, estBenevole: editedVisiteur.estBenevole !== undefined ? editedVisiteur.estBenevole : false };
-        await axios.post('https://pa-api-0tcm.onrender.com/auth/signupVisiteur', newVisiteur);
+        await axios.post('https://pa-api-0tcm.onrender.com/visiteurs', newVisiteur);
       }
       fetchVisiteurs();
       handleCloseDialog();
@@ -175,10 +174,8 @@ const VisiteursManagement: React.FC = () => {
           <TextField name="nom" label="Nom" value={editedVisiteur.nom || selectedVisiteur?.nom || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="prenom" label="Prénom" value={editedVisiteur.prenom || selectedVisiteur?.prenom || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="email" label="Email" value={editedVisiteur.email || selectedVisiteur?.email || ''} onChange={handleInputChange} fullWidth margin="normal" />
-          <TextField name="motDePasse" label="Mot de Passe" type="password" value={editedVisiteur.motDePasse || selectedVisiteur?.motDePasse || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="age" label="Âge" type="number" value={editedVisiteur.age || selectedVisiteur?.age || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="numTel" label="Téléphone" value={editedVisiteur.numTel || selectedVisiteur?.numTel || ''} onChange={handleInputChange} fullWidth margin="normal" />
-          <TextField name="adresse" label="Adresse" value={editedVisiteur.adresse || selectedVisiteur?.adresse || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <TextField name="profession" label="Profession" value={editedVisiteur.profession || selectedVisiteur?.profession || ''} onChange={handleInputChange} fullWidth margin="normal" />
           <FormControlLabel
             control={<Checkbox name="estBenevole" checked={editedVisiteur.estBenevole !== undefined ? editedVisiteur.estBenevole : selectedVisiteur?.estBenevole || false} onChange={handleInputChange} />}
