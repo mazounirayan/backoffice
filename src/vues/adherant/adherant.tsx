@@ -4,6 +4,8 @@ import { Box, Typography, useTheme, Button, Dialog, DialogTitle, DialogContent, 
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../components/theme/theme"; // Assurez-vous que ce chemin est correct
 import Header from "../../components/Header"; // Assurez-vous que ce chemin est correct
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface User {
   id: number;
@@ -21,7 +23,7 @@ interface Adherent {
   numTel: string;
   adresse: string;
   profession: string;
-  parrain:  {id:number;prenom:string;nom:string};
+  parrain: { id: number; prenom: string; nom: string };
   estBenevole: boolean;
   estBanie?: boolean; // Ajouté pour gérer l'état de bannissement
 }
@@ -37,7 +39,8 @@ const AdherentsManagement: React.FC = () => {
   const token = localStorage.getItem('token');
   const user = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
   const [error, setError] = useState<string | null>(null);
-console.log(editedAdherent)
+  console.log(editedAdherent);
+
   useEffect(() => {
     fetchAdherents();
     fetchUsers();
@@ -49,6 +52,7 @@ console.log(editedAdherent)
       setAdherents(response.data.Adherents);
     } catch (error) {
       console.error('Erreur lors de la récupération des adhérents:', error);
+      toast.error('Erreur lors de la récupération des adhérents.');
     }
   };
 
@@ -58,6 +62,7 @@ console.log(editedAdherent)
       setUsers(response.data.Users);
     } catch (error) {
       console.error('Erreur lors de la récupération des utilisateurs:', error);
+      toast.error('Erreur lors de la récupération des utilisateurs.');
     }
   };
 
@@ -92,6 +97,7 @@ console.log(editedAdherent)
   const handleSaveAdherent = async () => {
     if (editedAdherent.age && editedAdherent.age < 16) {
       setError("L'âge doit être supérieur ou égal à 16 ans.");
+      toast.error("L'âge doit être supérieur ou égal à 16 ans.");
       return;
     }
 
@@ -109,15 +115,18 @@ console.log(editedAdherent)
           await axios.patch(`https://pa-api-0tcm.onrender.com/adherentsUser/${selectedAdherent.id}`, updatedFields, {
             headers: { Authorization: `Bearer ${token}` }
           });
+          toast.success('Adhérent mis à jour avec succès.');
         }
       } else {
-        const newAdherent = { ...editedAdherent, estBanie: false, parrain: editedAdherent.parrain?.id , estBenevole: editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : false};
+        const newAdherent = { ...editedAdherent, estBanie: false, parrain: editedAdherent.parrain?.id, estBenevole: editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : false };
         await axios.post('https://pa-api-0tcm.onrender.com/auth/signupAdherent', newAdherent);
+        toast.success('Adhérent ajouté avec succès.');
       }
       fetchAdherents();
       handleCloseDialog();
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de l\'adhérent:', error);
+      toast.error('Erreur lors de la sauvegarde de l\'adhérent.');
     }
   };
 
@@ -126,8 +135,10 @@ console.log(editedAdherent)
       try {
         await axios.delete(`https://pa-api-0tcm.onrender.com/adherents/${id}`);
         fetchAdherents();
+        toast.success('Adhérent supprimé avec succès.');
       } catch (error) {
         console.error('Erreur lors de la suppression de l\'adhérent:', error);
+        toast.error('Erreur lors de la suppression de l\'adhérent.');
       }
     }
   };
@@ -140,24 +151,23 @@ console.log(editedAdherent)
         }, {
           headers: { Authorization: `Bearer ${token}` }
         });
-
         fetchAdherents();
+        toast.success('Adhérent banni avec succès.');
       } catch (error) {
         console.error('Erreur lors du bannissement de l\'adhérent:', error);
+        toast.error('Erreur lors du bannissement de l\'adhérent.');
       }
     }
   };
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nom", headerName: "Nom", flex: 0.75  },
-    { field: "prenom", headerName: "Prénom", flex: 0.75  },
+    { field: "nom", headerName: "Nom", flex: 0.75 },
+    { field: "prenom", headerName: "Prénom", flex: 0.75 },
     { field: "email", headerName: "Email", flex: 0.5 },
     { field: "numTel", headerName: "Téléphone", flex: 0.5 },
     { field: "profession", headerName: "Profession", flex: 0.5 },
-    { field: "profession", headerName: "Profession", flex: 0.5 },
-    { field: "le parrain", headerName: "parrain", flex: 0.5 },
-    
+    { field: "parrain", headerName: "Parrain", flex: 0.5 },
     {
       field: "actions",
       headerName: "Actions",
@@ -215,7 +225,7 @@ console.log(editedAdherent)
             control={<Checkbox name="estBenevole" checked={editedAdherent.estBenevole !== undefined ? editedAdherent.estBenevole : selectedAdherent?.estBenevole || false} onChange={handleInputChange} />}
             label="Est bénévole"
           />
-          <Select name="parrain" value={editedAdherent.parrain?.id || ''} onChange={handleSelectChange} fullWidth >
+          <Select name="parrain" value={editedAdherent.parrain?.id || ''} onChange={handleSelectChange} fullWidth>
             <MenuItem value="">
               <em>None</em>
             </MenuItem>
@@ -231,6 +241,9 @@ console.log(editedAdherent)
           <Button onClick={handleSaveAdherent} color="primary">Enregistrer</Button>
         </DialogActions>
       </Dialog>
+
+      {/* ToastContainer for displaying notifications */}
+      <ToastContainer />
     </Box>
   );
 };

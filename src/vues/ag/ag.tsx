@@ -57,6 +57,9 @@ const AgList: React.FC = () => {
   const handleModifyAg = (id: number) => {
     navigate(`/ags/${id}/modify`);
   };
+  const handleShowResults = (id: number) => {
+    navigate(`/ags/${id}/results`);
+  };
 
   const getStatus = (dateString: string) => {
     const date = parseISO(dateString);
@@ -80,6 +83,11 @@ const AgList: React.FC = () => {
                 <Typography>Vous avez déjà voté</Typography>
               )}
             </>
+          )}
+             {isPast(parseISO(ag.date)) && (
+            <Button onClick={() => handleShowResults(ag.id)} variant="contained" color="info" sx={{ mr: 1 }}>
+              Résultat
+            </Button>
           )}
           {user?.role === 'Administrateur' && (
             <>

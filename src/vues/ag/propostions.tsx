@@ -43,7 +43,7 @@ const CreatePropositionForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('https://pa-api-0tcm.onrender.com/propositions', { question, type, choix, ag: agId });
+      await axios.post('https://pa-api-0tcm.onrender.com/propositions', { question, type, choix, ag: agId ,});
       // Reset form
       setQuestion('');
       setType('checkbox');

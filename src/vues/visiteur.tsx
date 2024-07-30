@@ -5,6 +5,8 @@ import { DataGrid, GridToolbar, GridColDef } from "@mui/x-data-grid";
 import { tokens } from "../components/theme/theme";
 import Header from "../components/Header";
 import { useTheme } from "@mui/material";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 // Define the interface for Visiteur
 export interface Visiteur {
@@ -56,6 +58,7 @@ const Visiteurs = () => {
         setRows(data);
       } catch (error) {
         console.error('Failed to fetch visitors', error);
+        toast.error('Failed to fetch visitors');
       }
     };
     fetchData();
@@ -116,6 +119,7 @@ const Visiteurs = () => {
           slots={{ toolbar: GridToolbar }}
         />
       </Box>
+      <ToastContainer />
     </Box>
   );
 };

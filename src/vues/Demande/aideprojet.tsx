@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Box, Typography, Button, CircularProgress, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface Adherent {
   id: number;
@@ -50,6 +52,7 @@ const ProjectPage: React.FC = () => {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState<AideProjet | null>(null);
   const [updatedProject, setUpdatedProject] = useState<Partial<AideProjet>>({});
+  const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
 
   useEffect(() => {
     const fetchProjets = async () => {
@@ -58,6 +61,7 @@ const ProjectPage: React.FC = () => {
         setProjets(response.data.AideProjets);
       } catch (error) {
         console.error('Error fetching projects:', error);
+        toast.error('Erreur lors de la récupération des projets.');
       } finally {
         setLoading(false);
       }
@@ -70,8 +74,10 @@ const ProjectPage: React.FC = () => {
     try {
       await axios.delete(`https://pa-api-0tcm.onrender.com/aide-projets/${id}`);
       setProjets(projets.filter(projet => projet.id !== id));
+      toast.success('Projet supprimé avec succès.');
     } catch (error) {
       console.error('Error deleting project:', error);
+      toast.error('Erreur lors de la suppression du projet.');
     }
   };
 
@@ -89,16 +95,33 @@ const ProjectPage: React.FC = () => {
     }));
   };
 
+  const validateDates = (deadline: string): boolean => {
+    const today = new Date();
+    const deadlineDate = new Date(deadline);
+    return deadlineDate >= today;
+  };
+
   const handleEditSave = async () => {
     if (selectedProject) {
+      const deadline = updatedProject.deadline as string;
+
+      if (!validateDates(deadline)) {
+        setFormErrors({ deadline: 'La date limite ne peut pas être dans le passé.' });
+        return;
+      }
+
+      setFormErrors({});
+      
       try {
         await axios.patch(`https://pa-api-0tcm.onrender.com/aide-projets/${selectedProject.id}`, updatedProject);
         setProjets(projets.map(projet => projet.id === selectedProject.id ? { ...projet, ...updatedProject } : projet));
         setEditDialogOpen(false);
         setSelectedProject(null);
         setUpdatedProject({});
+        toast.success('Projet mis à jour avec succès.');
       } catch (error) {
         console.error('Error updating project:', error);
+        toast.error('Erreur lors de la mise à jour du projet.');
       }
     }
   };
@@ -199,6 +222,8 @@ const ProjectPage: React.FC = () => {
                 onChange={handleEditChange}
                 fullWidth
                 margin="normal"
+                error={!!formErrors.deadline}
+                helperText={formErrors.deadline}
               />
             </>
           )}
@@ -208,6 +233,9 @@ const ProjectPage: React.FC = () => {
           <Button onClick={handleEditSave} color="primary">Save</Button>
         </DialogActions>
       </Dialog>
+
+      {/* ToastContainer for displaying notifications */}
+      <ToastContainer />
     </Box>
   );
 };

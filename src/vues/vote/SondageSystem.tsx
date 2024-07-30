@@ -16,7 +16,7 @@ const API_BASE_URL = 'https://pa-api-0tcm.onrender.com';
 
 // Types
 type TypeSondage = 'UN_TOUR' | 'DEUX_TOURS';
-type TypeProposition = 'radio' | 'checkbox';
+type TypeProposition = 'radio' ;
 
 interface Sondage {
   id: number;
@@ -413,7 +413,7 @@ const SondageSystem: React.FC = () => {
                 }
               >
                 <MenuItem value="radio">Radio</MenuItem>
-                <MenuItem value="checkbox">Checkbox</MenuItem>
+                
               </Select>
             </FormControl>
             {newProposition.choix.map((choice, index) => (

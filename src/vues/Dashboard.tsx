@@ -20,7 +20,6 @@ function Dashboard() {
   // <Route path="/vote1" element={<PrivateRoute element={<Vote />} />} />
   const items = [
     { icon: <GroupIcon />, label: "team", route: "/team" },
-    { icon: <HowToVoteIcon />, label: "vote", route: "/vote1" },
     { icon: <InsertDriveFileIcon />, label: "document", route: "/document" },
     { icon: <GroupsIcon />, label: "ag", route: "/ag" },
     { icon: <SpeakerNotesIcon />, label: "Demandes", route: "/demande" },

@@ -4,10 +4,11 @@ import { Box, Typography, useTheme, Button, Dialog, DialogTitle, DialogContent, 
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../components/theme/theme";
 import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
 import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface User {
   id: number;
@@ -29,7 +30,6 @@ interface EditedUser {
   numTel: string;
   estBenevole: boolean;
   profession: string;
-
 }
 
 const Team = () => {
@@ -50,7 +50,6 @@ const Team = () => {
     numTel: "",
     estBenevole: false,
     profession: "",
-
   });
 
   useEffect(() => {
@@ -67,8 +66,10 @@ const Team = () => {
         access: user.role
       }));
       setRows(data);
+      toast.success('Utilisateurs chargés avec succès');
     } catch (error) {
       console.error('Failed to fetch users', error);
+      toast.error('Échec du chargement des utilisateurs');
     }
   };
 
@@ -86,7 +87,6 @@ const Team = () => {
       numTel: user.numTel || "",
       estBenevole: user.estBenevole || false,
       profession: user.profession || "",
-   
     });
     setOpenDialog(true);
   };
@@ -102,14 +102,12 @@ const Team = () => {
       numTel: "",
       estBenevole: false,
       profession: "",
-    
     });
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
     const { name, value } = e.target as { name: string; value: string };
     
-    // Check if the event target is an HTMLInputElement
     if (e.target instanceof HTMLInputElement) {
         const type = e.target.type;
         const checked = e.target.checked;
@@ -124,7 +122,6 @@ const Team = () => {
         }));
     }
 };
-
 
 const handleSaveUser = async () => {
   if (selectedUser && token) {
@@ -141,23 +138,26 @@ const handleSaveUser = async () => {
               });
           handleCloseDialog();
           fetchUsers();
+          toast.success('Utilisateur mis à jour avec succès');
       } catch (error) {
           console.error('Failed to update user', error);
+          toast.error('Échec de la mise à jour de l\'utilisateur');
       }
   }
 };
 
-
   const handleDeleteUser = async (userId: number) => {
-
     if (window.confirm("Êtes-vous sûr de vouloir supprimer cet utilisateur ?") && token) {
       try {
         await axios.delete(`https://pa-api-0tcm.onrender.com/users/${userId}`, {
-          data: { token,   idAdmin:user.id },  headers: { Authorization: `Bearer ${token}` }
+          data: { token, idAdmin:user.id },
+          headers: { Authorization: `Bearer ${token}` }
         });
         fetchUsers();
+        toast.success('Utilisateur supprimé avec succès');
       } catch (error) {
         console.error('Failed to delete user', error);
+        toast.error('Échec de la suppression de l\'utilisateur');
       }
     }
   };
@@ -228,6 +228,7 @@ const handleSaveUser = async () => {
 
   return (
     <Box m="20px">
+      <ToastContainer />
       <Header title="TEAM" subtitle="Gérer les membres de l'équipe" />
       <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
         <Typography variant="h6">Membres de l'équipe</Typography>
@@ -269,49 +270,45 @@ const handleSaveUser = async () => {
       >
         <DataGrid rows={rows} columns={columns} slots={{ toolbar: GridToolbar }} />
       </Box>
-
       <Dialog open={openDialog} onClose={handleCloseDialog}>
         <DialogTitle>Modifier l'utilisateur</DialogTitle>
         <DialogContent>
           <TextField
-            name="nom"
             label="Nom"
+            name="nom"
             value={editedUser.nom}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
           />
           <TextField
-            name="prenom"
             label="Prénom"
+            name="prenom"
             value={editedUser.prenom}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
           />
           <TextField
-            name="email"
             label="Email"
+            name="email"
             value={editedUser.email}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
           />
-          <Select
-            name="role"
-            value={editedUser.role}
+          <TextField
+            label="Numéro de téléphone"
+            name="numTel"
+            value={editedUser.numTel}
             onChange={handleInputChange}
             fullWidth
-            margin="dense"
-          >
-
-            <MenuItem value="Utilisateur">Utilisateur</MenuItem>
-            <MenuItem value="Administrateur">Administrateur</MenuItem>
-          </Select>
+            margin="normal"
+          />
           <TextField
-            name="numTel"
-            label="Numéro de téléphone"
-            value={editedUser.numTel}
+            label="Profession"
+            name="profession"
+            value={editedUser.profession}
             onChange={handleInputChange}
             fullWidth
             margin="normal"
@@ -326,21 +323,21 @@ const handleSaveUser = async () => {
             }
             label="Est bénévole"
           />
-          <TextField
-            name="profession"
-            label="Profession"
-            value={editedUser.profession}
+          <Select
+            label="Rôle"
+            name="role"
+            value={editedUser.role}
             onChange={handleInputChange}
             fullWidth
-            margin="normal"
-          />
-        
+            
+          >
+            <MenuItem value="Utilisateur">Utilisateur</MenuItem>
+            <MenuItem value="Administrateur">Administrateur</MenuItem>
+          </Select>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Annuler</Button>
-          <Button onClick={handleSaveUser} color="primary">
-            Enregistrer
-          </Button>
+          <Button onClick={handleCloseDialog} color="primary">Annuler</Button>
+          <Button onClick={handleSaveUser} color="secondary">Enregistrer</Button>
         </DialogActions>
       </Dialog>
     </Box>

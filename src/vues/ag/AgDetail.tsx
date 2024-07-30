@@ -84,6 +84,7 @@ const AgDetail: React.FC = () => {
             choix: choice,
             proposition: parseInt(propositionId, 10),
             user: user.id,
+            numTour:1
           })
         )
       );

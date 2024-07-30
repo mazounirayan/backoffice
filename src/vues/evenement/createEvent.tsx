@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Assurez-vous d'importer les styles
+
 import axios from 'axios';
 import {
   Box,
@@ -125,11 +128,11 @@ const Demandes: React.FC = () => {
 
   const handleDialogSubmit = async () => {
     if (!currentDemande) return;
-
+  
     try {
       if (currentDemande.type === 'Evénement') {
         await axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${currentDemande.id}`, { statut: 'Acceptée' });
-
+  
         await axios.post('https://pa-api-0tcm.onrender.com/evenements', {
           nom: currentDemande.evenementDemandes[0].titre,
           date: currentDemande.evenementDemandes[0].date,
@@ -138,63 +141,57 @@ const Demandes: React.FC = () => {
           estReserve,
           nbPlace
         });
-
+  
         setDemandes(demandes.map(demande =>
           demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée' } : demande
         ));
+        toast.success('Événement ajouté avec succès !');
       } else if (currentDemande.type === 'Parrainage') {
         if (selectedUser === null) {
           setError('Veuillez sélectionner un parrain.');
           return;
         }
-     console.log(currentDemande)
         await axios.patch(`https://pa-api-0tcm.onrender.com/adherentsUser/${currentDemande.adherent?.id}`, {
           parrain: selectedUser,
         }, {
           headers: { Authorization: `Bearer ${token}` }
         });
-
+  
         await axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${currentDemande.id}`, {
-        
           statut: 'Acceptée'
         });
-
+  
         setDemandes(demandes.map(demande =>
           demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée', parrain: selectedUser } : demande
         ));
+        toast.success('Parrainage attribué avec succès !');
       } else if (currentDemande.type === 'Projet') {
         if (financementData) {
-          console.log('Financement Data:', financementData);
-          console.log('Current Demande:', currentDemande);
-          
           await axios.post('https://pa-api-0tcm.onrender.com/aide-projets', {
             titre: financementData.titre,
             descriptionProjet: financementData.description,
             budget: financementData.budget,
             deadline: financementData.deadline,
-            adherent: currentDemande.adherent!.id || undefined  ,
+            adherent: currentDemande.adherent!.id || undefined,
             visiteur: currentDemande.visiteur!.id || undefined
-          
           });
-
+  
           setDemandes(demandes.map(demande =>
             demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée' } : demande
           ));
+          toast.success('Projet financé avec succès !');
         }
       }
       handleDialogClose();
     } catch (error) {
-      setError('Erreur lors de la mise à jour de la demande');
+      toast.error('Erreur lors de la mise à jour de la demande');
     }
   };
-
+  
   const handleFinancementSubmit = async () => {
     if (!currentDemande || !financementData) return;
   
     try {
-      console.log('Financement Data:', financementData);
-      console.log('Current Demande:', currentDemande);
-  
       const adherentId = currentDemande.adherent ? currentDemande.adherent.id : undefined;
       const visiteurId = currentDemande.visiteur ? currentDemande.visiteur.id : undefined;
   
@@ -210,25 +207,26 @@ const Demandes: React.FC = () => {
       setDemandes(demandes.map(demande =>
         demande.id === currentDemande.id ? { ...demande, statut: 'Acceptée' } : demande
       ));
+      toast.success('Aide au projet ajoutée avec succès !');
       handleDialogClose();
     } catch (error) {
-      console.log('Erreur lors de la mise à jour de la demande de financement');
+      toast.error('Erreur lors de la mise à jour de la demande de financement');
     }
   };
   
-
   const handleAction = (id: number, action: 'Acceptée' | 'Refusée') => {
     axios.patch(`https://pa-api-0tcm.onrender.com/demandes/${id}`, { statut: action })
       .then(response => {
         setDemandes(demandes.map(demande =>
           demande.id === id ? { ...demande, statut: action } : demande
         ));
+        toast.success(`Demande ${action} avec succès !`);
       })
       .catch(error => {
-        setError('Erreur lors de la mise à jour de la demande');
+        toast.error('Erreur lors de la mise à jour de la demande');
       });
   };
-
+  
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>{error}</p>;
 
@@ -274,16 +272,16 @@ const Demandes: React.FC = () => {
 
   return (
     <Box sx={{ padding: 2 }}>
-      <Typography variant="h4" gutterBottom>Demandes</Typography>
-      <Box sx={{ marginBottom: 2 }}>
-        <Typography variant="h6">Sélectionnez le type de demande:</Typography>
-        <Select value={selectedType} onChange={handleTypeChange}>
-          <MenuItem value="Evénement">Evénement</MenuItem>
-          <MenuItem value="Projet">Projet</MenuItem>
-          <MenuItem value="Parrainage">Parrainage</MenuItem>
-        </Select>
-      </Box>
-      {renderDemandesByType(selectedType)}
+    <Typography variant="h4" gutterBottom>Demandes</Typography>
+    <Box sx={{ marginBottom: 2 }}>
+      <Typography variant="h6">Sélectionnez le type de demande:</Typography>
+      <Select value={selectedType} onChange={handleTypeChange}>
+        <MenuItem value="Evénement">Evénement</MenuItem>
+        <MenuItem value="Projet">Projet</MenuItem>
+        <MenuItem value="Parrainage">Parrainage</MenuItem>
+      </Select>
+    </Box>
+    {renderDemandesByType(selectedType)}
 
       {/* Dialog for Event Details */}
       <Dialog open={openNbPlaceDialog} onClose={handleDialogClose}>
@@ -386,6 +384,8 @@ const Demandes: React.FC = () => {
           <Button onClick={handleFinancementSubmit} color="primary">Enregistrer</Button>
         </DialogActions>
       </Dialog>
+      <ToastContainer />
+      
     </Box>
   );
 };

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, Select, MenuItem, Button ,SelectChangeEvent } from '@mui/material';
+import { Box, Typography, Select, MenuItem, Button, SelectChangeEvent } from '@mui/material';
 
 interface Demande {
   id: number;
@@ -48,47 +48,82 @@ const Demandes: React.FC = () => {
     setSelectedType(event.target.value as string);
   };
 
-  if (loading) return <p>Chargement...</p>;
-  if (error) return <p>{error}</p>;
+  const validateDate = (dateString: string): boolean => {
+    const today = new Date();
+    const date = new Date(dateString);
+    return date >= today;
+  };
 
   const renderDemandesByType = (type: string) => {
-    return demandes.filter(demande => demande.type === type).map(demande => (
-      <Box key={demande.id} sx={{ border: '1px solid #ddd', padding: 2, marginBottom: 2, borderRadius: 2 }}>
-        <Typography variant="h6">ID: {demande.id}</Typography>
-        <Typography>Type: {demande.type}</Typography>
-        <Typography>Date de demande: {new Date(demande.dateDemande).toLocaleString()}</Typography>
-        <Typography>Statut: {demande.statut}</Typography>
-        <Typography>Email Visiteur: {demande.emailVisiteur}</Typography>
-        <Box>
-          {demande.type === 'Evénement' && demande.evenementDemandes.map(event => (
-            <Box key={event.id} sx={{ marginTop: 1 }}>
-              <Typography variant="subtitle1">Titre: {event.titre}</Typography>
-              <Typography>Date: {new Date(event.date).toLocaleString()}</Typography>
-              <Typography>Description: {event.description}</Typography>
-              <Typography>Lieu: {event.lieu}</Typography>
-            </Box>
-          ))}
-          {demande.type === 'Projet' && demande.aideProjetDemandes.map(projet => (
-            <Box key={projet.id} sx={{ marginTop: 1 }}>
-              <Typography variant="subtitle1">Titre: {projet.titre}</Typography>
-              <Typography>Description: {projet.descriptionProjet}</Typography>
-              <Typography>Budget: {projet.budget}</Typography>
-              <Typography>Deadline: {new Date(projet.deadline).toLocaleString()}</Typography>
-            </Box>
-          ))}
-          {demande.type === 'Parrainage' && demande.parrainageDemandes.map(parrainage => (
-            <Box key={parrainage.id} sx={{ marginTop: 1 }}>
-              <Typography variant="subtitle1">Détails: {parrainage.detailsParrainage}</Typography>
-            </Box>
-          ))}
+    return demandes
+      .filter(demande => demande.type === type)
+      .map(demande => (
+        <Box key={demande.id} sx={{ border: '1px solid #ddd', padding: 2, marginBottom: 2, borderRadius: 2 }}>
+          <Typography variant="h6">ID: {demande.id}</Typography>
+          <Typography>Type: {demande.type}</Typography>
+          <Typography>Date de demande: {new Date(demande.dateDemande).toLocaleString()}</Typography>
+          <Typography>Statut: {demande.statut}</Typography>
+          <Typography>Email Visiteur: {demande.emailVisiteur}</Typography>
+          <Box>
+            {demande.type === 'Evénement' && demande.evenementDemandes.map(event => (
+              <Box key={event.id} sx={{ marginTop: 1 }}>
+                {validateDate(event.date) ? (
+                  <>
+                    <Typography variant="subtitle1">Titre: {event.titre}</Typography>
+                    <Typography>Date: {new Date(event.date).toLocaleString()}</Typography>
+                    <Typography>Description: {event.description}</Typography>
+                    <Typography>Lieu: {event.lieu}</Typography>
+                  </>
+                ) : (
+                  <Typography variant="body2" color="error">Cet événement est passé.</Typography>
+                )}
+              </Box>
+            ))}
+            {demande.type === 'Projet' && demande.aideProjetDemandes.map(projet => (
+              <Box key={projet.id} sx={{ marginTop: 1 }}>
+                {validateDate(projet.deadline) ? (
+                  <>
+                    <Typography variant="subtitle1">Titre: {projet.titre}</Typography>
+                    <Typography>Description: {projet.descriptionProjet}</Typography>
+                    <Typography>Budget: {projet.budget}</Typography>
+                    <Typography>Deadline: {new Date(projet.deadline).toLocaleString()}</Typography>
+                  </>
+                ) : (
+                  <Typography variant="body2" color="error">Ce projet est passé.</Typography>
+                )}
+              </Box>
+            ))}
+            {demande.type === 'Parrainage' && demande.parrainageDemandes.map(parrainage => (
+              <Box key={parrainage.id} sx={{ marginTop: 1 }}>
+                <Typography variant="subtitle1">Détails: {parrainage.detailsParrainage}</Typography>
+              </Box>
+            ))}
+          </Box>
+          <Box sx={{ marginTop: 2 }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleAction(demande.id, 'acceptée')}
+              sx={{ marginRight: 1 }}
+              disabled={demande.statut === 'acceptée'}
+            >
+              Accepter
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => handleAction(demande.id, 'refusée')}
+              disabled={demande.statut === 'refusée'}
+            >
+              Refuser
+            </Button>
+          </Box>
         </Box>
-        <Box sx={{ marginTop: 2 }}>
-          <Button variant="contained" color="primary" onClick={() => handleAction(demande.id, 'acceptée')} sx={{ marginRight: 1 }}>Accepter</Button>
-          <Button variant="contained" color="secondary" onClick={() => handleAction(demande.id, 'refusée')}>Refuser</Button>
-        </Box>
-      </Box>
-    ));
+      ));
   };
+
+  if (loading) return <p>Chargement...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <Box sx={{ padding: 2 }}>

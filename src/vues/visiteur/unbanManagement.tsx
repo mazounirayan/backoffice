@@ -4,6 +4,8 @@ import { Box, Typography, useTheme, Button, InputLabel, FormControl, MenuItem, S
 import { DataGrid, GridColDef, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../components/theme/theme"; // Assurez-vous que ce chemin est correct
 import Header from "../../components/Header"; // Assurez-vous que ce chemin est correct
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface User {
   id: number;
@@ -22,26 +24,23 @@ const UnbanManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const token = localStorage.getItem('token');
   const [userType, setUserType] = useState<'adherent' | 'visiteur'>('adherent');
+
   useEffect(() => {
     fetchBannedUsers();
   }, [userType]);
 
   const fetchBannedUsers = async () => {
     try {
-     if(userType ==="adherent") {
+      if(userType ==="adherent") {
         const adherentsResponse = await axios.get('https://pa-api-0tcm.onrender.com/adherents?estBanie=true');
         setUsers([...adherentsResponse.data.Adherents]);
-    
-    }
-        
-        else {
-            const visiteursResponse = await axios.get('https://pa-api-0tcm.onrender.com/visiteurs?estBanie=true');
-            setUsers([...visiteursResponse.data.Visiteurs]);
-
-        }
-      
+      } else {
+        const visiteursResponse = await axios.get('https://pa-api-0tcm.onrender.com/visiteurs?estBanie=true');
+        setUsers([...visiteursResponse.data.Visiteurs]);
+      }
     } catch (error) {
       console.error('Erreur lors de la récupération des utilisateurs bannis:', error);
+      toast.error('Erreur lors de la récupération des utilisateurs bannis');
     }
   };
 
@@ -50,25 +49,24 @@ const UnbanManagement: React.FC = () => {
       try {
         console.log(userType)
         if (userType === 'adherent'){
-            await axios.patch(`https://pa-api-0tcm.onrender.com/adherentsUser/${id}`, {
-                estBanie: false,
-              }, {
-                headers: { Authorization: `Bearer ${token}` }
-              });
-        }else {
-
-            await axios.patch(`https://pa-api-0tcm.onrender.com/visiteurs/${id}`, {
-                estBanie: false,
-              }, {
-                headers: { Authorization: `Bearer ${token}` }
-              });
+          await axios.patch(`https://pa-api-0tcm.onrender.com/adherentsUser/${id}`, {
+            estBanie: false,
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+        } else {
+          await axios.patch(`https://pa-api-0tcm.onrender.com/visiteurs/${id}`, {
+            estBanie: false,
+          }, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
         }
-    
-
 
         fetchBannedUsers();
+        toast.success('Utilisateur débanni avec succès');
       } catch (error) {
         console.error('Erreur lors du débannissement de l\'utilisateur:', error);
+        toast.error('Erreur lors du débannissement de l\'utilisateur');
       }
     }
   };
@@ -126,6 +124,7 @@ const UnbanManagement: React.FC = () => {
       >
         <DataGrid rows={users} columns={columns} slots={{ toolbar: GridToolbar }} />
       </Box>
+      <ToastContainer />
     </Box>
   );
 };

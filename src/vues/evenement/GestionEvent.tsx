@@ -7,6 +7,8 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, People as PeopleIcon } from '@mui/icons-material';
 import emailjs from 'emailjs-com';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Types for event and participant
 interface Event {
@@ -54,7 +56,7 @@ const GestionEvenements: React.FC = () => {
       setEvenements(data.Evenements || []);
     } catch (error) {
       console.error('Erreur lors de la récupération des événements:', error);
-      setEvenements([]);
+      toast.error('Erreur lors de la récupération des événements');
     }
   };
 
@@ -63,6 +65,7 @@ const GestionEvenements: React.FC = () => {
       const response = await fetch(`https://pa-api-0tcm.onrender.com/inscriptions/${inscriptionId}`);
       if (!response.ok) {
         console.error(`Erreur lors de la récupération du participant avec l'id ${inscriptionId}: ${response.statusText}`);
+        toast.error(`Erreur lors de la récupération du participant avec l'id ${inscriptionId}`);
         return null;
       }
       const data = await response.json();
@@ -70,16 +73,14 @@ const GestionEvenements: React.FC = () => {
       return participant ? { ...participant, inscriptionId } : null;
     } catch (error) {
       console.error('Erreur lors de la récupération des détails du participant:', error);
+      toast.error('Erreur lors de la récupération des détails du participant');
       return null;
     }
   };
 
   const showParticipants = async (event: Event) => {
     const participantDetailsPromises = event.inscriptions.map(p => fetchParticipantDetails(p.id));
-    console.log(participantDetailsPromises);
-    
     const detailedParticipants = await Promise.all(participantDetailsPromises);
-    console.log(detailedParticipants);
 
     const validParticipants = detailedParticipants.filter(participant => participant !== null);
     
@@ -99,8 +100,10 @@ const GestionEvenements: React.FC = () => {
     try {
       await fetch(`https://pa-api-0tcm.onrender.com/evenements/${id}`, { method: 'DELETE' });
       fetchEvenements();
+      toast.success('Événement supprimé avec succès');
     } catch (error) {
       console.error('Erreur lors de la suppression de l\'événement:', error);
+      toast.error('Erreur lors de la suppression de l\'événement');
     }
   };
 
@@ -112,9 +115,11 @@ const GestionEvenements: React.FC = () => {
     }, 'your_user_id')
       .then((response) => {
         console.log('Email envoyé:', response);
+        toast.success('Email envoyé avec succès');
       })
       .catch((error) => {
         console.error('Erreur lors de l\'envoi de l\'email:', error);
+        toast.error('Erreur lors de l\'envoi de l\'email');
       });
   };
 
@@ -149,20 +154,16 @@ const GestionEvenements: React.FC = () => {
       });
 
       const subject = editingEvent ? 'Événement modifié' : 'Nouvel événement créé';
-      // const message = editingEvent
-      //   ? `L'événement "${formattedValues.nom}" a été modifié.`
-      //   : `Un nouvel événement "${formattedValues.nom}" a été créé.`;
-      
-      // // Envoyer l'e-mail aux participants
       participants.forEach(participant => {
-        // Remplacez `participant.email` par l'adresse e-mail réelle du participant
-        // sendEmail('participant@example.com', subject, message);
+        sendEmail(participant.email, subject, `L'événement "${formattedValues}" a été ${editingEvent ? 'modifié' : 'créé'}.`);
       });
 
       setIsModalOpen(false);
       fetchEvenements();
+      toast.success(`Événement ${editingEvent ? 'modifié' : 'créé'} avec succès`);
     } catch (error) {
       console.error('Erreur lors de la sauvegarde de l\'événement:', error);
+      toast.error('Erreur lors de la sauvegarde de l\'événement');
     }
   };
 
@@ -170,8 +171,10 @@ const GestionEvenements: React.FC = () => {
     try {
       await fetch(`https://pa-api-0tcm.onrender.com/inscriptions/${inscriptionId}`, { method: 'DELETE' });
       setParticipants(participants.filter(p => p.inscriptionId !== inscriptionId));
+      toast.success('Participant supprimé avec succès');
     } catch (error) {
       console.error('Erreur lors de la suppression du participant:', error);
+      toast.error('Erreur lors de la suppression du participant');
     }
   };
 
@@ -306,6 +309,8 @@ const GestionEvenements: React.FC = () => {
           <Button onClick={() => setIsParticipantsModalOpen(false)}>Fermer</Button>
         </DialogActions>
       </Dialog>
+
+      <ToastContainer />
     </div>
   );
 };

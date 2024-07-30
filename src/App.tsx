@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import Topbar from "./components/navbar/navbar";
 import Sidebar from "./components/sidbar/sidbar";
 import Dashboard from "./vues/Dashboard";
-import Contacts from "./vues/visiteur";
+
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./components/theme/theme";
 import Team from "./vues/team";
@@ -16,7 +16,6 @@ import LoginForm from './vues/login/LoginForm';
 import { AuthProvider } from './services/AuthService';
 import PrivateRoute from './services/PrivateRoute';
 
-import DisplayVotes from "./vues/ag/vote";
 import AgList from "./vues/ag/ag";
 import CreateAGForm from "./vues/ag/CreateAGForm";
 import CreatePropositionForm from "./vues/ag/propostions";
@@ -48,6 +47,7 @@ import ResultsPage from "./vues/vote/Resultat";
 import VoteStatistics from "./vues/vote/voteStats";
 import UnbanManagement from "./vues/visiteur/unbanManagement";
 import ProjectPage from "./vues/Demande/aideprojet";
+import AgResults from "./vues/ag/agResultat";
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
@@ -88,7 +88,10 @@ function App() {
                   path="/ags/:id" 
                   element={<PrivateRoute element={<AgDetail   />} />}
                 />
-           
+                  <Route
+                  path="/ags/:id/results" 
+                  element={<PrivateRoute element={<AgResults   />} />}
+                />
                  <Route
                   path="/stats/:sondageId" 
                   element={<PrivateRoute element={<VoteStatistics   />} />}
@@ -99,11 +102,11 @@ function App() {
                 
                 <Route path="/" element={<PrivateRoute element={<Dashboard />} />} />
                 <Route path="/team" element={<PrivateRoute element={<Team />} />} />
-                <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} />
-                <Route path="/form" element={<PrivateRoute element={<New  title={"Créer un nouvel utilisateur"}  />} />} />
+                {/* <Route path="/contacts" element={<PrivateRoute element={<Contacts />} />} /> */}
+                {/* <Route path="/form" element={<PrivateRoute element={<New  title={"Créer un nouvel utilisateur"}  />} />} /> */}
                 <Route path="/Account" element={<PrivateRoute element={<Profile />} />} />
                 <Route path="/faq" element={<PrivateRoute element={<FAQ />} />} />
-                <Route path="/calendar" element={<PrivateRoute element={<Calendar />} />} />
+                {/* <Route path="/calendar" element={<PrivateRoute element={<Calendar />} />} /> */}
                 <Route path="/createVote" element={<PrivateRoute element={<SondageSystem />} />} />
                 {/* <Route path="/vote" element={<PrivateRoute element={<VotingSystem/>} />} /> */}
             
